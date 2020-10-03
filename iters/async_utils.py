@@ -1,0 +1,1033 @@
+import asyncio
+
+from inspect import isawaitable as is_awaitable, iscoroutinefunction as is_coroutine_function
+from operator import add, attrgetter, mul
+from sys import maxsize as max_size
+from typing import (
+    Any,
+    AsyncIterable,
+    AsyncIterator,
+    Awaitable,
+    Callable,
+    ContextManager,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Reversible,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+    no_type_check,
+    overload,
+)
+
+from typing_extensions import AsyncContextManager, Protocol
+
+from iters.utils import Add_T, MarkerOr, marker, last
+
+__all__ = (
+    "AnyIterable",
+    "AnyIterator",
+    "MarkerOr",
+    "MaybeAwaitable",
+    "marker",
+    "async_all",
+    "async_any",
+    "async_append",
+    "async_chain",
+    "async_chain_from_iterable",
+    "async_collapse",
+    "async_compress",
+    "async_copy",
+    "async_copy_infinite",
+    "async_copy_safe",
+    "async_count",
+    "async_cycle",
+    "async_dict",
+    "async_drop",
+    "async_drop_while",
+    "async_enumerate",
+    "async_exhaust",
+    "async_filter",
+    "async_filter_false",
+    "async_first",
+    "async_flatten",
+    "async_fold",
+    "async_get",
+    "async_group",
+    "async_group_longest",
+    "async_iter",
+    "async_iter_any_iter",
+    "async_iter_chunk",
+    "async_iter_len",
+    "async_iter_slice",
+    "async_iterate",
+    "async_last",
+    "async_list",
+    "async_list_chunk",
+    "async_map",
+    "async_max",
+    "async_min",
+    "async_next",
+    "async_next_unchecked",
+    "async_nth",
+    "async_nth_or_last",
+    "async_partition",
+    "async_partition_infinite",
+    "async_partition_safe",
+    "async_prepend",
+    "async_product",
+    "async_reduce",
+    "async_repeat",
+    "async_reversed",
+    "async_set",
+    "async_side_effect",
+    "async_star_map",
+    "async_std_reversed",
+    "async_step_by",
+    "async_sum",
+    "async_take",
+    "async_tuple",
+    "async_tuple_chunk",
+    "async_with_async_iter",
+    "async_with_iter",
+    "async_zip",
+    "async_zip_longest",
+    "iter_async_function",
+    "iter_async_iter",
+    "iter_sync_function",
+    "iter_to_async_iter",
+    "maybe_await",
+)
+
+R = TypeVar("R")
+T = TypeVar("T")
+U = TypeVar("U")
+T1 = TypeVar("T1")
+T2 = TypeVar("T2")
+T3 = TypeVar("T3")
+T4 = TypeVar("T4")
+T5 = TypeVar("T5")
+
+AnyIterable = Union[AsyncIterable[T], Iterable[T]]
+AnyIterator = Union[AsyncIterator[T], Iterator[T]]
+MaybeAwaitable = Union[T, Awaitable[T]]
+
+
+class SupportsOrder(Protocol):
+    def __gt__(self, other: Any) -> bool:
+        ...
+
+    def __lt__(self, other: Any) -> bool:
+        ...
+
+
+Order_T = TypeVar("Order_T", bound=SupportsOrder)
+Order_U = TypeVar("Order_U", bound=SupportsOrder)
+
+
+async def maybe_await(value: MaybeAwaitable[R]) -> R:
+    if is_awaitable(value):
+        return await cast(Awaitable[R], value)
+
+    return cast(R, value)
+
+
+@overload
+def async_iter(iterable: AnyIterable[T]) -> AsyncIterator[T]:
+    ...
+
+
+@overload
+def async_iter(function: Callable[[], T], sentinel: T) -> AsyncIterator[T]:
+    ...
+
+
+@overload
+def async_iter(async_function: Callable[[], Awaitable[T]], sentinel: T) -> AsyncIterator[T]:
+    ...
+
+
+@no_type_check
+def async_iter(
+    something: Union[AsyncIterable[T], Iterable[T], Callable[[], T], Callable[[], Awaitable[T]]],
+    sentinel: MarkerOr[T] = marker,
+) -> AsyncIterator[T]:
+    if isinstance(something, AsyncIterable):
+        return iter_async_iter(something)
+
+    elif isinstance(something, Iterable):
+        return iter_to_async_iter(something)
+
+    elif callable(something):
+        if is_coroutine_function(something):
+            return iter_async_function(something, sentinel)
+
+        return iter_sync_function(something, sentinel)
+
+    else:
+        raise TypeError(
+            "Expected iterable, async iterable, function or async function, "
+            f"got {type(something).__name__!r}."
+        )
+
+
+def async_iter_any_iter(iterable: AnyIterable[T]) -> AsyncIterator[T]:
+    if isinstance(iterable, AsyncIterable):
+        return iter_async_iter(iterable)
+
+    elif isinstance(iterable, Iterable):
+        return iter_to_async_iter(iterable)
+
+    else:
+        raise TypeError(f"Expected iterable or async iterable, got {type(iterable).__name__!r}.")
+
+
+async def async_next(iterator: AnyIterator[T], default: MarkerOr[T] = marker) -> T:
+    if isinstance(iterator, AsyncIterator):
+        try:
+            return await iterator.__anext__()
+
+        except StopAsyncIteration:
+            if default is marker:
+                raise
+
+            return cast(T, default)
+
+    return next(iterator)
+
+
+async def iter_to_async_iter(iterable: Iterable[T]) -> AsyncIterator[T]:
+    for element in iterable:
+        yield element
+
+
+async def async_next_unchecked(
+    async_iterator: AsyncIterator[T], default: MarkerOr[T] = marker
+) -> T:
+    try:
+        return await async_iterator.__anext__()
+
+    except StopAsyncIteration:
+        if default is marker:
+            raise
+
+        return cast(T, default)
+
+
+def iter_async_iter(async_iterable: AsyncIterable[T]) -> AsyncIterator[T]:
+    return async_iterable.__aiter__()
+
+
+async def iter_sync_function(function: Callable[[], T], sentinel: T) -> AsyncIterator[T]:
+    return iter_to_async_iter(iter(function, sentinel))
+
+
+async def iter_async_function(
+    async_function: Callable[[], Awaitable[T]], sentinel: T
+) -> AsyncIterator[T]:
+    while True:
+        value = await async_function()
+
+        if value == sentinel:
+            break
+
+        yield value
+
+
+async def async_all(iterable: AnyIterable[T]) -> bool:
+    async for element in async_iter_any_iter(iterable):
+        if not element:
+            return False
+    return True
+
+
+async def async_any(iterable: AnyIterable[T]) -> bool:
+    async for element in async_iter_any_iter(iterable):
+        if element:
+            return True
+    return False
+
+
+async def async_count(start: Add_T = 0, step: Add_T = 1) -> AsyncIterator[Add_T]:  # type: ignore
+    if not step:
+        raise ValueError("Expected step to be true.")
+
+    while True:
+        yield start
+
+        start += step
+
+
+async def async_with_async_iter(
+    async_context_manager: AsyncContextManager[AnyIterable[T]],
+) -> AsyncIterator[T]:
+    async with async_context_manager as iterable:
+        async for element in async_iter_any_iter(iterable):
+            yield element
+
+
+def async_with_iter(context_manager: ContextManager[AnyIterable[T]]) -> AsyncIterator[T]:
+    with context_manager as iterable:
+        return async_iter_any_iter(iterable)
+
+
+def async_std_reversed(iterable: Reversible[T]) -> AsyncIterator[T]:
+    return iter_to_async_iter(reversed(iterable))
+
+
+async def async_reversed(iterable: AnyIterable[T]) -> AsyncIterator[T]:
+    async for element in async_std_reversed(await async_list(async_iter_any_iter(iterable))):
+        yield element
+
+
+async def async_reduce(
+    function: Callable[[Any, Any], MaybeAwaitable[Any]],
+    iterable: AnyIterable[T],
+    initial: MarkerOr[T] = marker,
+) -> Any:
+    async_iterator = async_iter_any_iter(iterable)
+
+    if initial is marker:
+        try:
+            value = await async_next_unchecked(async_iterator)
+
+        except StopAsyncIteration:
+            raise TypeError("reduce() of empty iterable with no initial value") from None
+
+    else:
+        value = cast(T, initial)
+
+    async for element in async_iterator:
+        value = await maybe_await(function(value, element))
+
+    return value
+
+
+async def async_product(iterable: AnyIterable[T], start: MarkerOr[T] = marker) -> T:
+    if start is marker:
+        start = cast(T, 0)
+
+    return await async_reduce(mul, iterable, start)
+
+
+async def async_sum(iterable: AnyIterable[T], start: MarkerOr[T] = marker) -> T:
+    if start is marker:
+        start = cast(T, 0)
+
+    return await async_reduce(add, iterable, start)
+
+
+async def async_iter_len(iterable: AnyIterable[T]) -> int:
+    length = 0
+
+    async for _ in async_iter_any_iter(iterable):
+        length += 1
+
+    return length
+
+
+async def async_dict(iterable: AnyIterable[Tuple[T, U]]) -> Dict[T, U]:
+    result: Dict[T, U] = {}
+
+    async for key, value in async_iter_any_iter(iterable):
+        result[key] = value
+
+    return result
+
+
+async def async_list(iterable: AnyIterable[T]) -> List[T]:
+    return [element async for element in async_iter_any_iter(iterable)]
+
+
+async def async_set(iterable: AnyIterable[T]) -> Set[T]:
+    return {element async for element in async_iter_any_iter(iterable)}
+
+
+async def async_tuple(iterable: AnyIterable[T]) -> Tuple[T, ...]:
+    return tuple(await async_list(iterable))
+
+
+async def async_enumerate(iterable: AnyIterable[T], start: int = 0) -> AsyncIterator[Tuple[int, T]]:
+    if not isinstance(start, int):
+        raise TypeError(f"Expected start to be integer, got {type(start).__name__!r}.")
+
+    number = start
+
+    async for element in async_iter_any_iter(iterable):
+        yield number, element
+
+        number += 1
+
+
+async def async_filter(
+    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    async for element in async_iter_any_iter(iterable):
+        if await maybe_await(predicate(element)):
+            yield element
+
+
+async def async_filter_false(
+    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    async for element in async_iter_any_iter(iterable):
+        if not await maybe_await(predicate(element)):
+            yield element
+
+
+async def async_map(
+    function: Callable[[T], MaybeAwaitable[U]], iterable: AnyIterable[T]
+) -> AsyncIterator[U]:
+    async for element in async_iter_any_iter(iterable):
+        yield await maybe_await(function(element))
+
+
+async def async_star_map(
+    function: Callable[[T], MaybeAwaitable[U]], iterable: AnyIterable[AnyIterable[T]]
+) -> AsyncIterator[U]:
+    async for args_iterable in async_iter_any_iter(iterable):
+        args = await async_tuple(async_iter_any_iter(args_iterable))
+        yield await maybe_await(function(*args))
+
+
+async def async_cycle(iterable: AnyIterable[T]) -> AsyncIterator[T]:
+    saved = []
+
+    async for element in async_iter_any_iter(iterable):
+        yield element
+        saved.append(element)
+
+    if not saved:
+        return
+
+    while True:
+        for element in saved:
+            yield element
+
+
+async def async_repeat(value: T, times: Optional[int] = None) -> AsyncIterator[T]:
+    if times is None:
+        while True:
+            yield value
+
+    else:
+        for _ in range(times):
+            yield value
+
+
+async def async_chain(*iterables: AnyIterable[T]) -> AsyncIterator[T]:
+    for iterable in iterables:
+        async for element in async_iter_any_iter(iterable):
+            yield element
+
+
+async def async_chain_from_iterable(iterables: AnyIterable[AnyIterable[T]]) -> AsyncIterator[T]:
+    async for iterable in async_iter_any_iter(iterables):
+        async for element in async_iter_any_iter(iterable):
+            yield element
+
+
+async def async_compress(iterable: AnyIterable[T], selectors: AnyIterable[U]) -> AsyncIterator[T]:
+    async for element, selector in async_zip(iterable, selectors):
+        if selector:
+            yield element
+
+
+async def async_drop_while(
+    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    async_iterator = async_iter_any_iter(iterable)
+
+    async for element in async_iterator:
+        if not await maybe_await(predicate(element)):
+            yield element
+            break
+
+    async for element in async_iterator:
+        yield element
+
+
+async def async_take_while(
+    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    async for element in async_iter_any_iter(iterable):
+        if await maybe_await(predicate(element)):
+            yield element
+
+        else:
+            break
+
+
+def async_copy(iterable: AnyIterable[T], n: int = 2) -> Tuple[AsyncIterator[T], ...]:
+    async_iterator = async_iter_any_iter(iterable)
+
+    queues: List[asyncio.Queue] = [asyncio.Queue() for _ in range(n)]
+
+    async def generator(this_queue: asyncio.Queue) -> AsyncIterator[T]:
+        while True:
+            if not this_queue.qsize():
+                try:
+                    value = await async_next_unchecked(async_iterator)
+
+                except StopAsyncIteration:
+                    return
+
+                await asyncio.gather(*(queue.put(value) for queue in queues))
+
+            yield await this_queue.get()
+
+    return tuple(generator(this_queue) for this_queue in queues)
+
+
+async_copy_infinite = async_copy
+
+
+def async_copy_safe(iterable: AnyIterable[T], n: int = 2) -> Tuple[AsyncIterator[T], ...]:
+    state: Optional[Tuple[T, ...]] = None
+
+    async def generator() -> AsyncIterator[T]:
+        nonlocal state
+
+        if state is None:
+            state = await async_tuple(iterable)
+
+        async for value in async_iter_any_iter(state):
+            yield value
+
+    return tuple(generator() for _ in range(n))
+
+
+@overload
+def async_zip(__iter_1: AnyIterable[T1]) -> AsyncIterator[Tuple[T1]]:
+    ...
+
+
+@overload
+def async_zip(__iter_1: AnyIterable[T1], __iter_2: AnyIterable[T2]) -> AsyncIterator[Tuple[T1, T2]]:
+    ...
+
+
+@overload
+def async_zip(
+    __iter_1: AnyIterable[T1], __iter_2: AnyIterable[T2], __iter_3: AnyIterable[T3]
+) -> AsyncIterator[Tuple[T1, T2, T3]]:
+    ...
+
+
+@overload
+def async_zip(
+    __iter_1: AnyIterable[T1],
+    __iter_2: AnyIterable[T2],
+    __iter_3: AnyIterable[T3],
+    __iter_4: AnyIterable[T4],
+) -> AsyncIterator[Tuple[T1, T2, T3, T4]]:
+    ...
+
+
+@overload
+def async_zip(
+    __iter_1: AnyIterable[T1],
+    __iter_2: AnyIterable[T2],
+    __iter_3: AnyIterable[T3],
+    __iter_4: AnyIterable[T4],
+    __iter_5: AnyIterable[T5],
+) -> AsyncIterator[Tuple[T1, T2, T3, T4, T5]]:
+    ...
+
+
+@overload
+def async_zip(
+    __iter_1: AnyIterable[Any],
+    __iter_2: AnyIterable[Any],
+    __iter_3: AnyIterable[Any],
+    __iter_4: AnyIterable[Any],
+    __iter_5: AnyIterable[Any],
+    __iter_6: AnyIterable[Any],
+    *iterables: AnyIterable[Any],
+) -> AsyncIterator[Tuple[Any, ...]]:
+    ...
+
+
+async def async_zip(*iterables: AnyIterable[Any]) -> AsyncIterator[Tuple[Any, ...]]:
+    iterators: List[AsyncIterator[Any]] = [async_iter_any_iter(iterable) for iterable in iterables]
+
+    if not iterators:
+        return
+
+    while True:
+        try:
+            values: Tuple[Any, ...] = tuple(
+                await asyncio.gather(*(async_next_unchecked(iterator) for iterator in iterators))
+            )
+            yield values
+
+        except StopAsyncIteration:
+            return
+
+
+@overload
+def async_iter_slice(iterable: AnyIterable[T], __stop: Optional[int]) -> AsyncIterator[T]:
+    ...
+
+
+@overload
+def async_iter_slice(
+    iterable: AnyIterable[T], __start: Optional[int], __stop: Optional[int],
+) -> AsyncIterator[T]:
+    ...
+
+
+@overload
+def async_iter_slice(
+    iterable: AnyIterable[T], __start: Optional[int], __stop: Optional[int], __step: Optional[int],
+) -> AsyncIterator[T]:
+    ...
+
+
+async def async_iter_slice(
+    iterable: AnyIterable[T], *slice_args: Optional[int]
+) -> AsyncIterator[T]:
+    real_slice = slice(*slice_args)
+
+    start, stop, step = real_slice.start or 0, real_slice.stop or max_size, real_slice.step or 1
+
+    if start < 0:
+        raise ValueError("Slice start can not be lower than 0.")
+
+    if stop < 0:
+        raise ValueError("Slice stop can not be lower than 0.")
+
+    if step < 1:
+        raise ValueError("Slice step can not be lower than 1.")
+
+    async for index, element in async_enumerate(iterable):
+        if index >= start and not (index - start) % step:
+            yield element
+
+        if index + 1 >= stop:
+            break
+
+
+async def async_max(
+    iterable: AnyIterable[Order_T],
+    *,
+    key: Optional[Callable[[Order_T], MaybeAwaitable[Order_U]]] = None,
+    default: MarkerOr[Order_T] = marker,
+) -> Order_T:
+    value: Order_T
+    value_key: Order_U
+
+    async_iterator = async_iter_any_iter(iterable)
+
+    try:
+        value = await async_next_unchecked(async_iterator)
+
+        if key is not None:
+            value_key = await maybe_await(key(value))
+
+    except StopAsyncIteration:
+        if default is marker:
+            raise TypeError("max() of empty iterable with no default") from None
+
+        return cast(Order_T, default)
+
+    if key is None:
+        async for element in async_iterator:
+            if element > value:
+                value = element
+
+    else:
+        async for element in async_iterator:
+            element_key = await maybe_await(key(value))
+
+            if element_key > value_key:
+                value = element
+                value_key = element_key
+
+    return value
+
+
+async def async_min(
+    iterable: AnyIterable[Order_T],
+    *,
+    key: Optional[Callable[[Order_T], MaybeAwaitable[Order_U]]] = None,
+    default: MarkerOr[Order_T] = marker,
+) -> Order_T:
+    value: Order_T
+    value_key: Order_U
+
+    async_iterator = async_iter_any_iter(iterable)
+
+    try:
+        value = await async_next_unchecked(async_iterator)
+
+        if key is not None:
+            value_key = await maybe_await(key(value))
+
+    except StopAsyncIteration:
+        if default is marker:
+            raise TypeError("min() of empty iterable with no default") from None
+
+        return cast(Order_T, default)
+
+    if key is None:
+        async for element in async_iterator:
+            if element < value:
+                value = element
+
+    else:
+        async for element in async_iterator:
+            element_key = await maybe_await(key(value))
+
+            if element_key < value_key:
+                value = element
+                value_key = element_key
+
+    return value
+
+
+async def async_exhaust(iterable: AnyIterable[T], amount: Optional[int] = None) -> None:
+    if amount is None:
+        async for _ in async_iter_any_iter(iterable):
+            pass
+
+    else:
+        await async_exhaust(async_take(iterable, amount))
+
+
+async def async_first(iterable: AnyIterable[T], default: MarkerOr[T] = marker) -> T:
+    try:
+        return await async_next_unchecked(async_iter_any_iter(iterable))
+
+    except StopAsyncIteration as error:
+        if default is marker:
+            raise ValueError("async_first() called on an empty async iterable.") from error
+
+        return cast(T, default)
+
+
+async def async_last(iterable: AnyIterable[T], default: MarkerOr[T] = marker) -> T:
+    if isinstance(iterable, AsyncIterable):
+        no_iter_sentinel = object()
+        element: Union[object, T] = no_iter_sentinel
+
+        async for element in iterable:
+            pass
+
+        if element is no_iter_sentinel:
+            if default is marker:
+                raise ValueError("async_last() called on an empty async iterable.")
+
+            return cast(T, default)
+
+        return cast(T, element)
+
+    else:
+        return last(iterable)
+
+
+async def async_fold(
+    iterable: AnyIterable[T], function: Callable[[U, Union[T, U]], MaybeAwaitable[U]], initial: U
+) -> U:
+    return await async_reduce(function, iterable, initial)
+
+
+def async_get(iterable: AnyIterable[T], **attrs: U) -> AsyncIterator[T]:
+    names = tuple(attr.replace("__", ".") for attr in attrs.keys())
+    expected = tuple(value for value in attrs.values())
+
+    if len(expected) == 1:
+        expected = expected[0]  # type: ignore
+
+    get_attrs = attrgetter(*names)
+
+    def predicate(item: T) -> bool:
+        return get_attrs(item) == expected
+
+    return async_filter(predicate, iterable)
+
+
+async def async_nth(iterable: AnyIterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+    try:
+        return await async_next_unchecked(async_iter_slice(iterable, n, None))
+
+    except StopIteration as error:
+        if default is marker:
+            raise ValueError("async_nth() called with n larger than iterable length.") from error
+
+        return cast(T, default)
+
+
+async def async_nth_or_last(iterable: AnyIterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+    return await async_last(async_iter_slice(iterable, n + 1), default=default)
+
+
+def async_drop(iterable: AnyIterable[T], n: int) -> AsyncIterator[T]:
+    return async_iter_slice(iterable, n, None)
+
+
+def async_take(iterable: AnyIterable[T], n: int) -> AsyncIterator[T]:
+    return async_iter_slice(iterable, n)
+
+
+def async_step_by(iterable: AnyIterable[T], step: int) -> AsyncIterator[T]:
+    return async_iter_slice(iterable, None, None, step)
+
+
+def async_group(iterable: AnyIterable[T], n: int) -> AsyncIterator[Tuple[T, ...]]:
+    iterators = (async_iter_any_iter(iterable),) * n
+
+    return async_zip(*iterators)
+
+
+def async_group_longest(
+    iterable: AnyIterable[T], n: int, fillvalue: Optional[T] = None
+) -> AsyncIterator[Tuple[Optional[T], ...]]:
+    iterators = (async_iter_any_iter(iterable),) * n
+
+    return async_zip_longest(*iterators, fillvalue=fillvalue)
+
+
+class ZipExhausted(Exception):
+    pass
+
+
+@overload
+def async_zip_longest(
+    __iter_1: AnyIterable[T1], *, fillvalue: Optional[T] = None
+) -> AsyncIterator[Tuple[Optional[Union[T1, T]]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iter_1: AnyIterable[T1], __iter_2: AnyIterable[T2], *, fillvalue: Optional[T] = None
+) -> AsyncIterator[Tuple[Optional[Union[T1, T]], Optional[Union[T2, T]]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iter_1: AnyIterable[T1],
+    __iter_2: AnyIterable[T2],
+    __iter_3: AnyIterable[T3],
+    *,
+    fillvalue: Optional[T] = None,
+) -> AsyncIterator[Tuple[Optional[Union[T1, T]], Optional[Union[T2, T]], Optional[Union[T3, T]]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iter_1: AnyIterable[T1],
+    __iter_2: AnyIterable[T2],
+    __iter_3: AnyIterable[T3],
+    __iter_4: AnyIterable[T4],
+    *,
+    fillvalue: Optional[T] = None,
+) -> AsyncIterator[
+    Tuple[
+        Optional[Union[T1, T]],
+        Optional[Union[T2, T]],
+        Optional[Union[T3, T]],
+        Optional[Union[T4, T]],
+    ],
+]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iter_1: AnyIterable[T1],
+    __iter_2: AnyIterable[T2],
+    __iter_3: AnyIterable[T3],
+    __iter_4: AnyIterable[T4],
+    __iter_5: AnyIterable[T5],
+    *,
+    fillvalue: Optional[T] = None,
+) -> AsyncIterator[
+    Tuple[
+        Optional[Union[T1, T]],
+        Optional[Union[T2, T]],
+        Optional[Union[T3, T]],
+        Optional[Union[T4, T]],
+        Optional[Union[T5, T]],
+    ]
+]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iter_1: AnyIterable[Any],
+    __iter_2: AnyIterable[Any],
+    __iter_3: AnyIterable[Any],
+    __iter_4: AnyIterable[Any],
+    __iter_5: AnyIterable[Any],
+    __iter_6: AnyIterable[Any],
+    *iterables: AnyIterable[Any],
+    fillvalue: Optional[T] = None,
+) -> AsyncIterator[Tuple[Optional[Union[Any, T]], ...]]:
+    ...
+
+
+async def async_zip_longest(
+    *iterables: AnyIterable[Any], fillvalue: Optional[T] = None
+) -> AsyncIterator[Tuple[Optional[Union[Any, T]], ...]]:
+    if not iterables:
+        return
+
+    remain = len(iterables) - 1
+
+    async def sentinel() -> AsyncIterator[Optional[T]]:
+        nonlocal remain
+
+        if not remain:
+            raise ZipExhausted
+
+        remain -= 1
+
+        yield fillvalue
+
+    fillers = async_repeat(fillvalue)
+
+    iterators = [async_chain(iterable, sentinel(), fillers) for iterable in iterables]
+
+    try:
+        while True:
+            yield await async_tuple(async_map(async_next_unchecked, iterators))
+
+    except ZipExhausted:
+        pass
+
+
+def async_flatten(iterable: AnyIterable[AnyIterable[T]]) -> AsyncIterator[T]:
+    return async_chain_from_iterable(iterable)
+
+
+def async_prepend(iterable: AnyIterable[T], item: T) -> AsyncIterator[T]:
+    return async_chain((item,), iterable)
+
+
+def async_append(iterable: AnyIterable[T], item: T) -> AsyncIterator[T]:
+    return async_chain(iterable, (item,))
+
+
+def async_partition(
+    iterable: AnyIterable[T], predicate: Callable[[T], MaybeAwaitable[bool]] = bool
+) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+    for_true, for_false = async_copy(iterable)
+
+    return async_filter(predicate, for_true), async_filter_false(predicate, for_false)
+
+
+async_partition_infinite = async_partition
+
+
+def async_partition_safe(
+    iterable: AnyIterable[T], predicate: Callable[[T], MaybeAwaitable[bool]] = bool
+) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+    for_true, for_false = async_copy_safe(iterable)
+
+    return async_filter(predicate, for_true), async_filter_false(predicate, for_false)
+
+
+async def async_list_chunk(iterable: AnyIterable[T], n: int) -> AsyncIterator[List[T]]:
+    iterator = async_iter_any_iter(iterable)
+
+    while True:
+        part = await async_list(async_take(iterator, n))
+
+        if not part:
+            break
+
+        yield part
+
+
+async def async_tuple_chunk(iterable: AnyIterable[T], n: int) -> AsyncIterator[Tuple[T, ...]]:
+    iterator = async_iter_any_iter(iterable)
+
+    while True:
+        part = await async_tuple(async_take(iterator, n))
+
+        if not part:
+            break
+
+        yield part
+
+
+async def async_iter_chunk(iterable: AnyIterable[T], n: int) -> AsyncIterator[AsyncIterator[T]]:
+    source = async_iter_any_iter(iterable)
+
+    while True:
+        try:
+            item = await async_next_unchecked(source)
+
+        except StopAsyncIteration:
+            return
+
+        source, iterator = async_copy(async_prepend(source, item))
+
+        yield async_take(iterator, n)
+
+        await async_exhaust(source, n)
+
+
+async def async_iterate(function: Callable[[T], MaybeAwaitable[T]], value: T) -> AsyncIterator[T]:
+    while True:
+        yield value
+        value = await maybe_await(function(value))
+
+
+def async_collapse(
+    iterable: Union[T, AnyIterable[T]],
+    base_type: Optional[Type[Any]] = None,
+    levels: Optional[int] = None,
+) -> AsyncIterator[T]:
+    async def walk(node: Union[T, AnyIterable[T]], level: int) -> AsyncIterator[T]:
+        if (
+            ((levels is not None) and (level > levels))
+            or isinstance(node, (str, bytes))
+            or ((base_type is not None) and isinstance(node, base_type))
+        ):
+            yield cast(T, node)
+            return
+
+        try:
+            tree = async_iter_any_iter(node)  # type: ignore
+
+        except TypeError:
+            yield cast(T, node)
+            return
+
+        else:
+            async for child in tree:
+                async for item in walk(child, level + 1):
+                    yield item
+
+    return walk(iterable, 0)
+
+
+async def async_side_effect(
+    iterable: AnyIterable[T],
+    function: Callable[[T], MaybeAwaitable[None]],
+    before: Optional[Callable[[], MaybeAwaitable[None]]] = None,
+    after: Optional[Callable[[], MaybeAwaitable[None]]] = None,
+) -> AsyncIterator[T]:
+    try:
+        if before is not None:
+            await maybe_await(before())
+
+        async for item in async_iter_any_iter(iterable):
+            await maybe_await(function(item))
+            yield item
+
+    finally:
+        if after is not None:
+            await maybe_await(after())
