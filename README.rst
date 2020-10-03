@@ -1,8 +1,6 @@
 iters.py
 ========
 
-*Less sophisticated, less restrictive, more magical and funky!*
-
 .. image:: https://img.shields.io/pypi/l/iters.py.svg
     :target: https://opensource.org/licenses/MIT
     :alt: Project License
