@@ -300,7 +300,7 @@ class AsyncIter(Generic[T]):
         return self.__class__(async_step_by(self._iterator, step))
 
     def enumerate(self, start: int = 0) -> "AsyncIter[Tuple[int, T]]":
-        return self.__class__(async_enumerate(self._iterator))
+        return self.__class__(async_enumerate(self._iterator, start))
 
     def filter(self, predicate: Callable[[T], MaybeAwaitable[bool]]) -> "AsyncIter[T]":
         return self.__class__(async_filter(predicate, self._iterator))

@@ -275,7 +275,7 @@ class Iter(Generic[T]):
         return self.__class__(step_by(self._iterator, step))
 
     def enumerate(self, start: int = 0) -> "Iter[Tuple[int, T]]":
-        return self.__class__(enumerate(self._iterator))
+        return self.__class__(enumerate(self._iterator, start))
 
     def filter(self, predicate: Callable[[T], bool]) -> "Iter[T]":
         return self.__class__(filter(predicate, self._iterator))
