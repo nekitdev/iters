@@ -97,6 +97,7 @@ __all__ = (
     "AsyncIter",
     "async_iter",
     "async_next",
+    "async_next_unchecked",
     "async_reversed",
     "return_async_iter",
     "async_std_iter",
@@ -150,7 +151,7 @@ class AsyncIter(Generic[T]):
     def __aiter__(self) -> "AsyncIter[T]":
         return self
 
-    async def __next__(self) -> T:
+    async def __anext__(self) -> T:
         return await async_next_unchecked(self._iterator)  # type: ignore
 
     def __repr__(self) -> str:
