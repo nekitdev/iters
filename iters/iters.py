@@ -78,8 +78,19 @@ __all__ = (
     "std_reversed",
 )
 
+KT = TypeVar("KT")
+VT = TypeVar("VT")
+
 T = TypeVar("T")
 U = TypeVar("U")
+
+T1 = TypeVar("T1")
+T2 = TypeVar("T2")
+T3 = TypeVar("T3")
+T4 = TypeVar("T4")
+T5 = TypeVar("T5")
+
+Or = Union[T, Optional[U]]
 
 std_iter = iter
 std_reversed = reversed
@@ -216,7 +227,7 @@ class Iter(Generic[T]):
     def collect(self, function: Callable[[Iterator[T]], Iterable[T]]) -> Iterable[T]:
         return function(self._iterator)  # type: ignore
 
-    def dict(self) -> Dict[T, T]:
+    def dict(self) -> Dict[KT, VT]:
         return dict(self._iterator)  # type: ignore
 
     def list(self) -> List[T]:
@@ -398,10 +409,126 @@ class Iter(Generic[T]):
 
         return self.__class__(with_true), self.__class__(with_false)
 
-    def zip(self, *iterables: Iterable[T]) -> "Iter[T]":
+    @overload
+    def zip(self, __iter_1: Iterable[T1]) -> "Iter[Tuple[T, T1]]":  # noqa
+        ...
+
+    @overload
+    def zip(  # noqa
+        self, __iter_1: Iterable[T1], __iter_2: Iterable[T2]
+    ) -> "Iter[Tuple[T, T1, T2]]":
+        ...
+
+    @overload
+    def zip(  # noqa
+        self, __iter_1: Iterable[T1], __iter_2: Iterable[T2], __iter_3: Iterable[T3]
+    ) -> "Iter[Tuple[T, T1, T2, T3]]":
+        ...
+
+    @overload
+    def zip(  # noqa
+        self,
+        __iter_1: Iterable[T1],
+        __iter_2: Iterable[T2],
+        __iter_3: Iterable[T3],
+        __iter_4: Iterable[T4],
+    ) -> "Iter[Tuple[T, T1, T2, T3, T4]]":
+        ...
+
+    @overload
+    def zip(  # noqa
+        self,
+        __iter_1: Iterable[T1],
+        __iter_2: Iterable[T2],
+        __iter_3: Iterable[T3],
+        __iter_4: Iterable[T4],
+        __iter_5: Iterable[T5],
+    ) -> "Iter[Tuple[T, T1, T2, T3, T4, T5]]":
+        ...
+
+    @overload
+    def zip(  # noqa
+        self,
+        __iter_1: Iterable[Any],
+        __iter_2: Iterable[Any],
+        __iter_3: Iterable[Any],
+        __iter_4: Iterable[Any],
+        __iter_5: Iterable[Any],
+        __iter_6: Iterable[Any],
+        *iterables: Iterable[Any],
+    ) -> "Iter[Tuple[Any, ...]]":
+        ...
+
+    @no_type_check
+    def zip(self, *iterables: Iterable[Any]) -> "Iter[Tuple[Any, ...]]":  # noqa
         return self.__class__(zip(self._iterator, *iterables))
 
-    def zip_longest(self, *iterables: Iterable[T], fill: T = None) -> "Iter[T]":
+    @overload
+    def zip_longest(  # noqa
+        self, __iter_1: Iterable[T1], *, fill: Optional[U] = None
+    ) -> "Iter[Tuple[Or[T, U], Or[T1, U]]]":
+        ...
+
+    @overload
+    def zip_longest(  # noqa
+        self, __iter_1: Iterable[T1], __iter_2: Iterable[T2], *, fill: Optional[U] = None
+    ) -> "Iter[Tuple[Or[T, U], Or[T1, U], Or[T2, U]]]":
+        ...
+
+    @overload
+    def zip_longest(  # noqa
+        self,
+        __iter_1: Iterable[T1],
+        __iter_2: Iterable[T2],
+        __iter_3: Iterable[T3],
+        *,
+        fill: Optional[U] = None,
+    ) -> "Iter[Tuple[Or[T, U], Or[T1, U], Or[T2, U], Or[T3, U]]]":
+        ...
+
+    @overload
+    def zip_longest(  # noqa
+        self,
+        __iter_1: Iterable[T1],
+        __iter_2: Iterable[T2],
+        __iter_3: Iterable[T3],
+        __iter_4: Iterable[T4],
+        *,
+        fill: Optional[U] = None,
+    ) -> "Iter[Tuple[Or[T, U], Or[T1, U], Or[T2, U], Or[T3, U], Or[T4, U]]]":
+        ...
+
+    @overload
+    def zip_longest(  # noqa
+        self,
+        __iter_1: Iterable[T1],
+        __iter_2: Iterable[T2],
+        __iter_3: Iterable[T3],
+        __iter_4: Iterable[T4],
+        __iter_5: Iterable[T5],
+        *,
+        fill: Optional[U] = None,
+    ) -> "Iter[Tuple[Or[T, U], Or[T1, U], Or[T2, U], Or[T3, U], Or[T4, U], Or[T5, U]]]":
+        ...
+
+    @overload
+    def zip_longest(  # noqa
+        self,
+        __iter_1: Iterable[Any],
+        __iter_2: Iterable[Any],
+        __iter_3: Iterable[Any],
+        __iter_4: Iterable[Any],
+        __iter_5: Iterable[Any],
+        __iter_6: Iterable[Any],
+        *iterables: Iterable[Any],
+        fill: Optional[U] = None,
+    ) -> "Iter[Tuple[Or[Any, U], ...]]":
+        ...
+
+    @no_type_check
+    def zip_longest(  # noqa
+        self, *iterables: Iterable[Any], fill: Optional[U] = None
+    ) -> "Iter[Tuple[Or[Any, U], ...]]":
         return self.__class__(zip_longest(self._iterator, *iterables, fillvalue=fill))
 
     def side_effect(

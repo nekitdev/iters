@@ -77,6 +77,11 @@ __all__ = (
     "async_next_unchecked",
     "async_nth",
     "async_nth_or_last",
+    "async_parallel_filter",
+    "async_parallel_filter_false",
+    "async_parallel_flatten",
+    "async_parallel_map",
+    "async_parallel_star_map",
     "async_partition",
     "async_partition_infinite",
     "async_partition_safe",
@@ -103,11 +108,16 @@ __all__ = (
     "iter_sync_function",
     "iter_to_async_iter",
     "maybe_await",
+    "run_iterators",
 )
+
+KT = TypeVar("KT")
+VT = TypeVar("VT")
 
 R = TypeVar("R")
 T = TypeVar("T")
 U = TypeVar("U")
+
 T1 = TypeVar("T1")
 T2 = TypeVar("T2")
 T3 = TypeVar("T3")
@@ -117,6 +127,7 @@ T5 = TypeVar("T5")
 AnyIterable = Union[AsyncIterable[T], Iterable[T]]
 AnyIterator = Union[AsyncIterator[T], Iterator[T]]
 MaybeAwaitable = Union[T, Awaitable[T]]
+Or = Union[T, Optional[U]]
 
 
 class SupportsOrder(Protocol):
@@ -332,8 +343,8 @@ async def async_iter_len(iterable: AnyIterable[T]) -> int:
     return length
 
 
-async def async_dict(iterable: AnyIterable[Tuple[T, U]]) -> Dict[T, U]:
-    result: Dict[T, U] = {}
+async def async_dict(iterable: AnyIterable[Tuple[KT, VT]]) -> Dict[KT, VT]:
+    result: Dict[KT, VT] = {}
 
     async for key, value in async_iter_any_iter(iterable):
         result[key] = value
@@ -373,11 +384,37 @@ async def async_filter(
             yield element
 
 
+async def async_parallel_filter(
+    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    elements = await async_list(async_iter_any_iter(iterable))
+
+    coroutines = (maybe_await(predicate(element)) for element in elements)
+    results = await asyncio.gather(*coroutines)
+
+    async for element, result in async_zip(elements, results):
+        if result:
+            yield element
+
+
 async def async_filter_false(
     predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     async for element in async_iter_any_iter(iterable):
         if not await maybe_await(predicate(element)):
+            yield element
+
+
+async def async_parallel_filter_false(
+    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    elements = await async_list(async_iter_any_iter(iterable))
+
+    coroutines = (maybe_await(predicate(element)) for element in elements)
+    results = await asyncio.gather(*coroutines)
+
+    async for element, result in async_zip(elements, results):
+        if not result:
             yield element
 
 
@@ -388,12 +425,41 @@ async def async_map(
         yield await maybe_await(function(element))
 
 
+async def async_parallel_map(
+    function: Callable[[T], MaybeAwaitable[U]], iterable: AnyIterable[T]
+) -> AsyncIterator[U]:
+    coroutines = [
+        maybe_await(function(element)) async for element in async_iter_any_iter(iterable)
+    ]
+    results = await asyncio.gather(*coroutines)
+
+    for result in results:
+        yield result
+
+
 async def async_star_map(
-    function: Callable[[T], MaybeAwaitable[U]], iterable: AnyIterable[AnyIterable[T]]
+    function: Callable[..., MaybeAwaitable[U]], iterable: AnyIterable[AnyIterable[T]]
 ) -> AsyncIterator[U]:
     async for args_iterable in async_iter_any_iter(iterable):
-        args = await async_tuple(async_iter_any_iter(args_iterable))
+        args = await async_list(async_iter_any_iter(args_iterable))
         yield await maybe_await(function(*args))
+
+
+async def async_parallel_star_map(
+    function: Callable[..., MaybeAwaitable[U]], iterable: AnyIterable[AnyIterable[T]]
+) -> AsyncIterator[U]:
+    args_list = [
+        await async_list(async_iter_any_iter(args_iterable))
+        async for args_iterable in async_iter_any_iter(iterable)
+    ]
+    coroutines = (
+        maybe_await(function(*args)) for args in args_list
+    )
+
+    results = await asyncio.gather(*coroutines)
+
+    for result in results:
+        yield result
 
 
 async def async_cycle(iterable: AnyIterable[T]) -> AsyncIterator[T]:
@@ -801,14 +867,14 @@ class ZipExhausted(Exception):
 @overload
 def async_zip_longest(
     __iter_1: AnyIterable[T1], *, fillvalue: Optional[T] = None
-) -> AsyncIterator[Tuple[Optional[Union[T1, T]]]]:
+) -> AsyncIterator[Tuple[Or[T1, T]]]:
     ...
 
 
 @overload
 def async_zip_longest(
     __iter_1: AnyIterable[T1], __iter_2: AnyIterable[T2], *, fillvalue: Optional[T] = None
-) -> AsyncIterator[Tuple[Optional[Union[T1, T]], Optional[Union[T2, T]]]]:
+) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T]]]:
     ...
 
 
@@ -819,7 +885,7 @@ def async_zip_longest(
     __iter_3: AnyIterable[T3],
     *,
     fillvalue: Optional[T] = None,
-) -> AsyncIterator[Tuple[Optional[Union[T1, T]], Optional[Union[T2, T]], Optional[Union[T3, T]]]]:
+) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T], Or[T3, T]]]:
     ...
 
 
@@ -831,14 +897,7 @@ def async_zip_longest(
     __iter_4: AnyIterable[T4],
     *,
     fillvalue: Optional[T] = None,
-) -> AsyncIterator[
-    Tuple[
-        Optional[Union[T1, T]],
-        Optional[Union[T2, T]],
-        Optional[Union[T3, T]],
-        Optional[Union[T4, T]],
-    ],
-]:
+) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T], Or[T3, T], Or[T4, T]]]:
     ...
 
 
@@ -851,15 +910,7 @@ def async_zip_longest(
     __iter_5: AnyIterable[T5],
     *,
     fillvalue: Optional[T] = None,
-) -> AsyncIterator[
-    Tuple[
-        Optional[Union[T1, T]],
-        Optional[Union[T2, T]],
-        Optional[Union[T3, T]],
-        Optional[Union[T4, T]],
-        Optional[Union[T5, T]],
-    ]
-]:
+) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T], Or[T3, T], Or[T4, T], Or[T5, T]]]:
     ...
 
 
@@ -873,13 +924,13 @@ def async_zip_longest(
     __iter_6: AnyIterable[Any],
     *iterables: AnyIterable[Any],
     fillvalue: Optional[T] = None,
-) -> AsyncIterator[Tuple[Optional[Union[Any, T]], ...]]:
+) -> AsyncIterator[Tuple[Or[Any, T], ...]]:
     ...
 
 
 async def async_zip_longest(
     *iterables: AnyIterable[Any], fillvalue: Optional[T] = None
-) -> AsyncIterator[Tuple[Optional[Union[Any, T]], ...]]:
+) -> AsyncIterator[Tuple[Or[Any, T], ...]]:
     if not iterables:
         return
 
@@ -909,6 +960,54 @@ async def async_zip_longest(
 
 def async_flatten(iterable: AnyIterable[AnyIterable[T]]) -> AsyncIterator[T]:
     return async_chain_from_iterable(iterable)
+
+
+async def async_parallel_flatten(iterable: AnyIterable[AnyIterable[T]]) -> AsyncIterator[T]:
+    coroutines = [
+        async_list(async_iter_any_iter(element_iterable))
+        async for element_iterable in async_iter_any_iter(iterable)
+    ]
+
+    flatten_elements = await asyncio.gather(*coroutines)
+
+    for element in flatten_elements:
+        yield element
+
+
+async def run_iterators(
+    iterators: AnyIterable[AnyIterable[T]],
+    *ignore_exceptions: Type[BaseException],
+    concurrent: bool = True,
+) -> AsyncIterator[T]:
+    if concurrent:
+        coroutines = [
+            async_list(async_iter_any_iter(iterator))
+            async for iterator in async_iter_any_iter(iterators)
+        ]
+
+        results: List[Union[List[T], BaseException]] = await asyncio.gather(
+            *coroutines, return_exceptions=True
+        )
+
+        filtered_results = (
+            result for result in results if not isinstance(result, ignore_exceptions)
+        )
+
+        for result in filtered_results:
+            if isinstance(result, BaseException):
+                raise result  # was not handled -> raise
+
+            for element in result:
+                yield element
+
+    else:
+        async for iterator in async_iter_any_iter(iterators):
+            try:
+                async for element in async_iter_any_iter(iterator):
+                    yield element
+
+            except ignore_exceptions:
+                pass
 
 
 def async_prepend(iterable: AnyIterable[T], item: T) -> AsyncIterator[T]:
