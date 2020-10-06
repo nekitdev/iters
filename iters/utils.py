@@ -26,6 +26,7 @@ from typing import (
     Optional,
     Reversible,
     Sequence,
+    Set,
     Tuple,
     Type,
     TypeVar,
@@ -47,6 +48,7 @@ __all__ = (
     "copy_safe",
     "count",
     "cycle",
+    "distinct",
     "drop",
     "drop_while",
     "exhaust",
@@ -376,3 +378,43 @@ def side_effect(
     finally:
         if after is not None:
             after()
+
+
+def distinct(
+    iterable: Iterable[T], key: Optional[Callable[[T], U]] = None
+) -> Iterator[T]:
+    if key is None:
+        seen_set: Set[T] = set()
+        add_to_seen_set = seen_set.add
+        seen_list: List[T] = []
+        add_to_seen_list = seen_list.append
+
+        for element in iterable:
+            try:
+                if element not in seen_set:
+                    add_to_seen_set(element)
+                    yield element
+
+            except TypeError:
+                if element not in seen_list:
+                    add_to_seen_list(element)
+                    yield element
+
+    else:
+        seen_value_set: Set[U] = set()
+        add_to_seen_value_set = seen_value_set.add
+        seen_value_list: List[U] = []
+        add_to_seen_value_list = seen_value_list.append
+
+        for element in iterable:
+            value = key(element)
+
+            try:
+                if value not in seen_value_set:
+                    add_to_seen_value_set(value)
+                    yield element
+
+            except TypeError:
+                if value not in seen_value_list:
+                    add_to_seen_value_list(value)
+                    yield element

@@ -32,6 +32,7 @@ from iters.utils import (
     copy_safe,
     count,
     cycle,
+    distinct,
     drop,
     drop_while,
     exhaust,
@@ -226,6 +227,11 @@ class Iter(Generic[T]):
 
     def collect(self, function: Callable[[Iterator[T]], Iterable[T]]) -> Iterable[T]:
         return function(self._iterator)  # type: ignore
+
+    def distinct(self, key: Optional[Callable[[T], U]] = None) -> "Iter[T]":
+        return self.__class__(distinct(self._iterator, key))  # type: ignore
+
+    unique = distinct
 
     def dict(self) -> Dict[KT, VT]:
         return dict(self._iterator)  # type: ignore

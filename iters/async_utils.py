@@ -49,6 +49,7 @@ __all__ = (
     "async_count",
     "async_cycle",
     "async_dict",
+    "async_distinct",
     "async_drop",
     "async_drop_while",
     "async_enumerate",
@@ -1130,3 +1131,43 @@ async def async_side_effect(
     finally:
         if after is not None:
             await maybe_await(after())
+
+
+async def async_distinct(
+    iterable: AnyIterable[T], key: Optional[Callable[[T], U]] = None
+) -> AsyncIterator[T]:
+    if key is None:
+        seen_set: Set[T] = set()
+        add_to_seen_set = seen_set.add
+        seen_list: List[T] = []
+        add_to_seen_list = seen_list.append
+
+        async for element in async_iter_any_iter(iterable):
+            try:
+                if element not in seen_set:
+                    add_to_seen_set(element)
+                    yield element
+
+            except TypeError:
+                if element not in seen_list:
+                    add_to_seen_list(element)
+                    yield element
+
+    else:
+        seen_value_set: Set[U] = set()
+        add_to_seen_value_set = seen_value_set.add
+        seen_value_list: List[U] = []
+        add_to_seen_value_list = seen_value_list.append
+
+        async for element in async_iter_any_iter(iterable):
+            value = await maybe_await(key(element))
+
+            try:
+                if value not in seen_value_set:
+                    add_to_seen_value_set(value)
+                    yield element
+
+            except TypeError:
+                if value not in seen_value_list:
+                    add_to_seen_value_list(value)
+                    yield element

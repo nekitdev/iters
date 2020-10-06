@@ -42,6 +42,7 @@ from iters.async_utils import (
     async_count,
     async_cycle,
     async_dict,
+    async_distinct,
     async_drop,
     async_drop_while,
     async_enumerate,
@@ -257,6 +258,11 @@ class AsyncIter(Generic[T]):
         self, function: Callable[[AsyncIterator[T]], MaybeAwaitable[AnyIterable[T]]],
     ) -> AnyIterable[T]:
         return await maybe_await(function(self._iterator))  # type: ignore
+
+    def distinct(self, key: Optional[Callable[[T], U]] = None) -> "AsyncIter[T]":
+        return self.__class__(async_distinct(self._iterator, key))  # type: ignore
+
+    unique = distinct
 
     async def dict(self) -> Dict[KT, VT]:
         return await async_dict(self._iterator)  # type: ignore
