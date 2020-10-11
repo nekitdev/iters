@@ -4,7 +4,6 @@ from typing import (
     Callable,
     ContextManager,
     Dict,
-    Generic,
     Iterable,
     Iterator,
     List,
@@ -97,7 +96,7 @@ std_iter = iter
 std_reversed = reversed
 
 
-class Iter(Generic[T]):
+class Iter(Iterator[T]):
     @overload
     def __init__(self, iterator: Iterator[T]) -> None:  # noqa
         ...
@@ -225,6 +224,9 @@ class Iter(Generic[T]):
     def for_each(self, function: Callable[[T], None]) -> None:
         self.map(function).exhaust()
 
+    def join(self, delim: str) -> str:
+        return delim.join(self._iterator)  # type: ignore
+
     def collect(self, function: Callable[[Iterator[T]], Iterable[T]]) -> Iterable[T]:
         return function(self._iterator)  # type: ignore
 
@@ -277,7 +279,7 @@ class Iter(Generic[T]):
 
     skip = drop
 
-    def drop_while(self, predicate: Callable[[T], bool]) -> "Iter[T]":
+    def drop_while(self, predicate: Callable[[T], Any]) -> "Iter[T]":
         return self.__class__(drop_while(predicate, self._iterator))
 
     skip_while = drop_while
@@ -285,7 +287,7 @@ class Iter(Generic[T]):
     def take(self, n: int) -> "Iter[T]":
         return self.__class__(take(self._iterator, n))
 
-    def take_while(self, predicate: Callable[[T], bool]) -> "Iter[T]":
+    def take_while(self, predicate: Callable[[T], Any]) -> "Iter[T]":
         return self.__class__(take_while(predicate, self._iterator))
 
     def step_by(self, step: int) -> "Iter[T]":
@@ -294,16 +296,16 @@ class Iter(Generic[T]):
     def enumerate(self, start: int = 0) -> "Iter[Tuple[int, T]]":
         return self.__class__(enumerate(self._iterator, start))
 
-    def filter(self, predicate: Callable[[T], bool]) -> "Iter[T]":
+    def filter(self, predicate: Callable[[T], Any]) -> "Iter[T]":
         return self.__class__(filter(predicate, self._iterator))
 
-    def filter_false(self, predicate: Callable[[T], bool]) -> "Iter[T]":
+    def filter_false(self, predicate: Callable[[T], Any]) -> "Iter[T]":
         return self.__class__(filter_false(predicate, self._iterator))
 
-    def find_all(self, predicate: Callable[[T], bool]) -> "Iter[T]":
+    def find_all(self, predicate: Callable[[T], Any]) -> "Iter[T]":
         return self.filter(predicate)
 
-    def find(self, predicate: Callable[[T], bool], default: Optional[T] = None) -> Optional[T]:
+    def find(self, predicate: Callable[[T], Any], default: Optional[T] = None) -> Optional[T]:
         return self.find_all(predicate).next_or(default)
 
     def first(self) -> T:
@@ -400,17 +402,17 @@ class Iter(Generic[T]):
     def star_map(self, function: Callable[..., U]) -> "Iter[U]":
         return self.__class__(star_map(function, self._iterator))
 
-    def partition(self, predicate: Callable[[T], bool]) -> "Tuple[Iter[T], Iter[T]]":
+    def partition(self, predicate: Callable[[T], Any]) -> "Tuple[Iter[T], Iter[T]]":
         with_true, with_false = partition(self._iterator, predicate)
 
         return self.__class__(with_true), self.__class__(with_false)
 
-    def partition_infinite(self, predicate: Callable[[T], bool]) -> "Tuple[Iter[T], Iter[T]]":
+    def partition_infinite(self, predicate: Callable[[T], Any]) -> "Tuple[Iter[T], Iter[T]]":
         with_true, with_false = partition_infinite(self._iterator, predicate)
 
         return self.__class__(with_true), self.__class__(with_false)
 
-    def partition_safe(self, predicate: Callable[[T], bool]) -> "Tuple[Iter[T], Iter[T]]":
+    def partition_safe(self, predicate: Callable[[T], Any]) -> "Tuple[Iter[T], Iter[T]]":
         with_true, with_false = partition_safe(self._iterator, predicate)
 
         return self.__class__(with_true), self.__class__(with_false)

@@ -7,7 +7,6 @@ from typing import (
     Callable,
     ContextManager,
     Dict,
-    Generic,
     Iterable,
     Iterator,
     List,
@@ -48,7 +47,9 @@ from iters.async_utils import (
     async_enumerate,
     async_exhaust,
     async_filter,
+    async_filter_nowait,
     async_filter_false,
+    async_filter_false_nowait,
     async_first,
     async_flatten,
     async_fold,
@@ -64,6 +65,7 @@ from iters.async_utils import (
     async_list,
     async_list_chunk,
     async_map,
+    async_map_nowait,
     async_max,
     async_min,
     async_next,
@@ -75,6 +77,7 @@ from iters.async_utils import (
     async_parallel_flatten,
     async_parallel_map,
     async_parallel_star_map,
+    async_parallel_wait,
     async_partition,
     async_partition_infinite,
     async_partition_safe,
@@ -85,6 +88,7 @@ from iters.async_utils import (
     async_set,
     async_side_effect,
     async_star_map,
+    async_star_map_nowait,
     async_std_reversed,
     async_step_by,
     async_sum,
@@ -92,6 +96,7 @@ from iters.async_utils import (
     async_take_while,
     async_tuple,
     async_tuple_chunk,
+    async_wait,
     async_with_async_iter,
     async_with_iter,
     async_zip,
@@ -126,7 +131,7 @@ T5 = TypeVar("T5")
 Or = Union[T, Optional[U]]
 
 
-class AsyncIter(Generic[T]):
+class AsyncIter(AsyncIterator[T]):
     @overload
     def __init__(self, iterator: Iterator[T]) -> None:  # noqa
         ...
@@ -248,11 +253,20 @@ class AsyncIter(Generic[T]):
     def slice(self, *slice_args) -> "AsyncIter[T]":
         return self.__class__(async_iter_slice(self._iterator, *slice_args))  # type: ignore
 
+    def wait(self) -> "AsyncIter[U]":
+        return self.__class__(async_wait(self._iterator))  # type: ignore
+
+    def parallel_wait(self) -> "AsyncIter[U]":
+        return self.__class__(async_parallel_wait(self._iterator))  # type: ignore
+
     async def exhaust(self) -> None:
         await async_exhaust(self._iterator)  # type: ignore
 
     async def for_each(self, function: Callable[[T], MaybeAwaitable[None]]) -> None:
         await self.map(function).exhaust()
+
+    async def join(self, delim: str) -> str:
+        return delim.join(await self.list())  # type: ignore
 
     async def collect(
         self, function: Callable[[AsyncIterator[T]], MaybeAwaitable[AnyIterable[T]]],
@@ -308,7 +322,7 @@ class AsyncIter(Generic[T]):
 
     skip = drop
 
-    def drop_while(self, predicate: Callable[[T], MaybeAwaitable[bool]]) -> "AsyncIter[T]":
+    def drop_while(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
         return self.__class__(async_drop_while(predicate, self._iterator))
 
     skip_while = drop_while
@@ -316,7 +330,7 @@ class AsyncIter(Generic[T]):
     def take(self, n: int) -> "AsyncIter[T]":
         return self.__class__(async_take(self._iterator, n))
 
-    def take_while(self, predicate: Callable[[T], MaybeAwaitable[bool]]) -> "AsyncIter[T]":
+    def take_while(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
         return self.__class__(async_take_while(predicate, self._iterator))
 
     def step_by(self, step: int) -> "AsyncIter[T]":
@@ -325,25 +339,31 @@ class AsyncIter(Generic[T]):
     def enumerate(self, start: int = 0) -> "AsyncIter[Tuple[int, T]]":
         return self.__class__(async_enumerate(self._iterator, start))
 
-    def filter(self, predicate: Callable[[T], MaybeAwaitable[bool]]) -> "AsyncIter[T]":
+    def filter(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
         return self.__class__(async_filter(predicate, self._iterator))
 
-    def parallel_filter(self, predicate: Callable[[T], MaybeAwaitable[bool]]) -> "AsyncIter[T]":
+    def filter_nowait(self, predicate: Callable[[T], Any]) -> "AsyncIter[T]":
+        return self.__class__(async_filter_nowait(predicate, self._iterator))
+
+    def parallel_filter(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
         return self.__class__(async_parallel_filter(predicate, self._iterator))
 
-    def filter_false(self, predicate: Callable[[T], MaybeAwaitable[bool]]) -> "AsyncIter[T]":
+    def filter_false(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
         return self.__class__(async_filter_false(predicate, self._iterator))
 
+    def filter_false_nowait(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
+        return self.__class__(async_filter_false_nowait(predicate, self._iterator))
+
     def parallel_filter_false(
-        self, predicate: Callable[[T], MaybeAwaitable[bool]]
+        self, predicate: Callable[[T], MaybeAwaitable[Any]]
     ) -> "AsyncIter[T]":
         return self.__class__(async_parallel_filter_false(predicate, self._iterator))
 
-    def find_all(self, predicate: Callable[[T], MaybeAwaitable[bool]]) -> "AsyncIter[T]":
+    def find_all(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
         return self.filter(predicate)
 
     async def find(
-        self, predicate: Callable[[T], bool], default: Optional[T] = None
+        self, predicate: Callable[[T], Any], default: Optional[T] = None
     ) -> Optional[T]:
         return await self.find_all(predicate).next_or(default)
 
@@ -450,31 +470,37 @@ class AsyncIter(Generic[T]):
     def map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
         return self.__class__(async_map(function, self._iterator))
 
+    def map_nowait(self, function: Callable[[T], U]) -> "AsyncIter[U]":
+        return self.__class__(async_map_nowait(function, self._iterator))
+
     def parallel_map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
         return self.__class__(async_parallel_map(function, self._iterator))
 
     def star_map(self, function: Callable[..., MaybeAwaitable[U]]) -> "AsyncIter[U]":
         return self.__class__(async_star_map(function, self._iterator))
 
+    def star_map_nowait(self, function: Callable[..., U]) -> "AsyncIter[U]":
+        return self.__class__(async_star_map_nowait(function, self._iterator))
+
     def parallel_star_map(self, function: Callable[..., MaybeAwaitable[U]]) -> "AsyncIter[U]":
         return self.__class__(async_parallel_star_map(function, self._iterator))
 
     def partition(
-        self, predicate: Callable[[T], MaybeAwaitable[bool]]
+        self, predicate: Callable[[T], MaybeAwaitable[Any]]
     ) -> "Tuple[AsyncIter[T], AsyncIter[T]]":
         with_true, with_false = async_partition(self._iterator, predicate)
 
         return self.__class__(with_true), self.__class__(with_false)
 
     def partition_infinite(
-        self, predicate: Callable[[T], MaybeAwaitable[bool]]
+        self, predicate: Callable[[T], MaybeAwaitable[Any]]
     ) -> "Tuple[AsyncIter[T], AsyncIter[T]]":
         with_true, with_false = async_partition_infinite(self._iterator, predicate)
 
         return self.__class__(with_true), self.__class__(with_false)
 
     def partition_safe(
-        self, predicate: Callable[[T], MaybeAwaitable[bool]]
+        self, predicate: Callable[[T], MaybeAwaitable[Any]]
     ) -> "Tuple[AsyncIter[T], AsyncIter[T]]":
         with_true, with_false = async_partition_safe(self._iterator, predicate)
 

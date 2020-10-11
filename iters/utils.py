@@ -235,7 +235,7 @@ def flatten(iterable: Iterable[Iterable[T]]) -> Iterator[T]:
 
 
 def partition(
-    iterable: Iterable[T], predicate: Callable[[T], bool] = bool
+    iterable: Iterable[T], predicate: Callable[[T], Any] = bool
 ) -> Tuple[Iterator[T], Iterator[T]]:
     for_true, for_false = copy(iterable)
 
@@ -246,7 +246,7 @@ partition_infinite = partition
 
 
 def partition_safe(
-    iterable: Iterable[T], predicate: Callable[[T], bool] = bool
+    iterable: Iterable[T], predicate: Callable[[T], Any] = bool
 ) -> Tuple[Iterator[T], Iterator[T]]:
     for_true, for_false = copy_safe(iterable)
 

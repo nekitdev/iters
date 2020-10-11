@@ -55,7 +55,9 @@ __all__ = (
     "async_enumerate",
     "async_exhaust",
     "async_filter",
+    "async_filter_nowait",
     "async_filter_false",
+    "async_filter_false_nowait",
     "async_first",
     "async_flatten",
     "async_fold",
@@ -72,6 +74,7 @@ __all__ = (
     "async_list",
     "async_list_chunk",
     "async_map",
+    "async_map_nowait",
     "async_max",
     "async_min",
     "async_next",
@@ -83,6 +86,7 @@ __all__ = (
     "async_parallel_flatten",
     "async_parallel_map",
     "async_parallel_star_map",
+    "async_parallel_wait",
     "async_partition",
     "async_partition_infinite",
     "async_partition_safe",
@@ -94,12 +98,14 @@ __all__ = (
     "async_set",
     "async_side_effect",
     "async_star_map",
+    "async_star_map_nowait",
     "async_std_reversed",
     "async_step_by",
     "async_sum",
     "async_take",
     "async_tuple",
     "async_tuple_chunk",
+    "async_wait",
     "async_with_async_iter",
     "async_with_iter",
     "async_zip",
@@ -148,6 +154,20 @@ async def maybe_await(value: MaybeAwaitable[R]) -> R:
         return await cast(Awaitable[R], value)
 
     return cast(R, value)
+
+
+async def async_wait(iterable: AnyIterable[MaybeAwaitable[T]]) -> AsyncIterator[T]:
+    async for element in async_iter_any_iter(iterable):
+        yield await maybe_await(element)
+
+
+async def async_parallel_wait(iterable: AnyIterable[MaybeAwaitable[T]]) -> AsyncIterator[T]:
+    coroutines = [maybe_await(element) async for element in async_iter_any_iter(iterable)]
+
+    results = await asyncio.gather(*coroutines)
+
+    for result in results:
+        yield result
 
 
 @overload
@@ -378,15 +398,23 @@ async def async_enumerate(iterable: AnyIterable[T], start: int = 0) -> AsyncIter
 
 
 async def async_filter(
-    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+    predicate: Callable[[T], MaybeAwaitable[Any]], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     async for element in async_iter_any_iter(iterable):
         if await maybe_await(predicate(element)):
             yield element
 
 
+async def async_filter_nowait(
+    predicate: Callable[[T], Any], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    async for element in async_iter_any_iter(iterable):
+        if predicate(element):
+            yield element
+
+
 async def async_parallel_filter(
-    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+    predicate: Callable[[T], MaybeAwaitable[Any]], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     elements = await async_list(async_iter_any_iter(iterable))
 
@@ -399,15 +427,23 @@ async def async_parallel_filter(
 
 
 async def async_filter_false(
-    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+    predicate: Callable[[T], MaybeAwaitable[Any]], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     async for element in async_iter_any_iter(iterable):
         if not await maybe_await(predicate(element)):
             yield element
 
 
+async def async_filter_false_nowait(
+    predicate: Callable[[T], Any], iterable: AnyIterable[T]
+) -> AsyncIterator[T]:
+    async for element in async_iter_any_iter(iterable):
+        if not predicate(element):
+            yield element
+
+
 async def async_parallel_filter_false(
-    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+    predicate: Callable[[T], MaybeAwaitable[Any]], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     elements = await async_list(async_iter_any_iter(iterable))
 
@@ -424,6 +460,13 @@ async def async_map(
 ) -> AsyncIterator[U]:
     async for element in async_iter_any_iter(iterable):
         yield await maybe_await(function(element))
+
+
+async def async_map_nowait(
+    function: Callable[[T], U], iterable: AnyIterable[T]
+) -> AsyncIterator[U]:
+    async for element in async_iter_any_iter(iterable):
+        yield function(element)
 
 
 async def async_parallel_map(
@@ -444,6 +487,14 @@ async def async_star_map(
     async for args_iterable in async_iter_any_iter(iterable):
         args = await async_list(async_iter_any_iter(args_iterable))
         yield await maybe_await(function(*args))
+
+
+async def async_star_map_nowait(
+    function: Callable[..., U], iterable: AnyIterable[AnyIterable[T]]
+) -> AsyncIterator[U]:
+    async for args_iterable in async_iter_any_iter(iterable):
+        args = await async_list(async_iter_any_iter(args_iterable))
+        yield function(*args)
 
 
 async def async_parallel_star_map(
@@ -507,7 +558,7 @@ async def async_compress(iterable: AnyIterable[T], selectors: AnyIterable[U]) ->
 
 
 async def async_drop_while(
-    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+    predicate: Callable[[T], MaybeAwaitable[Any]], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     async_iterator = async_iter_any_iter(iterable)
 
@@ -521,7 +572,7 @@ async def async_drop_while(
 
 
 async def async_take_while(
-    predicate: Callable[[T], MaybeAwaitable[bool]], iterable: AnyIterable[T]
+    predicate: Callable[[T], MaybeAwaitable[Any]], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     async for element in async_iter_any_iter(iterable):
         if await maybe_await(predicate(element)):
@@ -1020,7 +1071,7 @@ def async_append(iterable: AnyIterable[T], item: T) -> AsyncIterator[T]:
 
 
 def async_partition(
-    iterable: AnyIterable[T], predicate: Callable[[T], MaybeAwaitable[bool]] = bool
+    iterable: AnyIterable[T], predicate: Callable[[T], MaybeAwaitable[Any]] = bool
 ) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
     for_true, for_false = async_copy(iterable)
 
@@ -1031,7 +1082,7 @@ async_partition_infinite = async_partition
 
 
 def async_partition_safe(
-    iterable: AnyIterable[T], predicate: Callable[[T], MaybeAwaitable[bool]] = bool
+    iterable: AnyIterable[T], predicate: Callable[[T], MaybeAwaitable[Any]] = bool
 ) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
     for_true, for_false = async_copy_safe(iterable)
 
