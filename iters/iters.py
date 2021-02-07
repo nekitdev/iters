@@ -128,7 +128,7 @@ class Iter(Iterator[T]):
         return next(self._iterator)  # type: ignore
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}[T] at 0x{id(self):016x}>"
+        return f"<{self.__class__.__name__}<T> at 0x{id(self):016x}>"
 
     @overload
     def __getitem__(self, item: int) -> T:  # noqa

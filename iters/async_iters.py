@@ -178,7 +178,7 @@ class AsyncIter(AsyncIterator[T]):
         return await async_next_unchecked(self._iterator)  # type: ignore
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}[T] at 0x{id(self):016x}>"
+        return f"<{self.__class__.__name__}<T> at 0x{id(self):016x}>"
 
     def unwrap(self) -> AsyncIterator[T]:
         return self._iterator  # type: ignore

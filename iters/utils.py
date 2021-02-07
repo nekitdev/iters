@@ -373,6 +373,7 @@ def side_effect(
 
         for item in iterable:
             function(item)
+
             yield item
 
     finally:
@@ -393,11 +394,13 @@ def distinct(
             try:
                 if element not in seen_set:
                     add_to_seen_set(element)
+
                     yield element
 
             except TypeError:
                 if element not in seen_list:
                     add_to_seen_list(element)
+
                     yield element
 
     else:
@@ -412,9 +415,11 @@ def distinct(
             try:
                 if value not in seen_value_set:
                     add_to_seen_value_set(value)
+
                     yield element
 
             except TypeError:
                 if value not in seen_value_list:
                     add_to_seen_value_list(value)
+
                     yield element

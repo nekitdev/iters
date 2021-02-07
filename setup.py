@@ -7,7 +7,7 @@ root = Path(__file__).parent
 
 text = (root / "iters" / "__init__.py").read_text("utf-8")
 
-result = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', text, re.MULTILINE)
+result = re.search(r"^__version__\s*=\s*[\"']([^\"']*)[\"']", text, re.MULTILINE)
 
 if result is None:
     raise RuntimeError("Failed to find version.")
@@ -26,7 +26,7 @@ setup(
     version=version,
     packages=["iters"],
     license="MIT",
-    description="Rich Iterators for Python",
+    description="Rich Iterators for Python.",
     long_description=readme,
     long_description_content_type="text/x-rst",
     include_package_data=True,
@@ -37,6 +37,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Natural Language :: English",
         "Operating System :: OS Independent",
     ],
