@@ -21,10 +21,6 @@ iters.py
     :target: https://pypi.python.org/pypi/iters.py
     :alt: Library Downloads/Month
 
-.. image:: https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2Fnekit%2Fpledges
-    :target: https://patreon.com/nekit
-    :alt: Patreon Page [Support]
-
 iters.py is a module that implements rich iterators for Python.
 
 Key Features

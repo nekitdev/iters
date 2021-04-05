@@ -32,13 +32,15 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    overload,
 )
-from typing_extensions import Protocol
+
+from iters.types import MarkerOr, marker
 
 __all__ = (
-    "Marker",
-    "MarkerOr",
     "append",
+    "at",
+    "at_or_last",
     "chain",
     "chain_from_iterable",
     "collapse",
@@ -65,9 +67,6 @@ __all__ = (
     "iterate",
     "last",
     "list_chunk",
-    "marker",
-    "nth",
-    "nth_or_last",
     "partition",
     "partition_infinite",
     "partition_safe",
@@ -91,35 +90,6 @@ PY_380 = hex_version == 0x30800F0  # 3.8.0
 T = TypeVar("T")
 U = TypeVar("U")
 
-
-class SupportsAdd(Protocol):
-    def __add__(self, other: Any) -> Any:
-        ...
-
-
-Add_T = TypeVar("Add_T", bound=SupportsAdd)
-
-
-class Singleton:
-    INSTANCE = None
-
-    def __new__(cls, *args, **kwargs) -> "Singleton":
-        if cls.INSTANCE is None:
-            cls.INSTANCE = super().__new__(cls)
-
-        return cls.INSTANCE
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class Marker(Singleton):
-    pass
-
-
-marker = Marker()
-
-MarkerOr = Union[Marker, T]
 
 chain_from_iterable = chain.from_iterable
 
@@ -146,10 +116,10 @@ def first(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
 def last(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
     try:
         if isinstance(iterable, Sequence):
-            return iterable[-1]
+            return cast(Sequence[T], iterable)[-1]
 
         elif isinstance(iterable, Reversible) and not PY_380:
-            return next(reversed(iterable))
+            return next(reversed(cast(Reversible[T], iterable)))
 
         else:
             return deque(iterable, maxlen=1)[-1]
@@ -161,7 +131,7 @@ def last(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
         return cast(T, default)
 
 
-def fold(iterable: Iterable[T], function: Callable[[U, Union[T, U]], U], initial: U) -> U:
+def fold(iterable: Iterable[T], function: Callable[[U, T], U], initial: U) -> U:
     return reduce(function, iterable, initial)
 
 
@@ -180,18 +150,18 @@ def get(iterable: Iterable[T], **attrs: U) -> Iterator[T]:
     return filter(predicate, iterable)
 
 
-def nth(iterable: Iterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+def at(iterable: Iterable[T], n: int, default: MarkerOr[T] = marker) -> T:
     try:
         return next(iter_slice(iterable, n, None))
 
     except StopIteration as error:
         if default is marker:
-            raise ValueError("nth() called with n larger than iterable length.") from error
+            raise ValueError("at() called with n larger than iterable length.") from error
 
         return cast(T, default)
 
 
-def nth_or_last(iterable: Iterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+def at_or_last(iterable: Iterable[T], n: int, default: MarkerOr[T] = marker) -> T:
     return last(iter_slice(iterable, n + 1), default=default)
 
 
@@ -220,6 +190,16 @@ def group(iterable: Iterable[T], n: int) -> Iterator[Tuple[T, ...]]:
     iterators = (iter(iterable),) * n
 
     return zip(*iterators)
+
+
+@overload
+def group_longest(iterable: Iterable[T], n: int) -> Iterator[Tuple[Optional[T], ...]]:
+    ...
+
+
+@overload
+def group_longest(iterable: Iterable[T], n: int, fillvalue: T) -> Iterator[Tuple[T, ...]]:
+    ...
 
 
 def group_longest(
@@ -303,7 +283,9 @@ def iter_chunk(iterable: Iterable[T], n: int) -> Iterator[Iterator[T]]:
 
 def iter_len(iterable: Iterable[T]) -> int:
     counter = count()
+
     deque(zip(counter, iterable), maxlen=0)
+
     return next(counter)
 
 
@@ -333,7 +315,7 @@ def with_iter(context_manager: ContextManager[Iterable[T]]) -> Iterator[T]:
 
 
 def collapse(
-    iterable: Union[T, Iterable[T]],
+    iterable: Iterable[T],
     base_type: Optional[Type[Any]] = None,
     levels: Optional[int] = None,
 ) -> Iterator[T]:
@@ -381,9 +363,7 @@ def side_effect(
             after()
 
 
-def distinct(
-    iterable: Iterable[T], key: Optional[Callable[[T], U]] = None
-) -> Iterator[T]:
+def distinct(iterable: Iterable[T], key: Optional[Callable[[T], U]] = None) -> Iterator[T]:
     if key is None:
         seen_set: Set[T] = set()
         add_to_seen_set = seen_set.add

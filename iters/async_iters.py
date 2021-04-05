@@ -17,7 +17,6 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    cast,
     overload,
     no_type_check,
 )
@@ -25,12 +24,12 @@ from typing_extensions import AsyncContextManager
 
 from iters.async_utils import (
     AnyIterable,
-    MarkerOr,
     MaybeAwaitable,
-    marker,
     async_all,
     async_any,
     async_append,
+    async_at,
+    async_at_or_last,
     async_chain,
     async_chain_from_iterable,
     async_collapse,
@@ -56,7 +55,7 @@ from iters.async_utils import (
     async_get,
     async_group,
     async_group_longest,
-    async_iter as async_std_iter,
+    async_iter as std_async_iter,
     async_iter_chunk,
     async_iter_len,
     async_iter_slice,
@@ -70,8 +69,6 @@ from iters.async_utils import (
     async_min,
     async_next,
     async_next_unchecked,
-    async_nth,
-    async_nth_or_last,
     async_parallel_filter,
     async_parallel_filter_false,
     async_parallel_flatten,
@@ -85,11 +82,11 @@ from iters.async_utils import (
     async_product,
     async_reduce,
     async_repeat,
+    async_reversed as std_async_reversed,
     async_set,
     async_side_effect,
     async_star_map,
     async_star_map_nowait,
-    async_std_reversed,
     async_step_by,
     async_sum,
     async_take,
@@ -102,7 +99,25 @@ from iters.async_utils import (
     async_zip,
     async_zip_longest,
     maybe_await,
+    reverse_to_async,
     run_iterators,
+)
+from iters.types import MarkerOr, Order, marker
+
+__all__ = (
+    # async iterator class
+    "AsyncIter",
+    # convenient functions to get an async iterator
+    "async_iter",
+    "async_reversed",
+    # next functions; checked version works on any iterator, unchecked assumes an async iterator
+    "async_next",
+    "async_next_unchecked",
+    # since we are shadowing standard functions, export them as <std>
+    "std_async_iter",
+    "std_async_reversed",
+    # decorator to wrap return value of the function into an async iterator
+    "return_async_iter",
 )
 
 __all__ = (
@@ -112,12 +127,14 @@ __all__ = (
     "async_next_unchecked",
     "async_reversed",
     "return_async_iter",
-    "async_std_iter",
-    "async_std_reversed",
+    "std_async_iter",
+    "std_async_reversed",
 )
 
 KT = TypeVar("KT")
 VT = TypeVar("VT")
+
+N = TypeVar("N", int, float)
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -128,10 +145,14 @@ T3 = TypeVar("T3")
 T4 = TypeVar("T4")
 T5 = TypeVar("T5")
 
+OrderT = TypeVar("OrderT", bound=Order)
+
 Or = Union[T, Optional[U]]
 
 
 class AsyncIter(AsyncIterator[T]):
+    _iterator: AsyncIterator[T]
+
     @overload
     def __init__(self, iterator: Iterator[T]) -> None:  # noqa
         ...
@@ -169,23 +190,23 @@ class AsyncIter(AsyncIterator[T]):
         ],
         sentinel: MarkerOr[T] = marker,
     ) -> None:
-        self._iterator: AsyncIterator[T] = async_std_iter(something, sentinel)
+        self._iterator: AsyncIterator[T] = std_async_iter(something, sentinel)
 
     def __aiter__(self) -> "AsyncIter[T]":
         return self
 
     async def __anext__(self) -> T:
-        return await async_next_unchecked(self._iterator)  # type: ignore
+        return await async_next_unchecked(self._iterator)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}<T> at 0x{id(self):016x}>"
 
     def unwrap(self) -> AsyncIterator[T]:
-        return self._iterator  # type: ignore
+        return self._iterator
 
     @classmethod
-    def count(cls, start: T = 0, step: T = 1) -> "AsyncIter[T]":  # type: ignore
-        return cls(cast(AsyncIterator[T], async_count(start, step)))
+    def count(cls, start: N = 0, step: N = 1) -> "AsyncIter[N]":
+        return cls(async_count(start, step))
 
     @classmethod
     def repeat(cls, to_repeat: T, times: Optional[int] = None) -> "AsyncIter[T]":
@@ -193,7 +214,7 @@ class AsyncIter(AsyncIterator[T]):
 
     @classmethod
     def reversed(cls, iterable: Reversible[T]) -> "AsyncIter[T]":
-        return cls(async_std_reversed(iterable))
+        return cls(reverse_to_async(iterable))
 
     @classmethod
     def with_iter(cls, context_manager: ContextManager[Iterable[T]]) -> "AsyncIter[T]":
@@ -213,88 +234,83 @@ class AsyncIter(AsyncIterator[T]):
         return self
 
     async def next(self) -> T:
-        return await async_next_unchecked(self._iterator)  # type: ignore
+        return await async_next_unchecked(self._iterator)
 
     async def next_or(self, default: Optional[T]) -> Optional[T]:
-        return await async_next_unchecked(self._iterator, default)  # type: ignore
+        return await async_next_unchecked(self._iterator, default)
 
     async def all(self) -> bool:
-        return await async_all(self._iterator)  # type: ignore
+        return await async_all(self._iterator)
 
     async def any(self) -> bool:
-        return await async_any(self._iterator)  # type: ignore
+        return await async_any(self._iterator)
 
     def append(self, item: T) -> "AsyncIter[T]":
-        return self.__class__(async_append(self._iterator, item))  # type: ignore
+        return self.__class__(async_append(self._iterator, item))
 
     def prepend(self, item: T) -> "AsyncIter[T]":
-        return self.__class__(async_prepend(self._iterator, item))  # type: ignore
+        return self.__class__(async_prepend(self._iterator, item))
 
     def chain(self, *iterables: AnyIterable[T]) -> "AsyncIter[T]":
-        return self.__class__(async_chain(self._iterator, *iterables))  # type: ignore
+        return self.__class__(async_chain(self._iterator, *iterables))
 
     def chain_with(self, iterables: AnyIterable[AnyIterable[T]]) -> "AsyncIter[T]":
-        return self.__class__(
-            async_chain(self._iterator, async_chain_from_iterable(iterables))  # type: ignore
-        )
+        return self.__class__(async_chain(self._iterator, async_chain_from_iterable(iterables)))
 
     def collapse(
         self, base_type: Optional[Type[Any]] = None, levels: Optional[int] = None
     ) -> "AsyncIter[T]":
-        return self.__class__(
-            async_collapse(self._iterator, base_type=base_type, levels=levels)  # type: ignore
-        )
+        return self.__class__(async_collapse(self._iterator, base_type=base_type, levels=levels))
 
     def reverse(self) -> "AsyncIter[T]":
-        return self.__class__(
-            cast(AsyncIterator[T], async_reversed(self._iterator))  # type: ignore
-        )
+        return self.__class__(std_async_reversed(self._iterator))
 
-    def slice(self, *slice_args) -> "AsyncIter[T]":
-        return self.__class__(async_iter_slice(self._iterator, *slice_args))  # type: ignore
+    def slice(self, *slice_args: int) -> "AsyncIter[T]":
+        return self.__class__(async_iter_slice(self._iterator, *slice_args))
 
-    def wait(self) -> "AsyncIter[U]":
+    def wait(self: "AsyncIter[MaybeAwaitable[U]]") -> "AsyncIter[U]":
         return self.__class__(async_wait(self._iterator))  # type: ignore
 
-    def parallel_wait(self) -> "AsyncIter[U]":
+    def parallel_wait(self: "AsyncIter[MaybeAwaitable[U]]") -> "AsyncIter[U]":
         return self.__class__(async_parallel_wait(self._iterator))  # type: ignore
 
     async def exhaust(self) -> None:
-        await async_exhaust(self._iterator)  # type: ignore
+        await async_exhaust(self._iterator)
 
     async def for_each(self, function: Callable[[T], MaybeAwaitable[None]]) -> None:
         await self.map(function).exhaust()
 
-    async def join(self, delim: str) -> str:
-        return delim.join(await self.list())  # type: ignore
+    async def join(self: "AsyncIter[str]", delim: str) -> str:
+        return delim.join(await self.list())
 
     async def collect(
-        self, function: Callable[[AsyncIterator[T]], MaybeAwaitable[AnyIterable[T]]],
+        self,
+        function: Callable[[AsyncIterator[T]], MaybeAwaitable[AnyIterable[T]]],
     ) -> AnyIterable[T]:
-        return await maybe_await(function(self._iterator))  # type: ignore
+        return await maybe_await(function(self._iterator))
 
     def distinct(self, key: Optional[Callable[[T], U]] = None) -> "AsyncIter[T]":
-        return self.__class__(async_distinct(self._iterator, key))  # type: ignore
+        return self.__class__(async_distinct(self._iterator, key))
 
     unique = distinct
 
-    async def dict(self) -> Dict[KT, VT]:
-        return await async_dict(self._iterator)  # type: ignore
+    async def dict(self: "AsyncIter[Tuple[KT, VT]]") -> Dict[KT, VT]:
+        return await async_dict(self._iterator)
 
     async def list(self) -> List[T]:
-        return await async_list(self._iterator)  # type: ignore
+        return await async_list(self._iterator)
 
     async def set(self) -> Set[T]:
-        return await async_set(self._iterator)  # type: ignore
+        return await async_set(self._iterator)
 
     async def tuple(self) -> Tuple[T, ...]:
-        return await async_tuple(self._iterator)  # type: ignore
+        return await async_tuple(self._iterator)
 
     def compress(self, selectors: AnyIterable[U]) -> "AsyncIter[T]":
-        return self.__class__(async_compress(self._iterator, selectors))  # type: ignore
+        return self.__class__(async_compress(self._iterator, selectors))
 
     def copy(self) -> "AsyncIter[T]":
-        for_self, to_return = async_copy(self._iterator)  # type: ignore
+        for_self, to_return = async_copy(self._iterator)
 
         self._iterator = for_self
 
@@ -362,9 +378,7 @@ class AsyncIter(AsyncIterator[T]):
     def find_all(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
         return self.filter(predicate)
 
-    async def find(
-        self, predicate: Callable[[T], Any], default: Optional[T] = None
-    ) -> Optional[T]:
+    async def find(self, predicate: Callable[[T], Any], default: Optional[T] = None) -> Optional[T]:
         return await self.find_all(predicate).next_or(default)
 
     async def first(self) -> T:
@@ -376,47 +390,101 @@ class AsyncIter(AsyncIterator[T]):
     async def fold(self, function: Callable[[U, Union[T, U]], MaybeAwaitable[U]], initial: U) -> U:
         return await async_fold(self._iterator, function, initial)
 
-    async def reduce(self, function: Callable[[U, Union[T, U]], MaybeAwaitable[U]]) -> U:
+    async def reduce(self, function: Callable[[T, T], MaybeAwaitable[T]]) -> T:
         return await async_reduce(function, self._iterator)
 
-    async def max(self, *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None) -> T:
+    @overload  # noqa
+    async def max(self: "AsyncIter[OrderT]") -> OrderT:  # noqa
+        ...
+
+    @overload  # noqa
+    async def max(self: "AsyncIter[T]", *, key: Callable[[T], MaybeAwaitable[OrderT]]) -> T:  # noqa
+        ...
+
+    async def max(  # noqa
+        self, *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
+    ) -> Any:
         if key is None:
             return await async_max(self._iterator)
 
         return await async_max(self._iterator, key=key)
 
-    async def min(self, *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None) -> T:
+    @overload  # noqa
+    async def min(self: "AsyncIter[OrderT]") -> OrderT:  # noqa
+        ...
+
+    @overload  # noqa
+    async def min(self: "AsyncIter[T]", *, key: Callable[[T], MaybeAwaitable[OrderT]]) -> T:  # noqa
+        ...
+
+    async def min(  # noqa
+        self, *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
+    ) -> Any:
         if key is None:
             return await async_min(self._iterator)
 
         return await async_min(self._iterator, key=key)
 
-    async def max_or(
-        self, default: Optional[T], *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
-    ) -> Optional[T]:
+    @overload  # noqa
+    async def max_or(  # noqa
+        self: "AsyncIter[OrderT]", default: Optional[T]
+    ) -> Union[OrderT, Optional[T]]:
+        ...
+
+    @overload  # noqa
+    async def max_or(  # noqa
+        self: "AsyncIter[T]",
+        default: Optional[U],
+        *,
+        key: Callable[[T], MaybeAwaitable[OrderT]],
+    ) -> Union[T, Optional[U]]:
+        ...
+
+    async def max_or(  # noqa
+        self: "AsyncIter[Any]",
+        default: Optional[Any],
+        *,
+        key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None,
+    ) -> Optional[Any]:
         if key is None:
             return await async_max(self._iterator, default=default)
 
         return await async_max(self._iterator, key=key, default=default)
 
-    async def min_or(
-        self, default: Optional[T], *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
-    ) -> Optional[T]:
+    @overload  # noqa
+    async def min_or(self: "AsyncIter[OrderT]", default: Optional[T]) -> Union[OrderT, T]:  # noqa
+        ...
+
+    @overload  # noqa
+    async def min_or(  # noqa
+        self: "AsyncIter[T]",
+        default: Optional[U],
+        *,
+        key: Callable[[T], MaybeAwaitable[OrderT]],
+    ) -> Union[T, U]:
+        ...
+
+    async def min_or(  # noqa
+        self: "AsyncIter[Any]",
+        default: Optional[Any],
+        *,
+        key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None,
+    ) -> Optional[Any]:
         if key is None:
             return await async_min(self._iterator, default=default)
 
         return await async_min(self._iterator, key=key, default=default)
 
-    async def sum(self, start: MarkerOr[U] = marker) -> U:
+    async def sum(self, start: MarkerOr[T] = marker) -> T:
         return await async_sum(self._iterator, start)
 
-    async def product(self, start: MarkerOr[U] = marker) -> U:
+    async def product(self, start: MarkerOr[T] = marker) -> T:
         return await async_product(self._iterator, start)
 
-    def get_all(self, **attrs) -> "AsyncIter[T]":
+    def get_all(self, **attrs: Any) -> "AsyncIter[T]":
         return self.__class__(async_get(self._iterator, **attrs))
 
-    async def get(self, *, default: Optional[T] = None, **attrs) -> Optional[T]:
+    async def get(self, *, default: Optional[T] = None, **attrs: Any) -> Optional[T]:
         return await self.get_all(**attrs).next_or(default)
 
     async def last(self) -> T:
@@ -425,11 +493,11 @@ class AsyncIter(AsyncIterator[T]):
     async def last_or(self, default: Optional[T]) -> Optional[T]:
         return await async_last(self._iterator, default)
 
-    def flatten(self) -> "AsyncIter[T]":
-        return self.__class__(async_flatten(self._iterator))
+    def flatten(self: "AsyncIter[AnyIterable[T]]") -> "AsyncIter[T]":
+        return self.__class__(async_flatten(self._iterator))  # type: ignore
 
-    def parallel_flatten(self) -> "AsyncIter[T]":
-        return self.__class__(async_parallel_flatten(self._iterator))
+    def parallel_flatten(self: "AsyncIter[AnyIterable[T]]") -> "AsyncIter[T]":
+        return self.__class__(async_parallel_flatten(self._iterator))  # type: ignore
 
     def group(self, n: int) -> "AsyncIter[Tuple[T, ...]]":
         return self.__class__(async_group(self._iterator, n))
@@ -448,23 +516,25 @@ class AsyncIter(AsyncIterator[T]):
     def tuple_chunk(self, n: int) -> "AsyncIter[Tuple[T, ...]]":
         return self.__class__(async_tuple_chunk(self._iterator, n))
 
-    async def nth(self, n: int) -> T:
-        return await async_nth(self._iterator, n)
+    async def at(self, n: int) -> T:
+        return await async_at(self._iterator, n)
 
-    async def nth_or(self, n: int, default: T) -> T:
-        return await async_nth(self._iterator, n, default)
+    async def at_or(self, n: int, default: T) -> T:
+        return await async_at(self._iterator, n, default)
 
-    async def nth_or_last(self, n: int) -> T:
-        return await async_nth_or_last(self._iterator, n)
+    async def at_or_last(self, n: int) -> T:
+        return await async_at_or_last(self._iterator, n)
 
     async def length(self) -> int:
         return await async_iter_len(self._iterator)
 
     def run_iterators(
-        self, *ignore_exceptions: Type[BaseException], concurrent: bool = True
-    ) -> "AsyncIter[U]":
-        return self.__class__(
-            run_iterators(self._iterator, *ignore_exceptions, concurrent=concurrent)
+        self: "AsyncIter[AnyIterable[T]]",
+        *ignore_exceptions: Type[BaseException],
+        concurrent: bool = True,
+    ) -> "AsyncIter[T]":
+        return self.__class__(  # type: ignore
+            run_iterators(self._iterator, *ignore_exceptions, concurrent=concurrent)  # type: ignore
         )
 
     def map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
@@ -476,14 +546,20 @@ class AsyncIter(AsyncIterator[T]):
     def parallel_map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
         return self.__class__(async_parallel_map(function, self._iterator))
 
-    def star_map(self, function: Callable[..., MaybeAwaitable[U]]) -> "AsyncIter[U]":
-        return self.__class__(async_star_map(function, self._iterator))
+    def star_map(
+        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., MaybeAwaitable[T]]
+    ) -> "AsyncIter[T]":
+        return self.__class__(async_star_map(function, self._iterator))  # type: ignore
 
-    def star_map_nowait(self, function: Callable[..., U]) -> "AsyncIter[U]":
-        return self.__class__(async_star_map_nowait(function, self._iterator))
+    def star_map_nowait(
+        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., T]
+    ) -> "AsyncIter[T]":
+        return self.__class__(async_star_map_nowait(function, self._iterator))  # type: ignore
 
-    def parallel_star_map(self, function: Callable[..., MaybeAwaitable[U]]) -> "AsyncIter[U]":
-        return self.__class__(async_parallel_star_map(function, self._iterator))
+    def parallel_star_map(
+        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., MaybeAwaitable[T]]
+    ) -> "AsyncIter[T]":
+        return self.__class__(async_parallel_star_map(function, self._iterator))  # type: ignore
 
     def partition(
         self, predicate: Callable[[T], MaybeAwaitable[Any]]
@@ -655,7 +731,7 @@ async_reversed = async_iter.reversed
 
 def return_async_iter(function: Callable[..., AsyncIterable[T]]) -> Callable[..., AsyncIter[T]]:
     @wraps(function)
-    def wrapper(*args, **kwargs) -> AsyncIter[T]:
+    def wrapper(*args: Any, **kwargs: Any) -> AsyncIter[T]:
         return async_iter(function(*args, **kwargs))
 
     return wrapper

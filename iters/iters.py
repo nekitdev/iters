@@ -14,14 +14,15 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    cast,
     overload,
     no_type_check,
 )
 
+from iters.types import MarkerOr, Order, marker
 from iters.utils import (
-    MarkerOr,
     append,
+    at,
+    at_or_last,
     chain,
     chain_from_iterable,
     collapse,
@@ -48,9 +49,6 @@ from iters.utils import (
     iterate,
     last,
     list_chunk,
-    marker,
-    nth,
-    nth_or_last,
     partition,
     partition_infinite,
     partition_safe,
@@ -70,16 +68,22 @@ from iters.utils import (
 )
 
 __all__ = (
+    # iterator class
     "Iter",
+    # convenient functions to get an iterator
     "iter",
     "reversed",
-    "return_iter",
+    # since we are shadowing standard functions, export them as <std>
     "std_iter",
     "std_reversed",
+    # decorator to wrap return value of the function into an iterator
+    "return_iter",
 )
 
 KT = TypeVar("KT")
 VT = TypeVar("VT")
+
+N = TypeVar("N", int, float)
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -92,11 +96,15 @@ T5 = TypeVar("T5")
 
 Or = Union[T, Optional[U]]
 
+OrderT = TypeVar("OrderT", bound=Order)
+
 std_iter = iter
 std_reversed = reversed
 
 
 class Iter(Iterator[T]):
+    _iterator: Iterator[T]
+
     @overload
     def __init__(self, iterator: Iterator[T]) -> None:  # noqa
         ...
@@ -116,16 +124,16 @@ class Iter(Iterator[T]):
         sentinel: MarkerOr[T] = marker,
     ) -> None:
         if sentinel is marker:
-            self._iterator: Iterator[T] = std_iter(something)
+            self._iterator = std_iter(something)
 
         else:
-            self._iterator: Iterator[T] = std_iter(something, sentinel)
+            self._iterator = std_iter(something, sentinel)
 
     def __iter__(self) -> "Iter[T]":
         return self
 
     def __next__(self) -> T:
-        return next(self._iterator)  # type: ignore
+        return next(self._iterator)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}<T> at 0x{id(self):016x}>"
@@ -141,7 +149,7 @@ class Iter(Iterator[T]):
     @no_type_check
     def __getitem__(self, item: Union[int, slice]) -> Union[T, "Iter[T]"]:  # noqa
         if isinstance(item, int):
-            return self.nth(item)
+            return self.at(item)
 
         elif isinstance(item, slice):
             return self.slice(item.start, item.stop, item.stop)
@@ -150,11 +158,11 @@ class Iter(Iterator[T]):
             raise ValueError(f"Expected integer or slice, got type {type(item).__name__!r}.")
 
     def unwrap(self) -> Iterator[T]:
-        return self._iterator  # type: ignore
+        return self._iterator
 
     @classmethod
-    def count(cls, start: T = 0, step: T = 1) -> "Iter[T]":  # type: ignore
-        return cls(cast(Iterator[T], count(start, step)))
+    def count(cls, start: N = 0, step: N = 1) -> "Iter[N]":
+        return cls(count(start, step))
 
     @classmethod
     def repeat(cls, to_repeat: T, times: Optional[int] = None) -> "Iter[T]":
@@ -180,78 +188,74 @@ class Iter(Iterator[T]):
         return self
 
     def next(self) -> T:
-        return next(self._iterator)  # type: ignore
+        return next(self._iterator)
 
     def next_or(self, default: Optional[T]) -> Optional[T]:
-        return next(self._iterator, default)  # type: ignore
+        return next(self._iterator, default)
 
     def all(self) -> bool:
-        return all(self._iterator)  # type: ignore
+        return all(self._iterator)
 
     def any(self) -> bool:
-        return any(self._iterator)  # type: ignore
+        return any(self._iterator)
 
     def append(self, item: T) -> "Iter[T]":
-        return self.__class__(append(self._iterator, item))  # type: ignore
+        return self.__class__(append(self._iterator, item))
 
     def prepend(self, item: T) -> "Iter[T]":
-        return self.__class__(prepend(self._iterator, item))  # type: ignore
+        return self.__class__(prepend(self._iterator, item))
 
     def chain(self, *iterables: Iterable[T]) -> "Iter[T]":
-        return self.__class__(chain(self._iterator, *iterables))  # type: ignore
+        return self.__class__(chain(self._iterator, *iterables))
 
     def chain_with(self, iterables: Iterable[Iterable[T]]) -> "Iter[T]":
-        return self.__class__(
-            chain(self._iterator, chain_from_iterable(iterables))  # type: ignore
-        )
+        return self.__class__(chain(self._iterator, chain_from_iterable(iterables)))
 
     def collapse(
         self, base_type: Optional[Type[Any]] = None, levels: Optional[int] = None
     ) -> "Iter[T]":
-        return self.__class__(
-            collapse(self._iterator, base_type=base_type, levels=levels)  # type: ignore
-        )
+        return self.__class__(collapse(self._iterator, base_type=base_type, levels=levels))
 
     def reverse(self) -> "Iter[T]":
-        return self.__class__(std_reversed(tuple(self._iterator)))  # type: ignore
+        return self.__class__(std_reversed(tuple(self._iterator)))
 
-    def slice(self, *slice_args) -> "Iter[T]":
-        return self.__class__(iter_slice(self._iterator, *slice_args))  # type: ignore
+    def slice(self, *slice_args: int) -> "Iter[T]":
+        return self.__class__(iter_slice(self._iterator, *slice_args))
 
     def exhaust(self) -> None:
-        exhaust(self._iterator)  # type: ignore
+        exhaust(self._iterator)
 
     def for_each(self, function: Callable[[T], None]) -> None:
         self.map(function).exhaust()
 
-    def join(self, delim: str) -> str:
-        return delim.join(self._iterator)  # type: ignore
+    def join(self: "Iter[str]", delim: str) -> str:
+        return delim.join(self._iterator)
 
     def collect(self, function: Callable[[Iterator[T]], Iterable[T]]) -> Iterable[T]:
-        return function(self._iterator)  # type: ignore
+        return function(self._iterator)
 
     def distinct(self, key: Optional[Callable[[T], U]] = None) -> "Iter[T]":
-        return self.__class__(distinct(self._iterator, key))  # type: ignore
+        return self.__class__(distinct(self._iterator, key))
 
     unique = distinct
 
-    def dict(self) -> Dict[KT, VT]:
-        return dict(self._iterator)  # type: ignore
+    def dict(self: "Iter[Tuple[KT, VT]]") -> Dict[KT, VT]:
+        return dict(self._iterator)
 
     def list(self) -> List[T]:
-        return list(self._iterator)  # type: ignore
+        return list(self._iterator)
 
     def set(self) -> Set[T]:
-        return set(self._iterator)  # type: ignore
+        return set(self._iterator)
 
     def tuple(self) -> Tuple[T, ...]:
-        return tuple(self._iterator)  # type: ignore
+        return tuple(self._iterator)
 
     def compress(self, selectors: Iterable[U]) -> "Iter[T]":
-        return self.__class__(compress(self._iterator, selectors))  # type: ignore
+        return self.__class__(compress(self._iterator, selectors))
 
     def copy(self) -> "Iter[T]":
-        for_self, to_return = copy(self._iterator)  # type: ignore
+        for_self, to_return = copy(self._iterator)
 
         self._iterator = for_self
 
@@ -314,50 +318,89 @@ class Iter(Iterator[T]):
     def first_or(self, default: Optional[T]) -> Optional[T]:
         return first(self._iterator, default)
 
-    def fold(self, function: Callable[[U, Union[T, U]], U], initial: U) -> U:
+    def fold(self, function: Callable[[U, T], U], initial: U) -> U:
         return fold(self._iterator, function, initial)
 
-    def reduce(self, function: Callable[[U, Union[T, U]], U]) -> U:
+    def reduce(self, function: Callable[[T, T], T]) -> T:
         return reduce(function, self._iterator)
 
-    def max(self, *, key: Optional[Callable[[T], U]] = None) -> T:
+    @overload  # noqa
+    def max(self: "Iter[OrderT]") -> OrderT:  # noqa
+        ...
+
+    @overload  # noqa
+    def max(self: "Iter[T]", *, key: Callable[[T], OrderT]) -> T:  # noqa
+        ...
+
+    def max(self: "Iter[Any]", *, key: Optional[Callable[[Any], Any]] = None) -> Any:  # noqa
         if key is None:
             return max(self._iterator)
 
         return max(self._iterator, key=key)
 
-    def min(self, *, key: Optional[Callable[[T], U]] = None) -> T:
+    @overload  # noqa
+    def min(self: "Iter[OrderT]") -> OrderT:  # noqa
+        ...
+
+    @overload  # noqa
+    def min(self: "Iter[T]", *, key: Callable[[T], OrderT]) -> T:  # noqa
+        ...
+
+    def min(self: "Iter[Any]", *, key: Optional[Callable[[Any], Any]] = None) -> Any:  # noqa
         if key is None:
             return min(self._iterator)
 
         return min(self._iterator, key=key)
 
-    def max_or(
-        self, default: Optional[T], *, key: Optional[Callable[[Any], Any]] = None
-    ) -> Optional[T]:
+    @overload  # noqa
+    def max_or(self: "Iter[OrderT]", default: Optional[T]) -> Union[OrderT, Optional[T]]:  # noqa
+        ...
+
+    @overload  # noqa
+    def max_or(  # noqa
+        self: "Iter[T]", default: Optional[U], *, key: Callable[[T], OrderT]
+    ) -> Union[T, Optional[U]]:
+        ...
+
+    def max_or(  # noqa
+        self: "Iter[Any]", default: Optional[Any], *, key: Optional[Callable[[Any], Any]] = None
+    ) -> Optional[Any]:
         if key is None:
             return max(self._iterator, default=default)
 
         return max(self._iterator, key=key, default=default)
 
-    def min_or(
-        self, default: Optional[T], *, key: Optional[Callable[[Any], Any]] = None
-    ) -> Optional[T]:
+    @overload  # noqa
+    def min_or(self: "Iter[OrderT]", default: Optional[T]) -> Union[OrderT, Optional[T]]:  # noqa
+        ...
+
+    @overload  # noqa
+    def min_or(  # noqa
+        self: "Iter[T]", default: Optional[U], *, key: Callable[[T], OrderT]
+    ) -> Union[T, Optional[U]]:
+        ...
+
+    def min_or(  # noqa
+        self: "Iter[Any]",
+        default: Optional[Any],
+        *,
+        key: Optional[Callable[[Any], Any]] = None,
+    ) -> Optional[Any]:
         if key is None:
             return min(self._iterator, default=default)
 
         return min(self._iterator, key=key, default=default)
 
-    def sum(self, start: MarkerOr[T] = marker) -> U:
+    def sum(self, start: MarkerOr[T] = marker) -> T:
         return sum(self._iterator, start)
 
-    def product(self, start: MarkerOr[T] = marker) -> U:
+    def product(self, start: MarkerOr[T] = marker) -> T:
         return product(self._iterator, start)
 
-    def get_all(self, **attrs) -> "Iter[T]":
+    def get_all(self, **attrs: Any) -> "Iter[T]":
         return self.__class__(get(self._iterator, **attrs))
 
-    def get(self, *, default: Optional[T] = None, **attrs) -> Optional[T]:
+    def get(self, *, default: Optional[T] = None, **attrs: Any) -> Optional[T]:
         return self.get_all(**attrs).next_or(default)
 
     def last(self) -> T:
@@ -366,8 +409,8 @@ class Iter(Iterator[T]):
     def last_or(self, default: Optional[T]) -> Optional[T]:
         return last(self._iterator, default)
 
-    def flatten(self) -> "Iter[T]":
-        return self.__class__(flatten(self._iterator))
+    def flatten(self: "Iter[Iterable[T]]") -> "Iter[T]":
+        return self.__class__(flatten(self._iterator))  # type: ignore
 
     def group(self, n: int) -> "Iter[Tuple[T, ...]]":
         return self.__class__(group(self._iterator, n))
@@ -384,14 +427,14 @@ class Iter(Iterator[T]):
     def tuple_chunk(self, n: int) -> "Iter[Tuple[T, ...]]":
         return self.__class__(tuple_chunk(self._iterator, n))
 
-    def nth(self, n: int) -> T:
-        return nth(self._iterator, n)
+    def at(self, n: int) -> T:
+        return at(self._iterator, n)
 
-    def nth_or(self, n: int, default: T) -> T:
-        return nth(self._iterator, n, default)
+    def at_or(self, n: int, default: T) -> T:
+        return at(self._iterator, n, default)
 
-    def nth_or_last(self, n: int) -> T:
-        return nth_or_last(self._iterator, n)
+    def at_or_last(self, n: int) -> T:
+        return at_or_last(self._iterator, n)
 
     def length(self) -> int:
         return iter_len(self._iterator)
@@ -399,8 +442,8 @@ class Iter(Iterator[T]):
     def map(self, function: Callable[[T], U]) -> "Iter[U]":
         return self.__class__(map(function, self._iterator))
 
-    def star_map(self, function: Callable[..., U]) -> "Iter[U]":
-        return self.__class__(star_map(function, self._iterator))
+    def star_map(self: "Iter[Iterable[Any]]", function: Callable[..., T]) -> "Iter[T]":
+        return self.__class__(star_map(function, self._iterator))  # type: ignore
 
     def partition(self, predicate: Callable[[T], Any]) -> "Tuple[Iter[T], Iter[T]]":
         with_true, with_false = partition(self._iterator, predicate)
@@ -566,7 +609,7 @@ reversed = iter.reversed
 
 def return_iter(function: Callable[..., Iterable[T]]) -> Callable[..., Iter[T]]:
     @wraps(function)
-    def wrapper(*args, **kwargs) -> Iter[T]:
+    def wrapper(*args: Any, **kwargs: Any) -> Iter[T]:
         return iter(function(*args, **kwargs))
 
     return wrapper
