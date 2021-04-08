@@ -134,7 +134,6 @@ T5 = TypeVar("T5")
 AnyIterable = Union[AsyncIterable[T], Iterable[T]]
 AnyIterator = Union[AsyncIterator[T], Iterator[T]]
 MaybeAwaitable = Union[T, Awaitable[T]]
-Or = Union[T, Optional[U]]
 
 OrderT = TypeVar("OrderT", bound=Order)
 
@@ -628,51 +627,54 @@ def async_copy_safe(iterable: AnyIterable[T], n: int = 2) -> Tuple[AsyncIterator
 
 
 @overload
-def async_zip(__iter_1: AnyIterable[T1]) -> AsyncIterator[Tuple[T1]]:
-    ...
-
-
-@overload
-def async_zip(__iter_1: AnyIterable[T1], __iter_2: AnyIterable[T2]) -> AsyncIterator[Tuple[T1, T2]]:
+def async_zip(__iterable_1: AnyIterable[T1]) -> AsyncIterator[Tuple[T1]]:
     ...
 
 
 @overload
 def async_zip(
-    __iter_1: AnyIterable[T1], __iter_2: AnyIterable[T2], __iter_3: AnyIterable[T3]
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+) -> AsyncIterator[Tuple[T1, T2]]:
+    ...
+
+
+@overload
+def async_zip(
+    __iterable_1: AnyIterable[T1], __iterable_2: AnyIterable[T2], __iterable_3: AnyIterable[T3]
 ) -> AsyncIterator[Tuple[T1, T2, T3]]:
     ...
 
 
 @overload
 def async_zip(
-    __iter_1: AnyIterable[T1],
-    __iter_2: AnyIterable[T2],
-    __iter_3: AnyIterable[T3],
-    __iter_4: AnyIterable[T4],
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+    __iterable_4: AnyIterable[T4],
 ) -> AsyncIterator[Tuple[T1, T2, T3, T4]]:
     ...
 
 
 @overload
 def async_zip(
-    __iter_1: AnyIterable[T1],
-    __iter_2: AnyIterable[T2],
-    __iter_3: AnyIterable[T3],
-    __iter_4: AnyIterable[T4],
-    __iter_5: AnyIterable[T5],
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+    __iterable_4: AnyIterable[T4],
+    __iterable_5: AnyIterable[T5],
 ) -> AsyncIterator[Tuple[T1, T2, T3, T4, T5]]:
     ...
 
 
 @overload
 def async_zip(
-    __iter_1: AnyIterable[Any],
-    __iter_2: AnyIterable[Any],
-    __iter_3: AnyIterable[Any],
-    __iter_4: AnyIterable[Any],
-    __iter_5: AnyIterable[Any],
-    __iter_6: AnyIterable[Any],
+    __iterable_1: AnyIterable[Any],
+    __iterable_2: AnyIterable[Any],
+    __iterable_3: AnyIterable[Any],
+    __iterable_4: AnyIterable[Any],
+    __iterable_5: AnyIterable[Any],
+    __iterable_6: AnyIterable[Any],
     *iterables: AnyIterable[Any],
 ) -> AsyncIterator[Tuple[Any, ...]]:
     ...
@@ -991,18 +993,16 @@ def async_group_longest(iterable: AnyIterable[T], n: int) -> AsyncIterator[Tuple
 
 
 @overload
-def async_group_longest(
-    iterable: AnyIterable[T], n: int, fillvalue: T
-) -> AsyncIterator[Tuple[T, ...]]:
+def async_group_longest(iterable: AnyIterable[T], n: int, fill: T) -> AsyncIterator[Tuple[T, ...]]:
     ...
 
 
 def async_group_longest(
-    iterable: AnyIterable[T], n: int, fillvalue: Optional[T] = None
+    iterable: AnyIterable[T], n: int, fill: Optional[T] = None
 ) -> AsyncIterator[Tuple[Optional[T], ...]]:
     iterators = (async_iter_any_iter(iterable),) * n
 
-    return async_zip_longest(*iterators, fillvalue=fillvalue)
+    return async_zip_longest(*iterators, fill=fill)
 
 
 class ZipExhausted(Exception):
@@ -1010,72 +1010,128 @@ class ZipExhausted(Exception):
 
 
 @overload
-def async_zip_longest(
-    __iter_1: AnyIterable[T1], *, fillvalue: Optional[T] = None
-) -> AsyncIterator[Tuple[Or[T1, T]]]:
+def async_zip_longest(__iterable_1: AnyIterable[T1]) -> AsyncIterator[Tuple[Optional[T1]]]:
     ...
 
 
 @overload
 def async_zip_longest(
-    __iter_1: AnyIterable[T1], __iter_2: AnyIterable[T2], *, fillvalue: Optional[T] = None
-) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T]]]:
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+) -> AsyncIterator[Tuple[Optional[T1], Optional[T2]]]:
     ...
 
 
 @overload
 def async_zip_longest(
-    __iter_1: AnyIterable[T1],
-    __iter_2: AnyIterable[T2],
-    __iter_3: AnyIterable[T3],
-    *,
-    fillvalue: Optional[T] = None,
-) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T], Or[T3, T]]]:
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+) -> AsyncIterator[Tuple[Optional[T1], Optional[T2], Optional[T3]]]:
     ...
 
 
 @overload
 def async_zip_longest(
-    __iter_1: AnyIterable[T1],
-    __iter_2: AnyIterable[T2],
-    __iter_3: AnyIterable[T3],
-    __iter_4: AnyIterable[T4],
-    *,
-    fillvalue: Optional[T] = None,
-) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T], Or[T3, T], Or[T4, T]]]:
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+    __iterable_4: AnyIterable[T4],
+) -> AsyncIterator[Tuple[Optional[T1], Optional[T2], Optional[T3], Optional[T4]]]:
     ...
 
 
 @overload
 def async_zip_longest(
-    __iter_1: AnyIterable[T1],
-    __iter_2: AnyIterable[T2],
-    __iter_3: AnyIterable[T3],
-    __iter_4: AnyIterable[T4],
-    __iter_5: AnyIterable[T5],
-    *,
-    fillvalue: Optional[T] = None,
-) -> AsyncIterator[Tuple[Or[T1, T], Or[T2, T], Or[T3, T], Or[T4, T], Or[T5, T]]]:
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+    __iterable_4: AnyIterable[T4],
+    __iterable_5: AnyIterable[T5],
+) -> AsyncIterator[Tuple[Optional[T1], Optional[T2], Optional[T3], Optional[T4], Optional[T5]]]:
     ...
 
 
 @overload
 def async_zip_longest(
-    __iter_1: AnyIterable[Any],
-    __iter_2: AnyIterable[Any],
-    __iter_3: AnyIterable[Any],
-    __iter_4: AnyIterable[Any],
-    __iter_5: AnyIterable[Any],
-    __iter_6: AnyIterable[Any],
+    __iterable_1: AnyIterable[Any],
+    __iterable_2: AnyIterable[Any],
+    __iterable_3: AnyIterable[Any],
+    __iterable_4: AnyIterable[Any],
+    __iterable_5: AnyIterable[Any],
+    __iterable_6: AnyIterable[Any],
     *iterables: AnyIterable[Any],
-    fillvalue: Optional[T] = None,
-) -> AsyncIterator[Tuple[Or[Any, T], ...]]:
+) -> AsyncIterator[Tuple[Optional[Any], ...]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iterable_1: AnyIterable[T1], *, fill: T
+) -> AsyncIterator[Tuple[Union[T1, T]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iterable_1: AnyIterable[T1], __iterable_2: AnyIterable[T2], *, fill: T
+) -> AsyncIterator[Tuple[Union[T1, T], Union[T2, T]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+    *,
+    fill: T,
+) -> AsyncIterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+    __iterable_4: AnyIterable[T4],
+    *,
+    fill: T,
+) -> AsyncIterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T], Union[T4, T]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iterable_1: AnyIterable[T1],
+    __iterable_2: AnyIterable[T2],
+    __iterable_3: AnyIterable[T3],
+    __iterable_4: AnyIterable[T4],
+    __iterable_5: AnyIterable[T5],
+    *,
+    fill: T,
+) -> AsyncIterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T], Union[T4, T], Union[T5, T]]]:
+    ...
+
+
+@overload
+def async_zip_longest(
+    __iterable_1: AnyIterable[Any],
+    __iterable_2: AnyIterable[Any],
+    __iterable_3: AnyIterable[Any],
+    __iterable_4: AnyIterable[Any],
+    __iterable_5: AnyIterable[Any],
+    __iterable_6: AnyIterable[Any],
+    *iterables: AnyIterable[Any],
+    fill: T,
+) -> AsyncIterator[Tuple[Union[Any, T], ...]]:
     ...
 
 
 async def async_zip_longest(
-    *iterables: AnyIterable[Any], fillvalue: Optional[T] = None
-) -> AsyncIterator[Tuple[Or[Any, T], ...]]:
+    *iterables: AnyIterable[Any], fill: Optional[T] = None
+) -> AsyncIterator[Tuple[Union[Any, Optional[T]], ...]]:
     if not iterables:
         return
 
@@ -1089,9 +1145,9 @@ async def async_zip_longest(
 
         remain -= 1
 
-        yield fillvalue
+        yield fill
 
-    fillers = async_repeat(fillvalue)
+    fillers = async_repeat(fill)
 
     iterators = [async_chain(iterable, sentinel(), fillers) for iterable in iterables]
 

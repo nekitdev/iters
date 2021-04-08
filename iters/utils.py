@@ -1,3 +1,4 @@
+from builtins import zip as std_zip
 from collections import deque
 from functools import reduce
 from itertools import (
@@ -12,9 +13,9 @@ from itertools import (
     starmap as star_map,
     takewhile as take_while,
     tee as copy,
-    zip_longest,
+    zip_longest as std_zip_longest,
 )
-from operator import add, attrgetter, mul
+from operator import add, attrgetter as get_attr_factory, mul
 from sys import hexversion as hex_version
 from typing import (
     Any,
@@ -32,6 +33,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    no_type_check,
     overload,
 )
 
@@ -82,6 +84,7 @@ __all__ = (
     "take_while",
     "tuple_chunk",
     "with_iter",
+    "zip",
     "zip_longest",
 )
 
@@ -89,6 +92,194 @@ PY_380 = hex_version == 0x30800F0  # 3.8.0
 
 T = TypeVar("T")
 U = TypeVar("U")
+
+T1 = TypeVar("T1")
+T2 = TypeVar("T2")
+T3 = TypeVar("T3")
+T4 = TypeVar("T4")
+T5 = TypeVar("T5")
+
+
+@overload
+def zip(__iterable_1: Iterable[T1]) -> Iterator[Tuple[T1]]:
+    ...
+
+
+@overload
+def zip(__iterable_1: Iterable[T1], __iterable_2: Iterable[T2]) -> Iterator[Tuple[T1, T2]]:
+    ...
+
+
+@overload
+def zip(
+    __iterable_1: Iterable[T1], __iterable_2: Iterable[T2], __iterable_3: Iterable[T3]
+) -> Iterator[Tuple[T1, T2, T3]]:
+    ...
+
+
+@overload
+def zip(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+    __iterable_4: Iterable[T4],
+) -> Iterator[Tuple[T1, T2, T3, T4]]:
+    ...
+
+
+@overload
+def zip(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+    __iterable_4: Iterable[T4],
+    __iterable_5: Iterable[T5],
+) -> Iterator[Tuple[T1, T2, T3, T4, T5]]:
+    ...
+
+
+@overload
+def zip(
+    __iterable_1: Iterable[Any],
+    __iterable_2: Iterable[Any],
+    __iterable_3: Iterable[Any],
+    __iterable_4: Iterable[Any],
+    __iterable_5: Iterable[Any],
+    __iterable_6: Iterable[Any],
+    *iterables: Iterable[Any],
+) -> Iterator[Tuple[Any, ...]]:
+    ...
+
+
+def zip(*iterables: Iterable[Any]) -> Iterator[Tuple[Any, ...]]:
+    return std_zip(*iterables)
+
+
+@overload
+def zip_longest(__iterable_1: Iterable[T1]) -> Iterator[Tuple[Optional[T1]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+) -> Iterator[Tuple[Optional[T1], Optional[T2]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+) -> Iterator[Tuple[Optional[T1], Optional[T2], Optional[T3]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+    __iterable_4: Iterable[T4],
+) -> Iterator[Tuple[Optional[T1], Optional[T2], Optional[T3], Optional[T4]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+    __iterable_4: Iterable[T4],
+    __iterable_5: Iterable[T5],
+) -> Iterator[Tuple[Optional[T1], Optional[T2], Optional[T3], Optional[T4], Optional[T5]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[Any],
+    __iterable_2: Iterable[Any],
+    __iterable_3: Iterable[Any],
+    __iterable_4: Iterable[Any],
+    __iterable_5: Iterable[Any],
+    __iterable_6: Iterable[Any],
+    *iterables: Iterable[Any],
+) -> Iterator[Tuple[Optional[Any], ...]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1], *, fill: T
+) -> Iterator[Tuple[Union[T1, T]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1], __iterable_2: Iterable[T2], *, fill: T
+) -> Iterator[Tuple[Union[T1, T], Union[T2, T]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+    *,
+    fill: T,
+) -> Iterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+    __iterable_4: Iterable[T4],
+    *,
+    fill: T,
+) -> Iterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T], Union[T4, T]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[T1],
+    __iterable_2: Iterable[T2],
+    __iterable_3: Iterable[T3],
+    __iterable_4: Iterable[T4],
+    __iterable_5: Iterable[T5],
+    *,
+    fill: T,
+) -> Iterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T], Union[T4, T], Union[T5, T]]]:
+    ...
+
+
+@overload
+def zip_longest(
+    __iterable_1: Iterable[Any],
+    __iterable_2: Iterable[Any],
+    __iterable_3: Iterable[Any],
+    __iterable_4: Iterable[Any],
+    __iterable_5: Iterable[Any],
+    __iterable_6: Iterable[Any],
+    *iterables: Iterable[Any],
+    fill: T,
+) -> Iterator[Tuple[Union[Any, T], ...]]:
+    ...
+
+
+@no_type_check
+def zip_longest(
+    *iterables: Iterable[Any], fill: Optional[T] = None
+) -> Iterator[Tuple[Union[Any, Optional[T]], ...]]:
+    return std_zip_longest(*iterables, fillvalue=fill)
 
 
 chain_from_iterable = chain.from_iterable
@@ -142,7 +333,7 @@ def get(iterable: Iterable[T], **attrs: U) -> Iterator[T]:
     if len(expected) == 1:
         expected = expected[0]  # type: ignore
 
-    get_attrs = attrgetter(*names)
+    get_attrs = get_attr_factory(*names)
 
     def predicate(item: T) -> bool:
         return get_attrs(item) == expected
@@ -198,16 +389,16 @@ def group_longest(iterable: Iterable[T], n: int) -> Iterator[Tuple[Optional[T], 
 
 
 @overload
-def group_longest(iterable: Iterable[T], n: int, fillvalue: T) -> Iterator[Tuple[T, ...]]:
+def group_longest(iterable: Iterable[T], n: int, fill: T) -> Iterator[Tuple[T, ...]]:
     ...
 
 
 def group_longest(
-    iterable: Iterable[T], n: int, fillvalue: Optional[T] = None
+    iterable: Iterable[T], n: int, fill: Optional[T] = None
 ) -> Iterator[Tuple[Optional[T], ...]]:
     iterators = (iter(iterable),) * n
 
-    return zip_longest(iterators, fillvalue=fillvalue)
+    return zip_longest(*iterators, fill=fill)
 
 
 def flatten(iterable: Iterable[Iterable[T]]) -> Iterator[T]:
