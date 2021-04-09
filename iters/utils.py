@@ -326,12 +326,18 @@ def fold(iterable: Iterable[T], function: Callable[[U, T], U], initial: U) -> U:
     return reduce(function, iterable, initial)
 
 
+DOT = "."
+DUNDER = "__"
+
+
 def get(iterable: Iterable[T], **attrs: U) -> Iterator[T]:
-    names = tuple(attr.replace("__", ".") for attr in attrs.keys())
-    expected = tuple(value for value in attrs.values())
+    names = tuple(attr.replace(DUNDER, DOT) for attr in attrs.keys())
+    expected = tuple(attrs.values())
+
+    # special case for one attribute -> we recieve pure values instead of tuples
 
     if len(expected) == 1:
-        expected = expected[0]  # type: ignore
+        expected = first(expected)  # type: ignore
 
     get_attrs = get_attr_factory(*names)
 
@@ -524,6 +530,7 @@ def collapse(
 
         except TypeError:
             yield cast(T, node)
+
             return
 
         else:

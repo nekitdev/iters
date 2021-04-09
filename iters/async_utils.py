@@ -1,7 +1,7 @@
 import asyncio
 
 from inspect import isawaitable as is_awaitable, iscoroutinefunction as is_coroutine_function
-from operator import add, attrgetter, mul
+from operator import add, attrgetter as get_attr_factory, mul
 from sys import maxsize as max_size
 from typing import (
     Any,
@@ -29,7 +29,7 @@ from typing import (
 from typing_extensions import AsyncContextManager
 
 from iters.types import Marker, MarkerOr, Order, marker
-from iters.utils import last
+from iters.utils import first, last
 
 __all__ = (
     "AnyIterable",
@@ -372,12 +372,7 @@ async def async_iter_len(iterable: AnyIterable[T]) -> int:
 
 
 async def async_dict(iterable: AnyIterable[Tuple[KT, VT]]) -> Dict[KT, VT]:
-    result: Dict[KT, VT] = {}
-
-    async for key, value in async_iter_any_iter(iterable):
-        result[key] = value
-
-    return result
+    return {key: value async for key, value in async_iter_any_iter(iterable)}
 
 
 async def async_list(iterable: AnyIterable[T]) -> List[T]:
@@ -939,14 +934,20 @@ async def async_fold(
     return await async_reduce(function, iterable, initial)
 
 
+DOT = "."
+DUNDER = "__"
+
+
 def async_get(iterable: AnyIterable[T], **attrs: U) -> AsyncIterator[T]:
-    names = tuple(attr.replace("__", ".") for attr in attrs.keys())
-    expected = tuple(value for value in attrs.values())
+    names = tuple(attr.replace(DUNDER, DOT) for attr in attrs.keys())
+    expected = tuple(attrs.values())
+
+    # special case for one attribute -> we recieve pure values instead of tuples
 
     if len(expected) == 1:
-        expected = expected[0]  # type: ignore
+        expected = first(expected)  # type: ignore
 
-    get_attrs = attrgetter(*names)
+    get_attrs = get_attr_factory(*names)
 
     def predicate(item: T) -> bool:
         return get_attrs(item) == expected

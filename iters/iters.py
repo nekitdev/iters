@@ -408,16 +408,8 @@ class Iter(Iterator[T]):
     def last_or(self, default: Optional[T]) -> Optional[T]:
         return last(self._iterator, default)
 
-    @overload  # noqa
-    def flatten(self: "Iter[Iterable[T]]") -> "Iter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def flatten(self: "Iter[Iterator[T]]") -> "Iter[T]":  # noqa
-        ...
-
-    def flatten(self: "Iter[Any]") -> "Iter[T]":  # noqa
-        return self.__class__(flatten(self._iterator))
+    def flatten(self: "Iter[Iterable[T]]") -> "Iter[T]":
+        return self.__class__(flatten(self._iterator))  # type: ignore
 
     def group(self, n: int) -> "Iter[Tuple[T, ...]]":
         return self.__class__(group(self._iterator, n))
@@ -449,16 +441,8 @@ class Iter(Iterator[T]):
     def map(self, function: Callable[[T], U]) -> "Iter[U]":
         return self.__class__(map(function, self._iterator))
 
-    @overload  # noqa
-    def star_map(self: "Iter[Iterable[Any]]", function: Callable[..., T]) -> "Iter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def star_map(self: "Iter[Iterator[Any]]", function: Callable[..., T]) -> "Iter[T]":  # noqa
-        ...
-
-    def star_map(self: "Iter[Any]", function: Callable[..., T]) -> "Iter[T]":  # noqa
-        return self.__class__(star_map(function, self._iterator))
+    def star_map(self: "Iter[Iterable[Any]]", function: Callable[..., T]) -> "Iter[T]":
+        return self.__class__(star_map(function, self._iterator))  # type: ignore
 
     def partition(self, predicate: Callable[[T], Any]) -> "Tuple[Iter[T], Iter[T]]":
         with_true, with_false = partition(self._iterator, predicate)

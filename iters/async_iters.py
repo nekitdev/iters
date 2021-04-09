@@ -266,27 +266,11 @@ class AsyncIter(AsyncIterator[T]):
     def slice(self, *slice_args: int) -> "AsyncIter[T]":
         return self.__class__(async_iter_slice(self._iterator, *slice_args))
 
-    @overload  # noqa
-    def wait(self: "AsyncIter[Awaitable[T]]") -> "AsyncIter[T]":  # noqa
-        ...
+    def wait(self: "AsyncIter[MaybeAwaitable[T]]") -> "AsyncIter[T]":
+        return self.__class__(async_wait(self._iterator))  # type: ignore
 
-    @overload  # noqa
-    def wait(self: "AsyncIter[T]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    def wait(self: "AsyncIter[Any]") -> "AsyncIter[T]":  # noqa
-        return self.__class__(async_wait(self._iterator))
-
-    @overload  # noqa
-    def parallel_wait(self: "AsyncIter[Awaitable[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def parallel_wait(self: "AsyncIter[T]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    def parallel_wait(self: "AsyncIter[Any]") -> "AsyncIter[T]":  # noqa
-        return self.__class__(async_parallel_wait(self._iterator))
+    def parallel_wait(self: "AsyncIter[MaybeAwaitable[T]]") -> "AsyncIter[T]":
+        return self.__class__(async_parallel_wait(self._iterator))  # type: ignore
 
     async def exhaust(self) -> None:
         await async_exhaust(self._iterator)
@@ -507,43 +491,11 @@ class AsyncIter(AsyncIterator[T]):
     async def last_or(self, default: Optional[T]) -> Optional[T]:
         return await async_last(self._iterator, default)
 
-    @overload  # noqa
-    def flatten(self: "AsyncIter[AsyncIterable[T]]") -> "AsyncIter[T]":  # noqa
-        ...
+    def flatten(self: "AsyncIter[AnyIterable[T]]") -> "AsyncIter[T]":
+        return self.__class__(async_flatten(self._iterator))  # type: ignore
 
-    @overload  # noqa
-    def flatten(self: "AsyncIter[AsyncIterator[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def flatten(self: "AsyncIter[Iterable[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def flatten(self: "AsyncIter[Iterator[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    def flatten(self: "AsyncIter[Any]") -> "AsyncIter[T]":  # noqa
-        return self.__class__(async_flatten(self._iterator))
-
-    @overload  # noqa
-    def parallel_flatten(self: "AsyncIter[AsyncIterable[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def parallel_flatten(self: "AsyncIter[AsyncIterator[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def parallel_flatten(self: "AsyncIter[Iterable[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    @overload  # noqa
-    def parallel_flatten(self: "AsyncIter[Iterator[T]]") -> "AsyncIter[T]":  # noqa
-        ...
-
-    def parallel_flatten(self: "AsyncIter[Any]") -> "AsyncIter[T]":  # noqa
-        return self.__class__(async_parallel_flatten(self._iterator))
+    def parallel_flatten(self: "AsyncIter[AnyIterable[T]]") -> "AsyncIter[T]":
+        return self.__class__(async_parallel_flatten(self._iterator))  # type: ignore
 
     def group(self, n: int) -> "AsyncIter[Tuple[T, ...]]":
         return self.__class__(async_group(self._iterator, n))
@@ -574,45 +526,15 @@ class AsyncIter(AsyncIterator[T]):
     async def length(self) -> int:
         return await async_iter_len(self._iterator)
 
-    @overload  # noqa
-    def run_iterators(  # noqa
-        self: "AsyncIter[AsyncIterable[T]]",
+    def run_iterators(
+        self: "AsyncIter[AnyIterable[T]]",
         *ignore_exceptions: Type[BaseException],
         concurrent: bool = True,
     ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def run_iterators(  # noqa
-        self: "AsyncIter[AsyncIterator[T]]",
-        *ignore_exceptions: Type[BaseException],
-        concurrent: bool = True,
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def run_iterators(  # noqa
-        self: "AsyncIter[Iterable[T]]",
-        *ignore_exceptions: Type[BaseException],
-        concurrent: bool = True,
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def run_iterators(  # noqa
-        self: "AsyncIter[Iterator[T]]",
-        *ignore_exceptions: Type[BaseException],
-        concurrent: bool = True,
-    ) -> "AsyncIter[T]":
-        ...
-
-    def run_iterators(  # noqa
-        self: "AsyncIter[Any]",
-        *ignore_exceptions: Type[BaseException],
-        concurrent: bool = True,
-    ) -> "AsyncIter[T]":
-        return self.__class__(
-            run_iterators(self._iterator, *ignore_exceptions, concurrent=concurrent)
+        return self.__class__(  # type: ignore
+            run_iterators(  # type: ignore
+                self._iterator, *ignore_exceptions, concurrent=concurrent
+            )
         )
 
     def map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
@@ -624,104 +546,20 @@ class AsyncIter(AsyncIterator[T]):
     def parallel_map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
         return self.__class__(async_parallel_map(function, self._iterator))
 
-    @overload  # noqa
-    def star_map(  # noqa
-        self: "AsyncIter[AsyncIterable[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
+    def star_map(
+        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., MaybeAwaitable[T]]
     ) -> "AsyncIter[T]":
-        ...
+        return self.__class__(async_star_map(function, self._iterator))  # type: ignore
 
-    @overload  # noqa
-    def star_map(  # noqa
-        self: "AsyncIter[AsyncIterator[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
+    def star_map_nowait(
+        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., T]
     ) -> "AsyncIter[T]":
-        ...
+        return self.__class__(async_star_map_nowait(function, self._iterator))  # type: ignore
 
-    @overload  # noqa
-    def star_map(  # noqa
-        self: "AsyncIter[Iterable[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
+    def parallel_star_map(
+        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., MaybeAwaitable[T]]
     ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def star_map(  # noqa
-        self: "AsyncIter[Iterator[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
-    ) -> "AsyncIter[T]":
-        ...
-
-    def star_map(  # noqa
-        self: "AsyncIter[Any]", function: Callable[..., MaybeAwaitable[T]]
-    ) -> "AsyncIter[T]":
-        return self.__class__(async_star_map(function, self._iterator))
-
-    @overload  # noqa
-    def star_map_nowait(  # noqa
-        self: "AsyncIter[AsyncIterable[Any]]",
-        function: Callable[..., T],
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def star_map_nowait(  # noqa
-        self: "AsyncIter[AsyncIterator[Any]]",
-        function: Callable[..., T],
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def star_map_nowait(  # noqa
-        self: "AsyncIter[Iterable[Any]]",
-        function: Callable[..., T],
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def star_map_nowait(  # noqa
-        self: "AsyncIter[Iterator[Any]]",
-        function: Callable[..., T],
-    ) -> "AsyncIter[T]":
-        ...
-
-    def star_map_nowait(  # noqa
-        self: "AsyncIter[Any]", function: Callable[..., T]
-    ) -> "AsyncIter[T]":
-        return self.__class__(async_star_map_nowait(function, self._iterator))
-
-    @overload  # noqa
-    def parallel_star_map(  # noqa
-        self: "AsyncIter[AsyncIterable[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def parallel_star_map(  # noqa
-        self: "AsyncIter[AsyncIterator[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def parallel_star_map(  # noqa
-        self: "AsyncIter[Iterable[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
-    ) -> "AsyncIter[T]":
-        ...
-
-    @overload  # noqa
-    def parallel_star_map(  # noqa
-        self: "AsyncIter[Iterator[Any]]",
-        function: Callable[..., MaybeAwaitable[T]],
-    ) -> "AsyncIter[T]":
-        ...
-
-    def parallel_star_map(  # noqa
-        self: "AsyncIter[Any]", function: Callable[..., MaybeAwaitable[T]]
-    ) -> "AsyncIter[T]":
-        return self.__class__(async_parallel_star_map(function, self._iterator))
+        return self.__class__(async_parallel_star_map(function, self._iterator))  # type: ignore
 
     def partition(
         self, predicate: Callable[[T], MaybeAwaitable[Any]]
