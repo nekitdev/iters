@@ -4,7 +4,7 @@ __title__ = "iters"
 __author__ = "nekitdev"
 __copyright__ = "Copyright 2020-2021 nekitdev"
 __license__ = "MIT"
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 from iters.async_iters import (
     AsyncIter,

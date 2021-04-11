@@ -37,7 +37,7 @@ from typing import (
     overload,
 )
 
-from iters.types import MarkerOr, marker
+from iters.types import Marker, MarkerOr, marker
 
 __all__ = (
     "append",
@@ -293,7 +293,17 @@ def exhaust(iterator: Iterator[T], amount: Optional[int] = None) -> None:
         exhaust(take(iterator, amount))
 
 
-def first(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
+@overload
+def first(iterable: Iterable[T], default: Marker = marker) -> T:
+    ...
+
+
+@overload
+def first(iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...
+
+
+def first(iterable: Iterable[T], default: MarkerOr[U] = marker) -> Union[T, U]:
     try:
         return next(iter(iterable))
 
@@ -302,6 +312,16 @@ def first(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
             raise ValueError("first() called on an empty iterable.") from error
 
         return cast(T, default)
+
+
+@overload
+def last(iterable: Iterable[T], default: Marker = marker) -> T:
+    ...
+
+
+@overload
+def last(iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...
 
 
 def last(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
@@ -347,7 +367,17 @@ def get(iterable: Iterable[T], **attrs: U) -> Iterator[T]:
     return filter(predicate, iterable)
 
 
-def at(iterable: Iterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+@overload
+def at(iterable: Iterable[T], n: int, default: Marker = marker) -> T:
+    ...
+
+
+@overload
+def at(iterable: Iterable[T], n: int, default: U) -> Union[T, U]:
+    ...
+
+
+def at(iterable: Iterable[T], n: int, default: MarkerOr[U] = marker) -> Union[T, U]:
     try:
         return next(iter_slice(iterable, n, None))
 
@@ -355,10 +385,22 @@ def at(iterable: Iterable[T], n: int, default: MarkerOr[T] = marker) -> T:
         if default is marker:
             raise ValueError("at() called with n larger than iterable length.") from error
 
-        return cast(T, default)
+        return cast(U, default)
 
 
-def at_or_last(iterable: Iterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+@overload
+def at_or_last(iterable: Iterable[T], n: int, default: Marker = marker) -> T:
+    ...
+
+
+@overload
+def at_or_last(iterable: Iterable[T], n: int, default: U) -> Union[T, U]:
+    ...
+
+
+def at_or_last(
+    iterable: Iterable[T], n: int, default: MarkerOr[U] = marker
+) -> Union[T, U]:
     return last(iter_slice(iterable, n + 1), default=default)
 
 

@@ -159,23 +159,23 @@ async def async_parallel_wait(iterable: AnyIterable[MaybeAwaitable[T]]) -> Async
         yield result
 
 
-@overload  # noqa
-def async_iter(iterable: AnyIterable[T]) -> AsyncIterator[T]:  # noqa
+@overload
+def async_iter(iterable: AnyIterable[T]) -> AsyncIterator[T]:
     ...
 
 
-@overload  # noqa
-def async_iter(function: Callable[[], T], sentinel: T) -> AsyncIterator[T]:  # noqa
+@overload
+def async_iter(function: Callable[[], T], sentinel: T) -> AsyncIterator[T]:
     ...
 
 
-@overload  # noqa
-def async_iter(async_function: Callable[[], Awaitable[T]], sentinel: T) -> AsyncIterator[T]:  # noqa
+@overload
+def async_iter(async_function: Callable[[], Awaitable[T]], sentinel: T) -> AsyncIterator[T]:
     ...
 
 
-@no_type_check  # noqa
-def async_iter(  # noqa
+@no_type_check
+def async_iter(
     something: Union[AsyncIterable[T], Iterable[T], Callable[[], T], Callable[[], Awaitable[T]]],
     sentinel: MarkerOr[T] = marker,
 ) -> AsyncIterator[T]:
@@ -310,8 +310,8 @@ async def async_reversed(iterable: AnyIterable[T]) -> AsyncIterator[T]:
         yield element
 
 
-@overload  # noqa
-async def async_reduce(  # noqa
+@overload
+async def async_reduce(
     function: Callable[[T, T], MaybeAwaitable[T]],
     iterable: AnyIterable[T],
     initial: Marker = marker,
@@ -319,8 +319,8 @@ async def async_reduce(  # noqa
     ...
 
 
-@overload  # noqa
-async def async_reduce(  # noqa
+@overload
+async def async_reduce(
     function: Callable[[T, U], MaybeAwaitable[T]],
     iterable: AnyIterable[U],
     initial: T,
@@ -328,7 +328,7 @@ async def async_reduce(  # noqa
     ...
 
 
-async def async_reduce(  # noqa
+async def async_reduce(
     function: Callable[[Any, Any], MaybeAwaitable[Any]],
     iterable: AnyIterable[Any],
     initial: MarkerOr[Any] = marker,
@@ -684,8 +684,9 @@ async def async_zip(*iterables: AnyIterable[Any]) -> AsyncIterator[Tuple[Any, ..
     while True:
         try:
             values: Tuple[Any, ...] = tuple(
-                await asyncio.gather(*(async_next_unchecked(iterator) for iterator in iterators))
+                await asyncio.gather(*map(async_next_unchecked, iterators))
             )
+
             yield values
 
         except StopAsyncIteration:
@@ -740,8 +741,8 @@ async def async_iter_slice(
             break
 
 
-@overload  # noqa
-async def async_max(  # noqa
+@overload
+async def async_max(
     iterable: AnyIterable[OrderT],
     *,
     default: Marker = marker,
@@ -749,8 +750,8 @@ async def async_max(  # noqa
     ...
 
 
-@overload  # noqa
-async def async_max(  # noqa
+@overload
+async def async_max(
     iterable: AnyIterable[T],
     *,
     key: Callable[[T], MaybeAwaitable[OrderT]],
@@ -759,8 +760,8 @@ async def async_max(  # noqa
     ...
 
 
-@overload  # noqa
-async def async_max(  # noqa
+@overload
+async def async_max(
     iterable: AnyIterable[OrderT],
     *,
     default: T,
@@ -768,8 +769,8 @@ async def async_max(  # noqa
     ...
 
 
-@overload  # noqa
-async def async_max(  # noqa
+@overload
+async def async_max(
     iterable: AnyIterable[T],
     *,
     key: Callable[[T], MaybeAwaitable[OrderT]],
@@ -778,7 +779,7 @@ async def async_max(  # noqa
     ...
 
 
-async def async_max(  # noqa
+async def async_max(
     iterable: AnyIterable[Any],
     *,
     key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None,
@@ -814,8 +815,8 @@ async def async_max(  # noqa
     return value
 
 
-@overload  # noqa
-async def async_min(  # noqa
+@overload
+async def async_min(
     iterable: AnyIterable[OrderT],
     *,
     default: Marker = marker,
@@ -823,8 +824,8 @@ async def async_min(  # noqa
     ...
 
 
-@overload  # noqa
-async def async_min(  # noqa
+@overload
+async def async_min(
     iterable: AnyIterable[T],
     *,
     key: Callable[[T], MaybeAwaitable[OrderT]],
@@ -833,8 +834,8 @@ async def async_min(  # noqa
     ...
 
 
-@overload  # noqa
-async def async_min(  # noqa
+@overload
+async def async_min(
     iterable: AnyIterable[OrderT],
     *,
     default: T,
@@ -842,8 +843,8 @@ async def async_min(  # noqa
     ...
 
 
-@overload  # noqa
-async def async_min(  # noqa
+@overload
+async def async_min(
     iterable: AnyIterable[T],
     *,
     key: Callable[[T], MaybeAwaitable[OrderT]],
@@ -852,7 +853,7 @@ async def async_min(  # noqa
     ...
 
 
-async def async_min(  # noqa
+async def async_min(
     iterable: AnyIterable[Any],
     *,
     key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None,
@@ -897,7 +898,19 @@ async def async_exhaust(iterable: AnyIterable[T], amount: Optional[int] = None) 
         await async_exhaust(async_take(iterable, amount))
 
 
-async def async_first(iterable: AnyIterable[T], default: MarkerOr[T] = marker) -> T:
+@overload
+async def async_first(iterable: AnyIterable[T], default: Marker = marker) -> T:
+    ...
+
+
+@overload
+async def async_first(iterable: AnyIterable[T], default: U) -> Union[T, U]:
+    ...
+
+
+async def async_first(
+    iterable: AnyIterable[T], default: MarkerOr[U] = marker
+) -> Union[T, U]:
     try:
         return await async_next_unchecked(async_iter_any_iter(iterable))
 
@@ -905,12 +918,25 @@ async def async_first(iterable: AnyIterable[T], default: MarkerOr[T] = marker) -
         if default is marker:
             raise ValueError("async_first() called on an empty async iterable.") from error
 
-        return cast(T, default)
+        return cast(U, default)
 
 
-async def async_last(iterable: AnyIterable[T], default: MarkerOr[T] = marker) -> T:
+@overload
+async def async_last(iterable: AnyIterable[T], default: Marker = marker) -> T:
+    ...
+
+
+@overload
+async def async_last(iterable: AnyIterable[T], default: U) -> Union[T, U]:
+    ...
+
+
+async def async_last(
+    iterable: AnyIterable[T], default: MarkerOr[U] = marker
+) -> Union[T, U]:
     if isinstance(iterable, AsyncIterable):
         no_iter_sentinel = object()
+
         element: Union[Any, T] = no_iter_sentinel
 
         async for element in iterable:
@@ -955,7 +981,19 @@ def async_get(iterable: AnyIterable[T], **attrs: U) -> AsyncIterator[T]:
     return async_filter(predicate, iterable)
 
 
-async def async_at(iterable: AnyIterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+@overload
+async def async_at(iterable: AnyIterable[T], n: int, default: Marker = marker) -> T:
+    ...
+
+
+@overload
+async def async_at(iterable: AnyIterable[T], n: int, default: U) -> Union[T, U]:
+    ...
+
+
+async def async_at(
+    iterable: AnyIterable[T], n: int, default: MarkerOr[U] = marker
+) -> Union[T, U]:
     try:
         return await async_next_unchecked(async_iter_slice(iterable, n, None))
 
@@ -963,10 +1001,26 @@ async def async_at(iterable: AnyIterable[T], n: int, default: MarkerOr[T] = mark
         if default is marker:
             raise ValueError("async_at() called with n larger than iterable length.") from error
 
-        return cast(T, default)
+        return cast(U, default)
 
 
-async def async_at_or_last(iterable: AnyIterable[T], n: int, default: MarkerOr[T] = marker) -> T:
+@overload
+async def async_at_or_last(
+    iterable: AnyIterable[T], n: int, default: Marker = marker
+) -> T:
+    ...
+
+
+@overload
+async def async_at_or_last(
+    iterable: AnyIterable[T], n: int, default: U
+) -> Union[T, U]:
+    ...
+
+
+async def async_at_or_last(
+    iterable: AnyIterable[T], n: int, default: MarkerOr[U] = marker
+) -> Union[T, U]:
     return await async_last(async_iter_slice(iterable, n + 1), default=default)
 
 
@@ -989,12 +1043,16 @@ def async_group(iterable: AnyIterable[T], n: int) -> AsyncIterator[Tuple[T, ...]
 
 
 @overload
-def async_group_longest(iterable: AnyIterable[T], n: int) -> AsyncIterator[Tuple[Optional[T], ...]]:
+def async_group_longest(
+    iterable: AnyIterable[T], n: int
+) -> AsyncIterator[Tuple[Optional[T], ...]]:
     ...
 
 
 @overload
-def async_group_longest(iterable: AnyIterable[T], n: int, fill: T) -> AsyncIterator[Tuple[T, ...]]:
+def async_group_longest(
+    iterable: AnyIterable[T], n: int, fill: T
+) -> AsyncIterator[Tuple[T, ...]]:
     ...
 
 
