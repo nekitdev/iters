@@ -1,4 +1,5 @@
-from typing import Any, Type, TypeVar, Union, cast
+from threading import Lock
+from typing import Any, Dict, Type, TypeVar, Union, cast
 
 from typing_extensions import Protocol
 
@@ -7,15 +8,20 @@ __all__ = ("Marker", "MarkerOr", "Order", "Singleton", "marker")
 S = TypeVar("S", bound="Singleton")
 T = TypeVar("T")
 
+LOCK = Lock()
+
 
 class Singleton:
-    INSTANCE = None
+    INSTANCES: Dict[Type[Any], Any] = {}
 
     def __new__(cls: Type[S], *args: Any, **kwargs: Any) -> S:
-        if cls.INSTANCE is None:
-            cls.INSTANCE = cast(S, super().__new__(cls))
+        # use double-checked locking optimization
+        if cls not in cls.INSTANCES:  # check
+            with LOCK:  # lock
+                if cls not in cls.INSTANCES:  # check
+                    cls.INSTANCES[cls] = super().__new__(cls)  # instantiate
 
-        return cls.INSTANCE
+        return cast(S, cls.INSTANCES[cls])
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"

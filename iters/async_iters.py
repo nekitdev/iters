@@ -150,6 +150,9 @@ OrderT = TypeVar("OrderT", bound=Order)
 
 
 class AsyncIter(AsyncIterator[T]):
+    # XXX: if Higher-Kinded Types are going to be added,
+    # consider async iterators to be generic over type constructor as well,
+    # for instance: map_nowait(self: AI[T], function: Callable[[T], U]) -> AI[U]
     _iterator: AsyncIterator[T]
 
     @overload

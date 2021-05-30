@@ -103,6 +103,9 @@ std_reversed = reversed
 
 
 class Iter(Iterator[T]):
+    # XXX: if Higher-Kinded Types are going to be added,
+    # consider iterators to be generic over type constructor as well,
+    # for instance: map(self: I[T], function: Callable[[T], U]) -> I[U]
     _iterator: Iterator[T]
 
     @overload
