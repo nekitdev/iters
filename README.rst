@@ -134,38 +134,6 @@ Either way, here is one example of typing usage:
 
         print(key + value)  # perfectly valid!
 
-And another one:
-
-.. code:: python
-
-    from typing import TypeVar
-
-    from iters import iter
-
-    N = TypeVar("N", int, float, complex)  # some number
-
-    Z = 1  # int
-    C = 1  # int
-
-
-    def function(z: N, c: N = C) -> N:
-        return z * z + c
-
-
-    # Z_1 = function(Z), Z_2 = function(Z_1), ...
-    iterator = iter.iterate(function, Z)  # Iter[int]
-
-    # take several results from the beginning
-    numbers = iterator.take(5)  # Iter[int]
-
-    # convert them to strings so they can be joined later
-    strings = numbers.map(str)  # Iter[str]
-
-    # create the string to display
-    display = strings.join(" -> ")  # str
-
-    print(display)
-
 Authors
 -------
 

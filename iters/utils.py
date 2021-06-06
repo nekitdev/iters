@@ -287,7 +287,7 @@ chain_from_iterable = chain.from_iterable
 
 def exhaust(iterator: Iterator[T], amount: Optional[int] = None) -> None:
     if amount is None:
-        deque(iterator, maxlen=0)
+        deque(iterator, 0)
 
     else:
         exhaust(take(iterator, amount))
@@ -333,7 +333,7 @@ def last(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
             return next(reversed(cast(Reversible[T], iterable)))
 
         else:
-            return deque(iterable, maxlen=1)[-1]
+            return deque(iterable, 1)[-1]
 
     except (IndexError, ValueError, StopIteration) as error:
         if default is marker:
@@ -523,7 +523,7 @@ def iter_chunk(iterable: Iterable[T], n: int) -> Iterator[Iterator[T]]:
 def iter_len(iterable: Iterable[T]) -> int:
     counter = count()
 
-    deque(zip(counter, iterable), maxlen=0)
+    deque(zip(iterable, counter), 0)
 
     return next(counter)
 
