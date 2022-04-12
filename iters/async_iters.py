@@ -1,15 +1,21 @@
+from __future__ import annotations
+
 from functools import wraps
 from typing import (
     Any,
+    AnyStr,
+    AsyncContextManager,
     AsyncIterable,
     AsyncIterator,
     Awaitable,
     Callable,
     ContextManager,
+    Counter,
     Dict,
-    Iterable,
+    Hashable,
     Iterator,
     List,
+    Literal,
     Optional,
     Reversible,
     Set,
@@ -17,843 +23,2526 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    overload,
     no_type_check,
+    overload,
 )
-from typing_extensions import AsyncContextManager
+
+from typing_extensions import Never, ParamSpec
 
 from iters.async_utils import (
-    AnyIterable,
-    MaybeAwaitable,
+    async_accumulate_fold,
+    async_accumulate_fold_await,
+    async_accumulate_product,
+    async_accumulate_reduce,
+    async_accumulate_reduce_await,
+    async_accumulate_sum,
     async_all,
+    async_all_equal,
+    async_all_equal_await,
+    async_all_unique,
+    async_all_unique_await,
+    async_all_unique_fast,
+    async_all_unique_fast_await,
     async_any,
     async_append,
     async_at,
     async_at_or_last,
     async_chain,
     async_chain_from_iterable,
+    async_chunks,
     async_collapse,
+    async_combine,
+    async_compare,
+    async_compare_await,
     async_compress,
+    async_consume,
+    async_contains,
+    async_contains_identity,
     async_copy,
-    async_copy_infinite,
-    async_copy_safe,
+    async_copy_unsafe,
     async_count,
+    async_count_dict,
+    async_count_dict_await,
     async_cycle,
     async_dict,
-    async_distinct,
+    async_distribute,
+    async_distribute_unsafe,
+    async_divide,
     async_drop,
     async_drop_while,
+    async_drop_while_await,
+    async_duplicates,
+    async_duplicates_await,
+    async_duplicates_fast,
+    async_duplicates_fast_await,
+    async_empty,
     async_enumerate,
-    async_exhaust,
+    async_extract,
     async_filter,
-    async_filter_nowait,
+    async_filter_await,
+    async_filter_except,
+    async_filter_except_await,
     async_filter_false,
-    async_filter_false_nowait,
+    async_filter_false_await,
+    async_find,
+    async_find_all,
+    async_find_all_await,
+    async_find_await,
+    async_find_or_first,
+    async_find_or_first_await,
+    async_find_or_last,
+    async_find_or_last_await,
     async_first,
+    async_flat_map,
+    async_flat_map_await,
     async_flatten,
     async_fold,
-    async_get,
+    async_fold_await,
+    async_for_each,
+    async_for_each_await,
     async_group,
-    async_group_longest,
-    async_iter as std_async_iter,
-    async_iter_chunk,
-    async_iter_len,
+    async_group_await,
+    async_group_dict,
+    async_group_dict_await,
+    async_group_list,
+    async_group_list_await,
+    async_groups,
+    async_groups_longest,
+    async_has_next,
+    async_interleave,
+    async_interleave_longest,
+    async_intersperse,
+    async_intersperse_with,
+    async_intersperse_with_await,
+    async_is_empty,
+    async_is_sorted,
+    async_is_sorted_await,
+)
+from iters.async_utils import async_iter as async_iter_any_iter
+from iters.async_utils import (
+    async_iter_async_with,
+    async_iter_chunks,
+    async_iter_chunks_unsafe,
+    async_iter_except,
+    async_iter_except_await,
+    async_iter_function,
+    async_iter_function_await,
+    async_iter_length,
     async_iter_slice,
+    async_iter_windows,
+    async_iter_with,
     async_iterate,
+    async_iterate_await,
     async_last,
+    async_last_with_tail,
     async_list,
-    async_list_chunk,
+    async_list_windows,
     async_map,
-    async_map_nowait,
+    async_map_await,
+    async_map_except,
+    async_map_except_await,
     async_max,
+    async_max_await,
     async_min,
+    async_min_await,
+    async_min_max,
+    async_min_max_await,
     async_next,
     async_next_unchecked,
-    async_parallel_filter,
-    async_parallel_filter_false,
-    async_parallel_flatten,
-    async_parallel_map,
-    async_parallel_star_map,
-    async_parallel_wait,
+    async_once,
+    async_once_with,
+    async_once_with_await,
+    async_pad,
+    async_pad_with,
+    async_pad_with_await,
+    async_pairs,
+    async_pairs_longest,
+    async_pairs_windows,
     async_partition,
-    async_partition_infinite,
-    async_partition_safe,
+    async_partition_await,
+    async_partition_unsafe,
+    async_partition_unsafe_await,
+    async_peek,
+    async_position,
+    async_position_all,
+    async_position_all_await,
+    async_position_await,
     async_prepend,
     async_product,
     async_reduce,
+    async_reduce_await,
+    async_remove,
+    async_remove_await,
+    async_remove_duplicates,
+    async_remove_duplicates_await,
     async_repeat,
-    async_reversed as std_async_reversed,
+    async_repeat_each,
+    async_repeat_last,
+    async_repeat_with,
+    async_repeat_with_await,
+    async_reverse,
+    async_reversed,
     async_set,
     async_side_effect,
-    async_star_map,
-    async_star_map_nowait,
+    async_side_effect_await,
+    async_sort,
+    async_sort_await,
+    async_sorted,
+    async_sorted_await,
+    async_spy,
     async_step_by,
     async_sum,
+    async_tail,
     async_take,
     async_take_while,
+    async_take_while_await,
     async_tuple,
-    async_tuple_chunk,
+    async_tuple_windows,
+    async_unique,
+    async_unique_await,
+    async_unique_fast,
+    async_unique_fast_await,
     async_wait,
-    async_with_async_iter,
-    async_with_iter,
     async_zip,
+    async_zip_equal,
     async_zip_longest,
-    maybe_await,
-    reverse_to_async,
-    run_iterators,
+    standard_async_iter,
+    standard_async_next,
 )
-from iters.types import MarkerOr, Order, marker
+from iters.types import Ordering
+from iters.typing import (
+    AnyException,
+    AnyIterable,
+    AnySelectors,
+    AsyncPredicate,
+    Binary,
+    DynamicTuple,
+    EitherLenientOrdered,
+    EitherStrictOrdered,
+    EmptyTuple,
+    Nullary,
+    Predicate,
+    Product,
+    RecursiveAnyIterable,
+    Sum,
+    Tuple1,
+    Tuple2,
+    Tuple3,
+    Tuple4,
+    Tuple5,
+    Tuple6,
+    Tuple7,
+    Tuple8,
+    Unary,
+)
 
 __all__ = (
     # async iterator class
     "AsyncIter",
-    # convenient functions to get an async iterator
+    # convenient function to get async iterators
     "async_iter",
-    "async_reversed",
-    # next functions; checked version works on any iterator, unchecked assumes an async iterator
+    # next functions; checked version works on any iterator, unchecked assumes async iteration
     "async_next",
     "async_next_unchecked",
-    # since we are shadowing standard functions, export them as <std>
-    "std_async_iter",
-    "std_async_reversed",
-    # decorator to wrap return value of the function into an async iterator
-    "return_async_iter",
+    # since we are shadowing standard functions
+    "standard_async_iter",
+    "standard_async_next",
+    # wrap results of function calls into async iterators
+    "async_iter_result",
 )
-
-__all__ = (
-    "AsyncIter",
-    "async_iter",
-    "async_next",
-    "async_next_unchecked",
-    "async_reversed",
-    "return_async_iter",
-    "std_async_iter",
-    "std_async_reversed",
-)
-
-KT = TypeVar("KT")
-VT = TypeVar("VT")
-
-N = TypeVar("N", int, float)
 
 T = TypeVar("T", covariant=True)
-U = TypeVar("U")
+U = TypeVar("U", covariant=True)
+
 V = TypeVar("V")
+W = TypeVar("W")
 
-T1 = TypeVar("T1", covariant=True)
-T2 = TypeVar("T2", covariant=True)
-T3 = TypeVar("T3", covariant=True)
-T4 = TypeVar("T4", covariant=True)
-T5 = TypeVar("T5", covariant=True)
+A = TypeVar("A")
+B = TypeVar("B")
+C = TypeVar("C")
+D = TypeVar("D")
+E = TypeVar("E")
+F = TypeVar("F")
+G = TypeVar("G")
+H = TypeVar("H")
 
-OrderT = TypeVar("OrderT", bound=Order)
+Q = TypeVar("Q", bound=Hashable)
+
+S = TypeVar("S", bound=Sum)
+P = TypeVar("P", bound=Product)
+
+LT = TypeVar("LT", bound=EitherLenientOrdered)
+ST = TypeVar("ST", bound=EitherStrictOrdered)
+
+PS = ParamSpec("PS")
+
+EMPTY_BYTES = bytes()
+EMPTY_STRING = str()
 
 
 class AsyncIter(AsyncIterator[T]):
-    # XXX: if Higher-Kinded Types are going to be added,
-    # consider async iterators to be generic over type constructor as well,
-    # for instance: map_nowait(self: AI[T], function: Callable[[T], U]) -> AI[U]
     _iterator: AsyncIterator[T]
 
-    @overload
-    def __init__(self, iterator: Iterator[T]) -> None:
-        ...
-
-    @overload
-    def __init__(self, iterable: Iterable[T]) -> None:
-        ...
-
-    @overload
-    def __init__(self, async_iterator: AsyncIterator[T]) -> None:
-        ...
-
-    @overload
-    def __init__(self, async_iterable: AsyncIterable[T]) -> None:
-        ...
-
-    @overload
-    def __init__(self, function: Callable[[], T], sentinel: T) -> None:
-        ...
-
-    @overload
-    def __init__(self, async_function: Callable[[], Awaitable[T]], sentinel: T) -> None:
-        ...
-
-    @no_type_check
-    def __init__(
-        self,
-        something: Union[
-            Iterator[T],
-            Iterable[T],
-            AsyncIterator[T],
-            AsyncIterable[T],
-            Callable[[], T],
-            Callable[[], Awaitable[T]],
-        ],
-        sentinel: MarkerOr[T] = marker,
-    ) -> None:
-        self._iterator: AsyncIterator[T] = std_async_iter(something, sentinel)
-
-    def __aiter__(self) -> "AsyncIter[T]":
-        return self
-
-    async def __anext__(self) -> T:
-        return await async_next_unchecked(self._iterator)
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}<T> at 0x{id(self):016x}>"
-
-    def unwrap(self) -> AsyncIterator[T]:
+    @property
+    def iterator(self) -> AsyncIterator[T]:
         return self._iterator
 
-    @classmethod
-    def count(cls, start: N = 0, step: N = 1) -> "AsyncIter[N]":
-        return cls(async_count(start, step))
+    def _replace(self, iterator: AsyncIterator[T]) -> None:
+        self._iterator = iterator
 
     @classmethod
-    def repeat(cls, to_repeat: V, times: Optional[int] = None) -> "AsyncIter[V]":
-        return cls(async_repeat(to_repeat, times))
+    def empty(cls) -> AsyncIter[T]:
+        return cls.convert(async_empty())
 
     @classmethod
-    def reversed(cls, iterable: Reversible[T]) -> "AsyncIter[T]":
-        return cls(reverse_to_async(iterable))
+    def once(cls, value: V) -> AsyncIter[V]:
+        return cls.convert(async_once(value))
 
     @classmethod
-    def with_iter(cls, context_manager: ContextManager[Iterable[T]]) -> "AsyncIter[T]":
-        return cls(async_with_iter(context_manager))
+    def once_with(cls, function: Nullary[V]) -> AsyncIter[V]:
+        return cls.convert(async_once_with(function))
 
     @classmethod
-    def async_with_iter(
-        cls, context_manager: AsyncContextManager[AsyncIterable[T]]
-    ) -> "AsyncIter[T]":
-        return cls(async_with_async_iter(context_manager))
+    def once_with_await(cls, function: Nullary[Awaitable[V]]) -> AsyncIter[V]:
+        return cls.convert(async_once_with_await(function))
 
     @classmethod
-    def iterate(cls, function: Callable[[V], MaybeAwaitable[V]], value: V) -> "AsyncIter[V]":
-        return cls(async_iterate(function, value))
+    def repeat(cls, value: V) -> AsyncIter[V]:
+        return cls.convert(async_repeat(value))
 
-    def iter(self) -> "AsyncIter[T]":
+    @classmethod
+    def repeat_exactly(cls, value: V, count: int) -> AsyncIter[V]:
+        return cls.convert(async_repeat(value, count))
+
+    @classmethod
+    def repeat_with(cls, function: Nullary[V]) -> AsyncIter[V]:
+        return cls.convert(async_repeat_with(function))
+
+    @classmethod
+    def repeat_with_await(cls, function: Nullary[Awaitable[V]]) -> AsyncIter[V]:
+        return cls.convert(async_repeat_with_await(function))
+
+    @classmethod
+    def repeat_exactly_with(cls, function: Nullary[V], count: int) -> AsyncIter[V]:
+        return cls.convert(async_repeat_with(function, count))
+
+    @classmethod
+    def repeat_exactly_with_await(cls, function: Nullary[Awaitable[V]], count: int) -> AsyncIter[V]:
+        return cls.convert(async_repeat_with_await(function, count))
+
+    @classmethod
+    def count_from_by(cls, start: int, step: int) -> AsyncIter[int]:
+        return cls.convert(async_count(start, step))
+
+    @classmethod
+    def count_from(cls, start: int) -> AsyncIter[int]:
+        return cls.count_from_by(start, 1)
+
+    @classmethod
+    def count_by(cls, step: int) -> AsyncIter[int]:
+        return cls.count_from_by(0, step)
+
+    @classmethod
+    def count(cls) -> AsyncIter[int]:
+        return cls.count_from_by(0, 1)
+
+    @classmethod
+    def iterate(cls, function: Unary[V, V], value: V) -> AsyncIter[V]:
+        return cls.convert(async_iterate(function, value))
+
+    @classmethod
+    def iterate_await(cls, function: Unary[V, Awaitable[V]], value: V) -> AsyncIter[V]:
+        return cls.convert(async_iterate_await(function, value))
+
+    @classmethod
+    def iter_except(cls, function: Nullary[T], *errors: Type[AnyException]) -> AsyncIter[T]:
+        return cls.convert(async_iter_except(function, *errors))
+
+    @classmethod
+    def iter_except_await(
+        cls, function: Nullary[Awaitable[T]], *errors: Type[AnyException]
+    ) -> AsyncIter[T]:
+        return cls.convert(async_iter_except_await(function, *errors))
+
+    @classmethod
+    def iter_with(cls, context_manager: ContextManager[AnyIterable[T]]) -> AsyncIter[T]:
+        return cls.convert(async_iter_with(context_manager))
+
+    @classmethod
+    def iter_async_with(
+        cls, async_context_manager: AsyncContextManager[AnyIterable[T]]
+    ) -> AsyncIter[T]:
+        return cls.convert(async_iter_async_with(async_context_manager))
+
+    @classmethod
+    def create_chain(cls, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return cls.convert(async_chain(*iterables))
+
+    @classmethod
+    def create_chain_from_iterable(cls, iterable: AnyIterable[AnyIterable[T]]) -> AsyncIter[T]:
+        return cls.convert(async_chain_from_iterable(iterable))
+
+    @classmethod
+    def create_combine(cls, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return cls.convert(async_combine(*iterables))
+
+    @classmethod
+    def create_interleave(cls, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return cls.convert(async_interleave(*iterables))
+
+    @classmethod
+    def create_interleave_longest(cls, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return cls.convert(async_interleave_longest(*iterables))
+
+    @overload
+    @classmethod
+    def create_zip(cls) -> AsyncIter[T]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]) -> AsyncIter[Tuple[A, B]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
+    ) -> AsyncIter[Tuple[A, B, C]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[A, B, C, D]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[Tuple[A, B, C, D, E]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip(
+        cls,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
+        *iterables: AnyIterable[Any],
+    ) -> AsyncIter[DynamicTuple[Any]]:
+        ...  # pragma: overload
+
+    @no_type_check
+    @classmethod
+    def create_zip(cls, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
+        return cls.convert(async_zip(*iterables))
+
+    @overload
+    @classmethod
+    def create_zip_equal(cls) -> AsyncIter[T]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[A, B]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
+    ) -> AsyncIter[Tuple[A, B, C]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[A, B, C, D]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[Tuple[A, B, C, D, E]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_equal(
+        cls,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
+        *iterables: AnyIterable[Any],
+    ) -> AsyncIter[DynamicTuple[Any]]:
+        ...  # pragma: overload
+
+    @no_type_check
+    @classmethod
+    def create_zip_equal(cls, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
+        return cls.convert(async_zip_equal(*iterables))
+
+    @overload
+    @classmethod
+    def create_zip_longest(cls) -> AsyncIter[T]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[Optional[A], Optional[B]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
+    ) -> AsyncIter[Tuple[Optional[A], Optional[B], Optional[C]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[
+        Tuple[
+            Optional[A],
+            Optional[B],
+            Optional[C],
+            Optional[D],
+            Optional[E],
+            Optional[F],
+            Optional[G],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[
+        Tuple[
+            Optional[A],
+            Optional[B],
+            Optional[C],
+            Optional[D],
+            Optional[E],
+            Optional[F],
+            Optional[G],
+            Optional[H],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest(
+        cls,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
+        *iterables: AnyIterable[Any],
+    ) -> AsyncIter[DynamicTuple[Optional[Any]]]:
+        ...  # pragma: overload
+
+    @no_type_check
+    @classmethod
+    def create_zip_longest(cls, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Optional[Any]]]:
+        return cls.convert(zip_longest(*iterables))
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(cls, *, fill: V) -> AsyncIter[T]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(cls, __iterable_a: AnyIterable[A], *, fill: V) -> AsyncIter[Tuple[A]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], *, fill: V
+    ) -> AsyncIter[Tuple[Union[A, V], Union[B, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        *,
+        fill: V,
+    ) -> AsyncIter[Tuple[Union[A, V], Union[B, V], Union[C, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        *,
+        fill: V,
+    ) -> AsyncIter[Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        *,
+        fill: V,
+    ) -> AsyncIter[Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        *,
+        fill: V,
+    ) -> AsyncIter[Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V], Union[F, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        *,
+        fill: V,
+    ) -> AsyncIter[
+        Tuple[
+            Union[A, V],
+            Union[B, V],
+            Union[C, V],
+            Union[D, V],
+            Union[E, V],
+            Union[F, V],
+            Union[G, V],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+        *,
+        fill: V,
+    ) -> AsyncIter[
+        Tuple[
+            Union[A, V],
+            Union[B, V],
+            Union[C, V],
+            Union[D, V],
+            Union[E, V],
+            Union[F, V],
+            Union[G, V],
+            Union[H, V],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_zip_longest_with(
+        cls,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
+        *iterables: AnyIterable[Any],
+        fill: V,
+    ) -> AsyncIter[DynamicTuple[Union[Any, V]]]:
+        ...  # pragma: overload
+
+    @no_type_check
+    @classmethod
+    def create_zip_longest_with(
+        cls, *iterables: AnyIterable[Any], fill: V
+    ) -> AsyncIter[DynamicTuple[Union[Any, V]]]:
+        return cls.convert(async_zip_longest(*iterables, fill=fill))
+
+    @classmethod
+    def reversed(cls, reversible: Reversible[T]) -> AsyncIter[T]:
+        return cls.convert(async_reversed(reversible))
+
+    @classmethod
+    def function(cls, function: Nullary[T], sentinel: V) -> AsyncIter[T]:
+        return cls.convert(async_iter_function(function, sentinel))
+
+    @classmethod
+    def function_await(cls, function: Nullary[Awaitable[T]], sentinel: V) -> AsyncIter[T]:
+        return cls.convert(async_iter_function_await(function, sentinel))
+
+    @classmethod
+    def convert(cls, iterable: AnyIterable[U]) -> AsyncIter[U]:
+        return cls(iterable)  # type: ignore
+
+    @classmethod
+    def convert_tuple(cls, iterables: DynamicTuple[AnyIterable[U]]) -> DynamicTuple[AsyncIter[U]]:
+        return tuple(map(cls, iterables))  # type: ignore
+
+    @classmethod
+    def convert_nested(cls, nested: AnyIterable[AnyIterable[U]]) -> AsyncIter[AsyncIter[U]]:
+        return cls(map(cls, nested))  # type: ignore
+
+    def __init__(self, iterable: AnyIterable[T]) -> None:
+        self._iterator = async_iter_any_iter(iterable)
+
+    def __aiter__(self) -> AsyncIter[T]:
+        return self.iter()
+
+    async def __anext__(self) -> T:
+        return await self.next()
+
+    def unwrap(self) -> AsyncIterator[T]:
+        return self.iterator
+
+    def iter(self) -> AsyncIter[T]:
         return self
 
     async def next(self) -> T:
-        return await async_next_unchecked(self._iterator)
+        return await async_next_unchecked(self.iterator)
 
-    async def next_or(self, default: U) -> Union[T, U]:
-        return await async_next_unchecked(self._iterator, default)
+    async def next_or(self, default: V) -> Union[T, V]:
+        return await async_next_unchecked(self.iterator, default)
 
-    async def next_or_null(self) -> Optional[T]:
+    async def next_or_none(self) -> Optional[T]:
         return await self.next_or(None)
 
-    async def all(self) -> bool:
-        return await async_all(self._iterator)
+    async def compare(self: AsyncIter[ST], other: AnyIterable[ST]) -> Ordering:
+        return await async_compare(self.iterator, other)
 
-    async def any(self) -> bool:
-        return await async_any(self._iterator)
+    async def compare_by(self, other: AnyIterable[T], key: Unary[T, ST]) -> Ordering:
+        return await async_compare(self.iterator, other, key)
 
-    def append(self: "AsyncIter[V]", item: V) -> "AsyncIter[V]":
-        return self.__class__(async_append(self._iterator, item))
+    async def compare_by_await(
+        self, other: AnyIterable[T], key: Unary[T, Awaitable[ST]]
+    ) -> Ordering:
+        return await async_compare_await(self.iterator, other, key)
 
-    def prepend(self: "AsyncIter[V]", item: V) -> "AsyncIter[V]":
-        return self.__class__(async_prepend(self._iterator, item))
+    async def length(self) -> int:
+        return await async_iter_length(self.iterator)
 
-    def chain(self, *iterables: AnyIterable[T]) -> "AsyncIter[T]":
-        return self.__class__(async_chain(self._iterator, *iterables))
+    async def first(self) -> T:
+        return await async_first(self.iterator)
 
-    def chain_with(self, iterables: AnyIterable[AnyIterable[T]]) -> "AsyncIter[T]":
-        return self.__class__(async_chain(self._iterator, async_chain_from_iterable(iterables)))
+    async def first_or(self, default: V) -> Union[T, V]:
+        return await async_first(self.iterator, default)
 
-    def collapse(
-        self, base_type: Optional[Type[Any]] = None, levels: Optional[int] = None
-    ) -> "AsyncIter[T]":
-        return self.__class__(async_collapse(self._iterator, base_type=base_type, levels=levels))
+    async def first_or_none(self) -> Optional[T]:
+        return await self.first_or(None)
 
-    def reverse(self) -> "AsyncIter[T]":
-        return self.__class__(std_async_reversed(self._iterator))
+    async def last(self) -> T:
+        return await async_last(self.iterator)
 
-    def slice(self, *slice_args: int) -> "AsyncIter[T]":
-        return self.__class__(async_iter_slice(self._iterator, *slice_args))
+    async def last_or(self, default: V) -> Union[T, V]:
+        return await async_last(self.iterator, default)
 
-    def wait(self: "AsyncIter[MaybeAwaitable[V]]") -> "AsyncIter[V]":
-        return self.__class__(async_wait(self._iterator))  # type: ignore
+    async def last_or_none(self) -> Optional[T]:
+        return await self.last_or(None)
 
-    def parallel_wait(self: "AsyncIter[MaybeAwaitable[V]]") -> "AsyncIter[V]":
-        return self.__class__(async_parallel_wait(self._iterator))  # type: ignore
+    async def last_with_tail(self) -> T:
+        return await async_last_with_tail(self.iterator)
 
-    async def exhaust(self) -> None:
-        await async_exhaust(self._iterator)
+    async def last_with_tail_or(self, default: V) -> Union[T, V]:
+        return await async_last_with_tail(self.iterator, default)
 
-    async def for_each(self, function: Callable[[T], MaybeAwaitable[None]]) -> None:
-        await self.map(function).exhaust()
+    async def last_with_tail_or_none(self) -> Optional[T]:
+        return await self.last_with_tail_or(None)
 
-    async def join(self: "AsyncIter[str]", delim: str) -> str:
-        return delim.join(await self.list())
+    def collect(self, function: Unary[AsyncIterable[T], U]) -> U:
+        return function(self.iterator)
 
-    async def collect(
-        self,
-        function: Callable[[AsyncIterator[T]], MaybeAwaitable[AnyIterable[T]]],
-    ) -> AnyIterable[T]:
-        return await maybe_await(function(self._iterator))
-
-    def distinct(self, key: Optional[Callable[[T], U]] = None) -> "AsyncIter[T]":
-        return self.__class__(async_distinct(self._iterator, key))
-
-    unique = distinct
-
-    async def dict(self: "AsyncIter[Tuple[KT, VT]]") -> Dict[KT, VT]:
-        return await async_dict(self._iterator)
+    async def collect_await(self, function: Unary[AsyncIterable[T], Awaitable[U]]) -> U:
+        return await function(self.iterator)
 
     async def list(self) -> List[T]:
-        return await async_list(self._iterator)
+        return await async_list(self.iterator)
 
-    async def set(self) -> Set[T]:
-        return await async_set(self._iterator)
+    async def set(self: AsyncIter[Q]) -> Set[Q]:
+        return await async_set(self.iterator)
 
-    async def tuple(self) -> Tuple[T, ...]:
-        return await async_tuple(self._iterator)
+    async def tuple(self) -> DynamicTuple[T]:
+        return await async_tuple(self.iterator)
 
-    def compress(self, selectors: AnyIterable[U]) -> "AsyncIter[T]":
-        return self.__class__(async_compress(self._iterator, selectors))
+    async def dict(self: AsyncIter[Tuple[Q, V]]) -> Dict[Q, V]:
+        return await async_dict(self.iterator)
 
-    def copy(self) -> "AsyncIter[T]":
-        for_self, to_return = async_copy(self._iterator)
+    async def extract(self) -> Iterator[T]:
+        return await async_extract(self.iterator)
 
-        self._iterator = for_self
+    async def join(self: AsyncIter[AnyStr], string: AnyStr) -> AnyStr:
+        return string.join(await self.list())
 
-        return self.__class__(to_return)
+    async def string(self: AsyncIter[str]) -> str:
+        return await self.join(EMPTY_STRING)
 
-    def copy_infinite(self) -> "AsyncIter[T]":
-        for_self, to_return = async_copy_infinite(self._iterator)
+    async def bytes(self: AsyncIter[bytes]) -> bytes:
+        return await self.join(EMPTY_BYTES)
 
-        self._iterator = for_self
+    async def count_dict(self: AsyncIter[Q]) -> Counter[Q]:
+        return await async_count_dict(self.iterator)
 
-        return self.__class__(to_return)
+    async def count_dict_by(self, key: Unary[T, Q]) -> Counter[Q]:
+        return await async_count_dict(self.iterator, key)
 
-    def copy_safe(self) -> "AsyncIter[T]":
-        for_self, to_return = async_copy_safe(self._iterator)
+    async def count_dict_by_await(self, key: Unary[T, Awaitable[Q]]) -> Counter[Q]:
+        return await async_count_dict_await(self.iterator, key)
 
-        self._iterator = for_self
+    async def group_dict(self: AsyncIter[Q]) -> Dict[Q, List[Q]]:
+        return await async_group_dict(self.iterator)
 
-        return self.__class__(to_return)
+    async def group_dict_by(self, key: Unary[T, Q]) -> Dict[Q, List[T]]:
+        return await async_group_dict(self.iterator, key)
 
-    def cycle(self) -> "AsyncIter[T]":
-        return self.__class__(async_cycle(self._iterator))
+    async def group_dict_by_await(self, key: Unary[T, Awaitable[Q]]) -> Dict[Q, List[T]]:
+        return await async_group_dict_await(self.iterator, key)
 
-    def drop(self, n: int) -> "AsyncIter[T]":
-        return self.__class__(async_drop(self._iterator, n))
+    def group(self) -> AsyncIter[Tuple[T, AsyncIter[T]]]:
+        return self.convert(
+            (group_key, self.convert(group_iterator))
+            async for group_key, group_iterator in async_group(self.iterator)
+        )
+
+    def group_by(self, key: Unary[T, U]) -> AsyncIter[Tuple[U, AsyncIter[T]]]:
+        return self.convert(
+            (group_key, self.convert(group_iterator))
+            async for group_key, group_iterator in async_group(self.iterator, key)
+        )
+
+    def group_by_await(self, key: Unary[T, Awaitable[U]]) -> AsyncIter[Tuple[U, AsyncIter[T]]]:
+        return self.convert(
+            (group_key, self.convert(group_iterator))
+            async for group_key, group_iterator in async_group_await(self.iterator, key)
+        )
+
+    def group_list(self) -> AsyncIter[Tuple[T, List[T]]]:
+        return self.convert(async_group_list(self.iterator))
+
+    def group_list_by(self, key: Unary[T, U]) -> AsyncIter[Tuple[U, List[T]]]:
+        return self.convert(async_group_list(self.iterator, key))
+
+    def group_list_by_await(self, key: Unary[T, Awaitable[U]]) -> AsyncIter[Tuple[U, List[T]]]:
+        return self.convert(async_group_list_await(self.iterator, key))
+
+    async def all(self) -> bool:
+        return await async_all(self.iterator)
+
+    async def all_by(self, predicate: Predicate[T]) -> bool:
+        return await self.map(predicate).all()
+
+    async def all_by_await(self, predicate: AsyncPredicate[T]) -> bool:
+        return await self.map_await(predicate).all()
+
+    async def any(self) -> bool:
+        return await async_any(self.iterator)
+
+    async def any_by(self, predicate: Predicate[T]) -> bool:
+        return await self.map(predicate).any()
+
+    async def any_by_await(self, predicate: AsyncPredicate[T]) -> bool:
+        return await self.map_await(predicate).any()
+
+    async def all_equal(self) -> bool:
+        return await async_all_equal(self.iterator)
+
+    async def all_equal_by(self, key: Unary[T, U]) -> bool:
+        return await async_all_equal(self.iterator, key)
+
+    async def all_equal_by_await(self, key: Unary[T, Awaitable[U]]) -> bool:
+        return await async_all_equal_await(self.iterator, key)
+
+    async def all_unique(self) -> bool:
+        return await async_all_unique(self.iterator)
+
+    async def all_unique_by(self, key: Unary[T, U]) -> bool:
+        return await async_all_unique(self.iterator, key)
+
+    async def all_unique_by_await(self, key: Unary[T, Awaitable[U]]) -> bool:
+        return await async_all_unique_await(self.iterator, key)
+
+    async def all_unique_fast(self: AsyncIter[Q]) -> bool:
+        return await async_all_unique_fast(self.iterator)
+
+    async def all_unique_fast_by(self, key: Unary[T, Q]) -> bool:
+        return await async_all_unique_fast(self.iterator, key)
+
+    async def all_unique_fast_by_await(self, key: Unary[T, Awaitable[Q]]) -> bool:
+        return await async_all_unique_fast_await(self.iterator, key)
+
+    def remove(self, predicate: Predicate[T]) -> AsyncIter[T]:
+        return self.convert(async_remove(predicate, self.iterator))
+
+    def remove_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
+        return self.convert(async_remove_await(predicate, self.iterator))
+
+    def remove_duplicates(self) -> AsyncIter[T]:
+        return self.convert(async_remove_duplicates(self.iterator))
+
+    def remove_duplicates_by(self, key: Unary[T, U]) -> AsyncIter[T]:
+        return self.convert(async_remove_duplicates(self.iterator, key))
+
+    def remove_duplicates_by_await(self, key: Unary[T, Awaitable[U]]) -> AsyncIter[T]:
+        return self.convert(async_remove_duplicates_await(self.iterator, key))
+
+    def filter(self, predicate: Predicate[T]) -> AsyncIter[T]:
+        return self.convert(async_filter(predicate, self.iterator))
+
+    def filter_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
+        return self.convert(async_filter_await(predicate, self.iterator))
+
+    def filter_false(self, predicate: Predicate[T]) -> AsyncIter[T]:
+        return self.convert(async_filter_false(predicate, self.iterator))
+
+    def filter_false_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
+        return self.convert(async_filter_false_await(predicate, self.iterator))
+
+    def filter_except(self, validate: Unary[T, Any], *errors: Type[AnyException]) -> AsyncIter[T]:
+        return self.convert(async_filter_except(validate, self.iterator, *errors))
+
+    def filter_except_await(
+        self, validate: Unary[T, Awaitable[Any]], *errors: Type[AnyException]
+    ) -> AsyncIter[T]:
+        return self.convert(async_filter_except_await(validate, self.iterator, *errors))
+
+    def compress(self, selectors: AnySelectors) -> AsyncIter[T]:
+        return self.convert(async_compress(self.iterator, selectors))
+
+    def position_all(self, predicate: Predicate[T]) -> AsyncIter[int]:
+        return self.convert(async_position_all(predicate, self.iterator))
+
+    def position_all_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[int]:
+        return self.convert(async_position_all_await(predicate, self.iterator))
+
+    async def position(self, predicate: Predicate[T]) -> int:
+        return await async_position(predicate, self.iterator)
+
+    async def position_or(self, predicate: Predicate[T], default: V) -> Union[int, V]:
+        return await async_position(predicate, self.iterator, default)
+
+    async def position_or_none(self, predicate: Predicate[T]) -> Optional[int]:
+        return await self.position_or(predicate, None)
+
+    async def position_await(self, predicate: AsyncPredicate[T]) -> int:
+        return await async_position_await(predicate, self.iterator)
+
+    async def position_await_or(self, predicate: AsyncPredicate[T], default: V) -> Union[int, V]:
+        return await async_position_await(predicate, self.iterator, default)
+
+    async def position_await_or_none(self, predicate: AsyncPredicate[T]) -> Optional[int]:
+        return await self.position_await_or(predicate, None)
+
+    def find_all(self, predicate: Predicate[T]) -> AsyncIter[T]:
+        return self.convert(async_find_all(predicate, self.iterator))
+
+    def find_all_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
+        return self.convert(async_find_all_await(predicate, self.iterator))
+
+    async def find(self, predicate: Predicate[T]) -> T:
+        return await async_find(predicate, self.iterator)
+
+    async def find_or(self, predicate: Predicate[T], default: V) -> Union[T, V]:
+        return await async_find(predicate, self.iterator, default)  # type: ignore  # strange
+
+    async def find_or_none(self, predicate: Predicate[T]) -> Optional[T]:
+        return await self.find_or(predicate, None)
+
+    async def find_await(self, predicate: AsyncPredicate[T]) -> T:
+        return await async_find_await(predicate, self.iterator)
+
+    async def find_await_or(self, predicate: AsyncPredicate[T], default: V) -> Union[T, V]:
+        return await async_find_await(predicate, self.iterator, default)  # type: ignore  # strange
+
+    async def find_await_or_none(self, predicate: AsyncPredicate[T]) -> Optional[T]:
+        return await self.find_await_or(predicate, None)
+
+    async def find_or_first(self, predicate: Predicate[T]) -> T:
+        return await async_find_or_first(predicate, self.iterator)
+
+    async def find_or_first_or(self, predicate: Predicate[T], default: V) -> Union[T, V]:
+        return await async_find_or_first(predicate, self.iterator, default)  # type: ignore  # strange
+
+    async def find_or_first_or_none(self, predicate: Predicate[T]) -> Optional[T]:
+        return await self.find_or_first_or(predicate, None)
+
+    async def find_or_first_await(self, predicate: AsyncPredicate[T]) -> T:
+        return await async_find_or_first_await(predicate, self.iterator)
+
+    async def find_or_first_await_or(self, predicate: AsyncPredicate[T], default: V) -> Union[T, V]:
+        return await async_find_or_first_await(predicate, self.iterator, default)  # type: ignore  # strange
+
+    async def find_or_first_await_or_none(self, predicate: AsyncPredicate[T]) -> Optional[T]:
+        return await self.find_or_first_await_or(predicate, None)
+
+    async def find_or_last(self, predicate: Predicate[T]) -> T:
+        return await async_find_or_last(predicate, self.iterator)
+
+    async def find_or_last_or(self, predicate: Predicate[T], default: V) -> Union[T, V]:
+        return await async_find_or_last(predicate, self.iterator, default)  # type: ignore  # strange
+
+    async def find_or_last_or_none(self, predicate: Predicate[T]) -> Optional[T]:
+        return await self.find_or_last_or(predicate, None)
+
+    async def find_or_last_await(self, predicate: AsyncPredicate[T]) -> T:
+        return await async_find_or_last_await(predicate, self.iterator)
+
+    async def find_or_last_await_or(self, predicate: AsyncPredicate[T], default: V) -> Union[T, V]:
+        return await async_find_or_last_await(predicate, self.iterator, default)  # type: ignore  # strange
+
+    async def find_or_last_await_or_none(self, predicate: AsyncPredicate[T]) -> Optional[T]:
+        return await self.find_or_last_await_or(predicate, None)
+
+    async def contains(self, item: V) -> bool:
+        return await async_contains(item, self.iterator)
+
+    async def contains_identity(self: AsyncIter[V], item: V) -> bool:
+        return await async_contains_identity(item, self.iterator)
+
+    async def reduce(self, function: Binary[T, T, T]) -> T:
+        return await async_reduce(function, self.iterator)
+
+    async def reduce_await(self, function: Binary[T, T, Awaitable[T]]) -> T:
+        return await async_reduce_await(function, self.iterator)
+
+    async def fold(self, initial: V, function: Binary[V, T, V]) -> V:
+        return await async_fold(initial, function, self.iterator)
+
+    async def fold_await(self, initial: V, function: Binary[V, T, Awaitable[V]]) -> V:
+        return await async_fold_await(initial, function, self.iterator)
+
+    async def sum(self: AsyncIter[S]) -> S:
+        return await async_sum(self.iterator)
+
+    async def sum_with(self: AsyncIter[S], initial: S) -> S:
+        return await async_sum(self.iterator, initial)
+
+    async def product(self: AsyncIter[P]) -> P:
+        return await async_product(self.iterator)
+
+    async def product_with(self: AsyncIter[P], initial: P) -> P:
+        return await async_product(self.iterator, initial)
+
+    def accumulate_reduce(self, function: Binary[T, T, T]) -> AsyncIter[T]:
+        return self.convert(async_accumulate_reduce(function, self.iterator))
+
+    def accumulate_reduce_await(self, function: Binary[T, T, Awaitable[T]]) -> AsyncIter[T]:
+        return self.convert(async_accumulate_reduce_await(function, self.iterator))
+
+    def accumulate_fold(self, initial: V, function: Binary[V, T, V]) -> AsyncIter[V]:
+        return self.convert(async_accumulate_fold(initial, function, self.iterator))
+
+    def accumulate_fold_await(
+        self, initial: V, function: Binary[V, T, Awaitable[V]]
+    ) -> AsyncIter[V]:
+        return self.convert(async_accumulate_fold_await(initial, function, self.iterator))
+
+    def accumulate_sum(self: AsyncIter[S]) -> AsyncIter[S]:
+        return self.convert(async_accumulate_sum(self.iterator))
+
+    def accumulate_sum_with(self: AsyncIter[S], initial: S) -> AsyncIter[S]:
+        return self.convert(async_accumulate_sum(self.iterator, initial))
+
+    def accumulate_product(self: AsyncIter[P]) -> AsyncIter[P]:
+        return self.convert(async_accumulate_product(self.iterator))
+
+    def accumulate_product_with(self: AsyncIter[P], initial: P) -> AsyncIter[P]:
+        return self.convert(async_accumulate_product(self.iterator, initial))
+
+    async def min(self: AsyncIter[ST]) -> ST:
+        return await async_min(self.iterator)
+
+    async def min_or(self: AsyncIter[ST], default: V) -> Union[ST, V]:
+        return await async_min(self.iterator, default=default)
+
+    async def min_or_none(self: AsyncIter[ST]) -> Optional[ST]:
+        return await self.min_or(None)
+
+    async def min_by(self, key: Unary[T, ST]) -> T:
+        return await async_min(self.iterator, key=key)
+
+    async def min_by_or(self, key: Unary[T, ST], default: V) -> Union[T, V]:
+        return await async_min(self.iterator, key=key, default=default)  # type: ignore  # strange
+
+    async def min_by_or_none(self, key: Unary[T, ST]) -> Optional[T]:
+        return await self.min_by_or(key, None)
+
+    async def min_by_await(self, key: Unary[T, Awaitable[ST]]) -> T:
+        return await async_min_await(self.iterator, key=key)
+
+    async def min_by_await_or(self, key: Unary[T, Awaitable[ST]], default: V) -> Union[T, V]:
+        return await async_min_await(self.iterator, key=key, default=default)  # type: ignore  # strange
+
+    async def min_by_await_or_none(self, key: Unary[T, Awaitable[ST]]) -> Optional[T]:
+        return await self.min_by_await_or(key, None)
+
+    async def max(self: AsyncIter[ST]) -> ST:
+        return await async_max(self.iterator)
+
+    async def max_or(self: AsyncIter[ST], default: V) -> Union[ST, V]:
+        return await async_max(self.iterator, default=default)
+
+    async def max_or_none(self: AsyncIter[ST]) -> Optional[ST]:
+        return await self.max_or(None)
+
+    async def max_by(self, key: Unary[T, ST]) -> T:
+        return await async_max(self.iterator, key=key)
+
+    async def max_by_or(self, key: Unary[T, ST], default: V) -> Union[T, V]:
+        return await async_max(self.iterator, key=key, default=default)  # type: ignore  # strange
+
+    async def max_by_or_none(self, key: Unary[T, ST]) -> Optional[T]:
+        return await self.max_by_or(key, None)
+
+    async def max_by_await(self, key: Unary[T, Awaitable[ST]]) -> T:
+        return await async_max_await(self.iterator, key=key)
+
+    async def max_by_await_or(self, key: Unary[T, Awaitable[ST]], default: V) -> Union[T, V]:
+        return await async_max_await(self.iterator, key=key, default=default)  # type: ignore  # strange
+
+    async def max_by_await_or_none(self, key: Unary[T, Awaitable[ST]]) -> Optional[T]:
+        return await self.max_by_await_or(key, None)
+
+    async def min_max(self: AsyncIter[ST]) -> Tuple[ST, ST]:
+        return await async_min_max(self.iterator)
+
+    async def min_max_or(
+        self: AsyncIter[ST], default: Tuple[V, W]
+    ) -> Union[Tuple[ST, ST], Tuple[V, W]]:
+        return await async_min_max(self.iterator, default=default)
+
+    async def min_max_by(self, key: Unary[T, ST]) -> Tuple[T, T]:
+        return await async_min_max(self.iterator, key=key)
+
+    async def min_max_by_or(
+        self, key: Unary[T, ST], default: Tuple[V, W]
+    ) -> Tuple[Union[T, V], Union[T, W]]:
+        return await async_min_max(self.iterator, key=key, default=default)
+
+    async def min_max_by_await(self, key: Unary[T, Awaitable[ST]]) -> Tuple[T, T]:
+        return await async_min_max_await(self.iterator, key=key)
+
+    async def min_max_by_await_or(
+        self, key: Unary[T, Awaitable[ST]], default: Tuple[V, W]
+    ) -> Tuple[Union[T, V], Union[T, W]]:
+        return await async_min_max_await(self.iterator, key=key, default=default)
+
+    def map(self, function: Unary[T, U]) -> AsyncIter[U]:
+        return self.convert(async_map(function, self.iterator))
+
+    def map_await(self, function: Unary[T, Awaitable[U]]) -> AsyncIter[U]:
+        return self.convert(async_map_await(function, self.iterator))
+
+    def map_except(self, function: Unary[T, U], *errors: Type[AnyException]) -> AsyncIter[U]:
+        return self.convert(async_map_except(function, self.iterator, *errors))
+
+    def map_except_await(
+        self, function: Unary[T, Awaitable[U]], *errors: Type[AnyException]
+    ) -> AsyncIter[U]:
+        return self.convert(async_map_except_await(function, self.iterator, *errors))
+
+    def flat_map(self, function: Unary[T, AnyIterable[U]]) -> AsyncIter[U]:
+        return self.convert(async_flat_map(function, self.iterator))
+
+    def flat_map_await(self, function: Unary[T, Awaitable[AnyIterable[U]]]) -> AsyncIter[U]:
+        return self.convert(async_flat_map_await(function, self.iterator))
+
+    def flatten(self: AsyncIter[AnyIterable[U]]) -> AsyncIter[U]:
+        return self.convert(async_flatten(self.iterator))
+
+    def collapse(self: AsyncIter[RecursiveAnyIterable[U]]) -> AsyncIter[U]:
+        return self.convert(async_collapse(self.iterator))
+
+    def enumerate(self) -> AsyncIter[Tuple[int, T]]:
+        return self.convert(async_enumerate(self.iterator))
+
+    def enumerate_from(self, start: int) -> AsyncIter[Tuple[int, T]]:
+        return self.convert(async_enumerate(self.iterator, start))
+
+    async def consume(self) -> None:
+        await async_consume(self.iterator)
+
+    async def for_each(self, function: Unary[T, Any]) -> None:
+        await async_for_each(function, self.iterator)
+
+    async def for_each_await(self, function: Unary[T, Awaitable[Any]]) -> None:
+        await async_for_each_await(function, self.iterator)
+
+    def append(self: AsyncIter[V], item: V) -> AsyncIter[V]:
+        return self.convert(async_append(item, self.iterator))
+
+    def prepend(self: AsyncIter[V], item: V) -> AsyncIter[V]:
+        return self.convert(async_prepend(item, self.iterator))
+
+    async def at(self, index: int) -> T:
+        return await async_at(index, self.iterator)
+
+    async def at_or(self, index: int, default: V) -> Union[T, V]:
+        return await async_at(index, self.iterator, default)
+
+    async def at_or_none(self, index: int) -> Optional[T]:
+        return await self.at_or(index, None)
+
+    async def at_or_last(self, index: int) -> T:
+        return await async_at_or_last(index, self.iterator)
+
+    async def at_or_last_or(self, index: int, default: V) -> Union[T, V]:
+        return await async_at_or_last(index, self.iterator, default)
+
+    async def at_or_last_or_none(self, index: int) -> Optional[T]:
+        return await self.at_or_last_or(index, None)
+
+    @overload
+    def slice(self, __stop: Optional[int]) -> AsyncIter[T]:
+        ...  # pragma: overload
+
+    @overload
+    def slice(
+        self, __start: Optional[int], __stop: Optional[int], __step: Optional[int] = ...
+    ) -> AsyncIter[T]:
+        ...  # pragma: overload
+
+    def slice(self, *slice_args: Optional[int]) -> AsyncIter[T]:
+        return self.convert(async_iter_slice(self.iterator, *slice_args))
+
+    def drop(self, size: int) -> AsyncIter[T]:
+        return self.convert(async_drop(size, self.iterator))
 
     skip = drop
 
-    def drop_while(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
-        return self.__class__(async_drop_while(predicate, self._iterator))
+    def drop_while(self, predicate: Predicate[T]) -> AsyncIter[T]:
+        return self.convert(async_drop_while(predicate, self.iterator))
 
     skip_while = drop_while
 
-    def take(self, n: int) -> "AsyncIter[T]":
-        return self.__class__(async_take(self._iterator, n))
+    def drop_while_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
+        return self.convert(async_drop_while_await(predicate, self.iterator))
 
-    def take_while(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
-        return self.__class__(async_take_while(predicate, self._iterator))
+    skip_while_await = drop_while_await
 
-    def step_by(self, step: int) -> "AsyncIter[T]":
-        return self.__class__(async_step_by(self._iterator, step))
+    def take(self, size: int) -> AsyncIter[T]:
+        return self.convert(async_take(size, self.iterator))
 
-    def enumerate(self, start: int = 0) -> "AsyncIter[Tuple[int, T]]":
-        return self.__class__(async_enumerate(self._iterator, start))
+    def take_while(self, predicate: Predicate[T]) -> AsyncIter[T]:
+        return self.convert(async_take_while(predicate, self.iterator))
 
-    def filter(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
-        return self.__class__(async_filter(predicate, self._iterator))
+    def take_while_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
+        return self.convert(async_take_while_await(predicate, self.iterator))
 
-    def filter_nowait(self, predicate: Callable[[T], Any]) -> "AsyncIter[T]":
-        return self.__class__(async_filter_nowait(predicate, self._iterator))
+    def step_by(self, step: int) -> AsyncIter[T]:
+        return self.convert(async_step_by(step, self.iterator))
 
-    def parallel_filter(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
-        return self.__class__(async_parallel_filter(predicate, self._iterator))
+    def tail(self, size: int) -> AsyncIter[T]:
+        return self.convert(async_tail(size, self.iterator))
 
-    def filter_false(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
-        return self.__class__(async_filter_false(predicate, self._iterator))
+    def chain(self, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return self.convert(async_chain(self.iterator, *iterables))
 
-    def filter_false_nowait(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
-        return self.__class__(async_filter_false_nowait(predicate, self._iterator))
+    def chain_with(self, iterables: AnyIterable[AnyIterable[T]]) -> AsyncIter[T]:
+        return self.chain(async_chain_from_iterable(iterables))
 
-    def parallel_filter_false(
-        self, predicate: Callable[[T], MaybeAwaitable[Any]]
-    ) -> "AsyncIter[T]":
-        return self.__class__(async_parallel_filter_false(predicate, self._iterator))
+    def cycle(self) -> AsyncIter[T]:
+        return self.convert(async_cycle(self.iterator))
 
-    def find_all(self, predicate: Callable[[T], MaybeAwaitable[Any]]) -> "AsyncIter[T]":
-        return self.filter(predicate)
+    def intersperse(self: AsyncIter[V], value: V) -> AsyncIter[V]:
+        return self.convert(async_intersperse(value, self.iterator))
 
-    async def find(self, predicate: Callable[[T], Any]) -> T:
-        return await self.find_all(predicate).next()
+    def intersperse_with(self, function: Nullary[T]) -> AsyncIter[T]:
+        return self.convert(async_intersperse_with(function, self.iterator))
 
-    async def find_or(self, predicate: Callable[[T], Any], default: U) -> Union[T, U]:
-        return await self.find_all(predicate).next_or(default)
+    def intersperse_with_await(self, function: Nullary[Awaitable[T]]) -> AsyncIter[T]:
+        return self.convert(async_intersperse_with_await(function, self.iterator))
 
-    async def find_or_null(self, predicate: Callable[[T], Any]) -> Optional[T]:
-        return await self.find_all(predicate).next_or_null()
+    def interleave(self, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return self.convert(async_interleave(self.iterator, *iterables))
 
-    async def first(self) -> T:
-        return await async_first(self._iterator)
+    def interleave_longest(self, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return self.convert(async_interleave_longest(self.iterator, *iterables))
 
-    async def first_or(self, default: U) -> Union[T, U]:
-        return await async_first(self._iterator, default)
-
-    async def first_or_null(self) -> Optional[T]:
-        return await self.first_or(None)
-
-    async def fold(self, function: Callable[[U, Union[T, U]], MaybeAwaitable[U]], initial: U) -> U:
-        return await async_fold(self._iterator, function, initial)
-
-    async def reduce(self, function: Callable[[T, T], MaybeAwaitable[T]]) -> T:
-        return await async_reduce(function, self._iterator)
+    def combine(self, *iterables: AnyIterable[T]) -> AsyncIter[T]:
+        return self.convert(async_combine(*iterables))
 
     @overload
-    async def max(self: "AsyncIter[OrderT]") -> OrderT:
-        ...
+    def distribute_unsafe(self, count: Literal[0]) -> EmptyTuple:
+        ...  # pragma: overload
 
     @overload
-    async def max(self: "AsyncIter[T]", *, key: Callable[[T], MaybeAwaitable[OrderT]]) -> T:
-        ...
-
-    async def max(
-        self, *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
-    ) -> Any:
-        if key is None:
-            return await async_max(self._iterator)
-
-        return await async_max(self._iterator, key=key)
+    def distribute_unsafe(self, count: Literal[1]) -> Tuple1[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def min(self: "AsyncIter[OrderT]") -> OrderT:
-        ...
+    def distribute_unsafe(self, count: Literal[2]) -> Tuple2[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def min(self: "AsyncIter[T]", *, key: Callable[[T], MaybeAwaitable[OrderT]]) -> T:
-        ...
-
-    async def min(
-        self, *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
-    ) -> Any:
-        if key is None:
-            return await async_min(self._iterator)
-
-        return await async_min(self._iterator, key=key)
+    def distribute_unsafe(self, count: Literal[3]) -> Tuple3[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def max_or(
-        self: "AsyncIter[OrderT]", default: U
-    ) -> Union[OrderT, U]:
-        ...
+    def distribute_unsafe(self, count: Literal[4]) -> Tuple4[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def max_or(
-        self: "AsyncIter[T]",
-        default: U,
-        *,
-        key: Callable[[T], MaybeAwaitable[OrderT]],
-    ) -> Union[T, U]:
-        ...
-
-    async def max_or(
-        self: "AsyncIter[Any]",
-        default: Any,
-        *,
-        key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None,
-    ) -> Any:
-        if key is None:
-            return await async_max(self._iterator, default=default)
-
-        return await async_max(self._iterator, key=key, default=default)
+    def distribute_unsafe(self, count: Literal[5]) -> Tuple5[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def max_or_null(self: "AsyncIter[OrderT]") -> Optional[OrderT]:
-        ...
+    def distribute_unsafe(self, count: Literal[6]) -> Tuple6[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def max_or_null(
-        self: "AsyncIter[T]", *, key: Callable[[T], MaybeAwaitable[OrderT]]
-    ) -> Optional[T]:
-        ...
-
-    async def max_or_null(
-        self: "AsyncIter[Any]", *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
-    ) -> Optional[Any]:
-        if key is None:
-            return await self.max_or(None)
-
-        return await self.max_or(None, key=key)
+    def distribute_unsafe(self, count: Literal[7]) -> Tuple7[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def min_or(self: "AsyncIter[OrderT]", default: U) -> Union[OrderT, U]:
-        ...
+    def distribute_unsafe(self, count: Literal[8]) -> Tuple8[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    async def min_or(
-        self: "AsyncIter[T]",
-        default: U,
-        *,
-        key: Callable[[T], MaybeAwaitable[OrderT]],
-    ) -> Union[T, U]:
-        ...
+    def distribute_unsafe(self, count: int) -> DynamicTuple[AsyncIter[T]]:
+        ...  # pragma: overload
 
-    async def min_or(
-        self: "AsyncIter[Any]",
-        default: Any,
-        *,
-        key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None,
-    ) -> Any:
-        if key is None:
-            return await async_min(self._iterator, default=default)
+    def distribute_unsafe(self, count: int) -> DynamicTuple[AsyncIter[T]]:
+        return self.convert_tuple(async_distribute_unsafe(count, self.iterator))
 
-        return await async_min(self._iterator, key=key, default=default)
+    distribute_infinite = distribute_unsafe
 
     @overload
-    async def min_or_null(self: "AsyncIter[OrderT]") -> Optional[OrderT]:
-        ...
+    def distribute(self, count: Literal[0]) -> EmptyTuple:
+        ...  # pragma: overload
 
     @overload
-    async def min_or_null(
-        self: "AsyncIter[T]", *, key: Callable[[T], MaybeAwaitable[OrderT]]
-    ) -> Optional[T]:
-        ...
-
-    async def min_or_null(
-        self: "AsyncIter[Any]", *, key: Optional[Callable[[Any], MaybeAwaitable[Any]]] = None
-    ) -> Optional[Any]:
-        if key is None:
-            return await self.min_or(None)
-
-        return await self.min_or(None, key=key)
-
-    async def sum(self, start: MarkerOr[T] = marker) -> T:
-        return await async_sum(self._iterator, start)
-
-    async def product(self, start: MarkerOr[T] = marker) -> T:
-        return await async_product(self._iterator, start)
-
-    def get_all(self, **attrs: Any) -> "AsyncIter[T]":
-        return self.__class__(async_get(self._iterator, **attrs))
-
-    async def get(self, **attrs: Any) -> T:
-        return await self.get_all(**attrs).next()
-
-    async def get_or(self, *, default: U, **attrs: Any) -> Union[T, U]:
-        return await self.get_all(**attrs).next_or(default)
-
-    async def get_or_null(self, **attrs: Any) -> Optional[T]:
-        return await self.get_all(**attrs).next_or_null()
-
-    async def last(self) -> T:
-        return await async_last(self._iterator)
-
-    async def last_or(self, default: U) -> Union[T, U]:
-        return await async_last(self._iterator, default)
-
-    async def last_or_null(self) -> Optional[T]:
-        return await self.last_or(None)
-
-    def flatten(self: "AsyncIter[AnyIterable[V]]") -> "AsyncIter[V]":
-        return self.__class__(async_flatten(self._iterator))  # type: ignore
-
-    def parallel_flatten(self: "AsyncIter[AnyIterable[V]]") -> "AsyncIter[V]":
-        return self.__class__(async_parallel_flatten(self._iterator))  # type: ignore
-
-    def group(self, n: int) -> "AsyncIter[Tuple[T, ...]]":
-        return self.__class__(async_group(self._iterator, n))
-
-    def group_longest(
-        self, n: int, fill: Optional[T] = None
-    ) -> "AsyncIter[Tuple[Optional[T], ...]]":
-        return self.__class__(async_group_longest(self._iterator, n, fill))
-
-    def iter_chunk(self, n: int) -> "AsyncIter[AsyncIter[T]]":
-        return self.__class__(async_map(self.__class__, async_iter_chunk(self._iterator, n)))
-
-    def list_chunk(self, n: int) -> "AsyncIter[List[T]]":
-        return self.__class__(async_list_chunk(self._iterator, n))
-
-    def tuple_chunk(self, n: int) -> "AsyncIter[Tuple[T, ...]]":
-        return self.__class__(async_tuple_chunk(self._iterator, n))
-
-    async def at(self, n: int) -> T:
-        return await async_at(self._iterator, n)
-
-    async def at_or(self, n: int, default: U) -> Union[T, U]:
-        return await async_at(self._iterator, n, default)
-
-    async def at_or_null(self, n: int) -> Optional[T]:
-        return await self.at_or(n, None)
-
-    async def at_or_last(self, n: int) -> T:
-        return await async_at_or_last(self._iterator, n)
-
-    async def length(self) -> int:
-        return await async_iter_len(self._iterator)
-
-    def run_iterators(
-        self: "AsyncIter[AnyIterable[V]]",
-        *ignore_exceptions: Type[BaseException],
-        concurrent: bool = True,
-    ) -> "AsyncIter[V]":
-        return self.__class__(  # type: ignore
-            run_iterators(
-                self._iterator, *ignore_exceptions, concurrent=concurrent  # type: ignore
-            )
-        )
-
-    def map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
-        return self.__class__(async_map(function, self._iterator))
-
-    def map_nowait(self, function: Callable[[T], U]) -> "AsyncIter[U]":
-        return self.__class__(async_map_nowait(function, self._iterator))
-
-    def parallel_map(self, function: Callable[[T], MaybeAwaitable[U]]) -> "AsyncIter[U]":
-        return self.__class__(async_parallel_map(function, self._iterator))
-
-    def star_map(
-        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., MaybeAwaitable[V]]
-    ) -> "AsyncIter[V]":
-        return self.__class__(async_star_map(function, self._iterator))  # type: ignore
-
-    def star_map_nowait(
-        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., V]
-    ) -> "AsyncIter[V]":
-        return self.__class__(async_star_map_nowait(function, self._iterator))  # type: ignore
-
-    def parallel_star_map(
-        self: "AsyncIter[AnyIterable[Any]]", function: Callable[..., MaybeAwaitable[V]]
-    ) -> "AsyncIter[V]":
-        return self.__class__(async_parallel_star_map(function, self._iterator))  # type: ignore
-
-    def partition(
-        self, predicate: Callable[[T], MaybeAwaitable[Any]]
-    ) -> "Tuple[AsyncIter[T], AsyncIter[T]]":
-        with_true, with_false = async_partition(self._iterator, predicate)
-
-        return self.__class__(with_true), self.__class__(with_false)
-
-    def partition_infinite(
-        self, predicate: Callable[[T], MaybeAwaitable[Any]]
-    ) -> "Tuple[AsyncIter[T], AsyncIter[T]]":
-        with_true, with_false = async_partition_infinite(self._iterator, predicate)
-
-        return self.__class__(with_true), self.__class__(with_false)
-
-    def partition_safe(
-        self, predicate: Callable[[T], MaybeAwaitable[Any]]
-    ) -> "Tuple[AsyncIter[T], AsyncIter[T]]":
-        with_true, with_false = async_partition_safe(self._iterator, predicate)
-
-        return self.__class__(with_true), self.__class__(with_false)
+    def distribute(self, count: Literal[1]) -> Tuple1[AsyncIter[T]]:
+        ...  # pragma: overload
 
     @overload
-    def zip(self, __iterable_1: AnyIterable[T1]) -> "AsyncIter[Tuple[T, T1]]":
-        ...
+    def distribute(self, count: Literal[2]) -> Tuple2[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def distribute(self, count: Literal[3]) -> Tuple3[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def distribute(self, count: Literal[4]) -> Tuple4[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def distribute(self, count: Literal[5]) -> Tuple5[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def distribute(self, count: Literal[6]) -> Tuple6[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def distribute(self, count: Literal[7]) -> Tuple7[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def distribute(self, count: Literal[8]) -> Tuple8[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def distribute(self, count: int) -> DynamicTuple[AsyncIter[T]]:
+        ...  # pragma: overload
+
+    def distribute(self, count: int) -> DynamicTuple[AsyncIter[T]]:
+        return self.convert_tuple(async_distribute(count, self.iterator))
+
+    def divide(self, count: int) -> AsyncIter[AsyncIter[T]]:
+        return self.convert_nested(async_divide(count, self.iterator))
+
+    def pad(self, value: V) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad(value, self.iterator))
+
+    def pad_exactly(self, value: V, size: int) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad(value, self.iterator, size))
+
+    def pad_multiple(self, value: V, size: int) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad(value, self.iterator, size, multiple=True))
+
+    def pad_none(self) -> AsyncIter[Optional[T]]:
+        return self.pad(None)
+
+    def pad_none_exactly(self, size: int) -> AsyncIter[Optional[T]]:
+        return self.pad_exactly(None, size)
+
+    def pad_none_multiple(self, size: int) -> AsyncIter[Optional[T]]:
+        return self.pad_multiple(None, size)
+
+    def pad_with(self, function: Unary[int, V]) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad_with(function, self.iterator))
+
+    def pad_exactly_with(self, function: Unary[int, V], size: int) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad_with(function, self.iterator, size))
+
+    def pad_multiple_with(self, function: Unary[int, V], size: int) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad_with(function, self.iterator, size, multiple=True))
+
+    def pad_with_await(self, function: Unary[int, Awaitable[V]]) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad_with_await(function, self.iterator))
+
+    def pad_exactly_with_await(
+        self, function: Unary[int, Awaitable[V]], size: int
+    ) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad_with_await(function, self.iterator, size))
+
+    def pad_multiple_with_await(
+        self, function: Unary[int, Awaitable[V]], size: int
+    ) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_pad_with_await(function, self.iterator, size, multiple=True))
+
+    def chunks(self, size: int) -> AsyncIter[List[T]]:
+        return self.convert(async_chunks(size, self.iterator))
+
+    def iter_chunks(self, size: int) -> AsyncIter[AsyncIter[T]]:
+        return self.convert_nested(async_iter_chunks(size, self.iterator))
+
+    def iter_chunks_unsafe(self, size: int) -> AsyncIter[AsyncIter[T]]:
+        return self.convert_nested(async_iter_chunks_unsafe(size, self.iterator))
+
+    iter_chunks_infinite = iter_chunks_unsafe
+
+    @overload
+    def groups(self, size: Literal[0]) -> AsyncIter[Never]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[1]) -> AsyncIter[Tuple1[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[2]) -> AsyncIter[Tuple2[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[3]) -> AsyncIter[Tuple3[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[4]) -> AsyncIter[Tuple4[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[5]) -> AsyncIter[Tuple5[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[6]) -> AsyncIter[Tuple6[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[7]) -> AsyncIter[Tuple7[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: Literal[8]) -> AsyncIter[Tuple8[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups(self, size: int) -> AsyncIter[DynamicTuple[T]]:
+        ...  # pragma: overload
+
+    def groups(self, size: int) -> AsyncIter[DynamicTuple[T]]:
+        return self.convert(async_groups(size, self.iterator))
+
+    @overload
+    def groups_longest(self, size: Literal[0]) -> AsyncIter[Never]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[1]) -> AsyncIter[Tuple1[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[2]) -> AsyncIter[Tuple2[Optional[T]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[3]) -> AsyncIter[Tuple3[Optional[T]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[4]) -> AsyncIter[Tuple4[Optional[T]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[5]) -> AsyncIter[Tuple5[Optional[T]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[6]) -> AsyncIter[Tuple6[Optional[T]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[7]) -> AsyncIter[Tuple7[Optional[T]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: Literal[8]) -> AsyncIter[Tuple8[Optional[T]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest(self, size: int) -> AsyncIter[DynamicTuple[Optional[T]]]:
+        ...  # pragma: overload
+
+    def groups_longest(self, size: int) -> AsyncIter[DynamicTuple[Optional[T]]]:
+        return self.convert(async_groups_longest(size, self.iterator))
+
+    @overload
+    def groups_longest_with(self, size: Literal[0], fill: V) -> AsyncIter[Never]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[1], fill: V) -> AsyncIter[Tuple1[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[2], fill: V) -> AsyncIter[Tuple2[Union[T, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[3], fill: V) -> AsyncIter[Tuple3[Union[T, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[4], fill: V) -> AsyncIter[Tuple4[Union[T, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[5], fill: V) -> AsyncIter[Tuple5[Union[T, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[6], fill: V) -> AsyncIter[Tuple6[Union[T, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[7], fill: V) -> AsyncIter[Tuple7[Union[T, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: Literal[8], fill: V) -> AsyncIter[Tuple8[Union[T, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def groups_longest_with(self, size: int, fill: V) -> AsyncIter[DynamicTuple[Union[T, V]]]:
+        ...  # pragma: overload
+
+    def groups_longest_with(self, size: int, fill: V) -> AsyncIter[DynamicTuple[Union[T, V]]]:
+        return self.convert(async_groups_longest(size, self.iterator, fill))
+
+    def pairs(self) -> AsyncIter[Tuple[T, T]]:
+        return self.convert(async_pairs(self.iterator))
+
+    def pairs_longest(self) -> AsyncIter[Tuple[Optional[T], Optional[T]]]:
+        return self.convert(async_pairs_longest(self.iterator))
+
+    def pairs_longest_with(self, fill: V) -> AsyncIter[Tuple[Union[T, V], Union[T, V]]]:
+        return self.convert(async_pairs_longest(self.iterator, fill))
+
+    def iter_windows(self, size: int) -> AsyncIter[AsyncIter[T]]:
+        return self.convert_nested(async_iter_windows(size, self.iterator))
+
+    def list_windows(self, size: int) -> AsyncIter[List[T]]:
+        return self.convert(async_list_windows(size, self.iterator))
+
+    def pairs_windows(self) -> AsyncIter[Tuple[T, T]]:
+        return self.convert(async_pairs_windows(self.iterator))
+
+    @overload
+    def tuple_windows(self, size: Literal[0]) -> AsyncIter[EmptyTuple]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[1]) -> AsyncIter[Tuple1[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[2]) -> AsyncIter[Tuple2[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[3]) -> AsyncIter[Tuple3[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[4]) -> AsyncIter[Tuple4[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[5]) -> AsyncIter[Tuple5[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[6]) -> AsyncIter[Tuple6[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[7]) -> AsyncIter[Tuple7[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: Literal[8]) -> AsyncIter[Tuple8[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def tuple_windows(self, size: int) -> AsyncIter[DynamicTuple[T]]:
+        ...  # pragma: overload
+
+    def tuple_windows(self, size: int) -> AsyncIter[DynamicTuple[T]]:
+        return self.convert(async_tuple_windows(size, self.iterator))
+
+    @overload
+    def zip(self) -> AsyncIter[Tuple[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]:
+        ...  # pragma: overload
 
     @overload
     def zip(
-        self, __iterable_1: AnyIterable[T1], __iterable_2: AnyIterable[T2]
-    ) -> "AsyncIter[Tuple[T, T1, T2]]":
-        ...
+        self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[T, A, B]]:
+        ...  # pragma: overload
 
     @overload
     def zip(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-    ) -> "AsyncIter[Tuple[T, T1, T2, T3]]":
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+    ) -> AsyncIter[Tuple[T, A, B, C]]:
+        ...  # pragma: overload
 
     @overload
     def zip(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-        __iterable_4: AnyIterable[T4],
-    ) -> "AsyncIter[Tuple[T, T1, T2, T3, T4]]":
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[T, A, B, C, D]]:
+        ...  # pragma: overload
 
     @overload
     def zip(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-        __iterable_4: AnyIterable[T4],
-        __iterable_5: AnyIterable[T5],
-    ) -> "AsyncIter[Tuple[T, T1, T2, T3, T4, T5]]":
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]:
+        ...  # pragma: overload
 
     @overload
     def zip(
         self,
-        __iterable_1: AnyIterable[Any],
-        __iterable_2: AnyIterable[Any],
-        __iterable_3: AnyIterable[Any],
-        __iterable_4: AnyIterable[Any],
-        __iterable_5: AnyIterable[Any],
-        __iterable_6: AnyIterable[Any],
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip(
+        self,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> "AsyncIter[Tuple[Any, ...]]":
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]:
+        ...  # pragma: overload
 
-    @no_type_check
-    def zip(self, *iterables: AnyIterable[Any]) -> "AsyncIter[Tuple[Any, ...]]":
-        return self.__class__(async_zip(self._iterator, *iterables))
-
-    @overload
-    def zip_longest(
-        self, __iterable_1: AnyIterable[T1]
-    ) -> "AsyncIter[Tuple[Optional[T], Optional[T1]]]":
-        ...
+    def zip(self, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
+        return self.convert(async_zip(self.iterator, *iterables))
 
     @overload
-    def zip_longest(
-        self, __iterable_1: AnyIterable[T1], __iterable_2: AnyIterable[T2]
-    ) -> "AsyncIter[Tuple[Optional[T], Optional[T1], Optional[T2]]]":
-        ...
+    def zip_equal(self) -> AsyncIter[Tuple[T]]:
+        ...  # pragma: overload
 
     @overload
-    def zip_longest(
+    def zip_equal(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_equal(
+        self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[T, A, B]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_equal(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-    ) -> "AsyncIter[Tuple[Optional[T], Optional[T1], Optional[T2], Optional[T3]]]":
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+    ) -> AsyncIter[Tuple[T, A, B, C]]:
+        ...  # pragma: overload
 
     @overload
-    def zip_longest(
+    def zip_equal(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-        __iterable_4: AnyIterable[T4],
-    ) -> "AsyncIter[Tuple[Optional[T], Optional[T1], Optional[T2], Optional[T3], Optional[T4]]]":
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[T, A, B, C, D]]:
+        ...  # pragma: overload
 
     @overload
-    def zip_longest(
+    def zip_equal(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-        __iterable_4: AnyIterable[T4],
-        __iterable_5: AnyIterable[T5],
-    ) -> "AsyncIter[Tuple[Optional[T], Optional[T1], Optional[T2], Optional[T3], Optional[T4], Optional[T5]]]":  # noqa
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]:
+        ...  # pragma: overload
 
     @overload
-    def zip_longest(
+    def zip_equal(
         self,
-        __iterable_1: AnyIterable[Any],
-        __iterable_2: AnyIterable[Any],
-        __iterable_3: AnyIterable[Any],
-        __iterable_4: AnyIterable[Any],
-        __iterable_5: AnyIterable[Any],
-        __iterable_6: AnyIterable[Any],
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_equal(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_equal(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_equal(
+        self,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> "AsyncIter[Tuple[Optional[Any], ...]]":
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]:
+        ...  # pragma: overload
+
+    def zip_equal(self, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
+        return self.convert(async_zip_equal(self.iterator, *iterables))
+
+    @overload
+    def zip_longest(self) -> AsyncIter[Tuple[T]]:
+        ...  # pragma: overload
 
     @overload
     def zip_longest(
-        self, __iterable_1: AnyIterable[T1], *, fill: U
-    ) -> "AsyncIter[Tuple[Union[T, U], Union[T1, U]]]":
-        ...
+        self, __iterable_a: AnyIterable[A]
+    ) -> AsyncIter[Tuple[Optional[T], Optional[A]]]:
+        ...  # pragma: overload
 
     @overload
     def zip_longest(
-        self, __iterable_1: AnyIterable[T1], __iterable_2: AnyIterable[T2], *, fill: U
-    ) -> "AsyncIter[Tuple[Union[T, U], Union[T1, U], Union[T2, U]]]":
-        ...
-
-    @overload
-    def zip_longest(
-        self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-        *,
-        fill: U
-    ) -> "AsyncIter[Tuple[Union[T, U], Union[T1, U], Union[T2, U], Union[T3, U]]]":
-        ...
+        self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[Optional[T], Optional[A], Optional[B]]]:
+        ...  # pragma: overload
 
     @overload
     def zip_longest(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-        __iterable_4: AnyIterable[T4],
-        *,
-        fill: U
-    ) -> "AsyncIter[Tuple[Union[T, U], Union[T1, U], Union[T2, U], Union[T3, U], Union[T4, U]]]":
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+    ) -> AsyncIter[Tuple[Optional[T], Optional[A], Optional[B], Optional[C]]]:
+        ...  # pragma: overload
 
     @overload
     def zip_longest(
         self,
-        __iterable_1: AnyIterable[T1],
-        __iterable_2: AnyIterable[T2],
-        __iterable_3: AnyIterable[T3],
-        __iterable_4: AnyIterable[T4],
-        __iterable_5: AnyIterable[T5],
-        *,
-        fill: U
-    ) -> "AsyncIter[Tuple[Union[T, U], Union[T1, U], Union[T2, U], Union[T3, U], Union[T4, U], Union[T5, U]]]":  # noqa
-        ...
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[Optional[T], Optional[A], Optional[B], Optional[C], Optional[D]]]:
+        ...  # pragma: overload
 
     @overload
     def zip_longest(
         self,
-        __iterable_1: AnyIterable[Any],
-        __iterable_2: AnyIterable[Any],
-        __iterable_3: AnyIterable[Any],
-        __iterable_4: AnyIterable[Any],
-        __iterable_5: AnyIterable[Any],
-        __iterable_6: AnyIterable[Any],
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[
+        Tuple[Optional[T], Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[
+        Tuple[
+            Optional[T],
+            Optional[A],
+            Optional[B],
+            Optional[C],
+            Optional[D],
+            Optional[E],
+            Optional[F],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[
+        Tuple[
+            Optional[T],
+            Optional[A],
+            Optional[B],
+            Optional[C],
+            Optional[D],
+            Optional[E],
+            Optional[F],
+            Optional[G],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[
+        Tuple[
+            Optional[T],
+            Optional[A],
+            Optional[B],
+            Optional[C],
+            Optional[D],
+            Optional[E],
+            Optional[F],
+            Optional[G],
+            Optional[H],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest(
+        self,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-        fill: U,
-    ) -> "AsyncIter[Tuple[Union[Any, U], ...]]":
-        ...
+    ) -> AsyncIter[DynamicTuple[Optional[Any]]]:
+        ...  # pragma: overload
 
-    @no_type_check
-    def zip_longest(
-        self, *iterables: AnyIterable[Any], fill: Optional[U] = None
-    ) -> "AsyncIter[Tuple[Union[Optional[Any], U], ...]]":
-        return self.__class__(async_zip_longest(self._iterator, *iterables, fill=fill))
+    def zip_longest(self, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Optional[Any]]]:
+        return self.convert(async_zip_longest(self.iterator, *iterables))
 
-    def side_effect(
+    @overload
+    def zip_longest_with(self, *, fill: V) -> AsyncIter[Tuple[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest_with(
+        self, __iterable_a: AnyIterable[A], *, fill: V
+    ) -> AsyncIter[Tuple[Union[T, V], Union[A, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest_with(
+        self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], *, fill: V
+    ) -> AsyncIter[Tuple[Union[T, V], Union[A, V], Union[B, V]]]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest_with(
         self,
-        function: Callable[[T], MaybeAwaitable[None]],
-        before: Optional[Callable[[], MaybeAwaitable[None]]] = None,
-        after: Optional[Callable[[], MaybeAwaitable[None]]] = None,
-    ) -> "AsyncIter[T]":
-        return self.__class__(async_side_effect(self._iterator, function, before, after))
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        *,
+        fill: V,
+    ) -> AsyncIter[Tuple[Union[T, V], Union[A, V], Union[B, V], Union[C, V]]]:
+        ...  # pragma: overload
 
-    def inspect(self, string: str) -> "AsyncIter[T]":
-        def print_and_string(item: Any) -> None:
-            print(string, item)
+    @overload
+    def zip_longest_with(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        *,
+        fill: V,
+    ) -> AsyncIter[Tuple[Union[T, V], Union[A, V], Union[B, V], Union[C, V], Union[D, V]]]:
+        ...  # pragma: overload
 
-        return self.side_effect(print_and_string)
+    @overload
+    def zip_longest_with(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        *,
+        fill: V,
+    ) -> AsyncIter[
+        Tuple[Union[T, V], Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V]]
+    ]:
+        ...  # pragma: overload
 
-    def inspect_format(self, format_string: str) -> "AsyncIter[T]":
-        def print_format(item: Any) -> None:
-            print(format_string.format(item))
+    @overload
+    def zip_longest_with(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        *,
+        fill: V,
+    ) -> AsyncIter[
+        Tuple[
+            Union[T, V],
+            Union[A, V],
+            Union[B, V],
+            Union[C, V],
+            Union[D, V],
+            Union[E, V],
+            Union[F, V],
+        ]
+    ]:
+        ...  # pragma: overload
 
-        return self.side_effect(print_format)
+    @overload
+    def zip_longest_with(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        *,
+        fill: V,
+    ) -> AsyncIter[
+        Tuple[
+            Union[T, V],
+            Union[A, V],
+            Union[B, V],
+            Union[C, V],
+            Union[D, V],
+            Union[E, V],
+            Union[F, V],
+            Union[G, V],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest_with(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+        *,
+        fill: V,
+    ) -> AsyncIter[
+        Tuple[
+            Union[T, V],
+            Union[A, V],
+            Union[B, V],
+            Union[C, V],
+            Union[D, V],
+            Union[E, V],
+            Union[F, V],
+            Union[G, V],
+            Union[H, V],
+        ]
+    ]:
+        ...  # pragma: overload
+
+    @overload
+    def zip_longest_with(
+        self,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
+        *iterables: AnyIterable[Any],
+        fill: V,
+    ) -> AsyncIter[DynamicTuple[Union[Any, V]]]:
+        ...  # pragma: overload
+
+    @no_type_check  # strange
+    def zip_longest_with(
+        self, *iterables: AnyIterable[Any], fill: V
+    ) -> AsyncIter[DynamicTuple[Union[Any, V]]]:
+        return self.convert(async_zip_longest(self.iterator, *iterables, fill=fill))
+
+    def reverse(self) -> AsyncIter[T]:
+        return self.convert(async_reverse(self.iterator))
+
+    async def sorted(self: AsyncIter[ST]) -> List[ST]:
+        return await async_sorted(self.iterator)
+
+    async def sorted_by(self, key: Unary[T, ST]) -> List[T]:
+        return await async_sorted(self.iterator, key=key)
+
+    async def sorted_reverse(self: AsyncIter[ST]) -> List[ST]:
+        return await async_sorted(self.iterator, reverse=True)
+
+    async def sorted_reverse_by(self, key: Unary[T, ST]) -> List[T]:
+        return await async_sorted(self.iterator, key=key, reverse=True)
+
+    async def sorted_by_await(self, key: Unary[T, Awaitable[ST]]) -> List[T]:
+        return await async_sorted_await(self.iterator, key=key)
+
+    async def sorted_reverse_by_await(self, key: Unary[T, Awaitable[ST]]) -> List[T]:
+        return await async_sorted_await(self.iterator, key=key, reverse=True)
+
+    def sort(self: AsyncIter[ST]) -> AsyncIter[ST]:
+        return self.convert(async_sort(self.iterator))
+
+    def sort_by(self, key: Unary[T, ST]) -> AsyncIter[T]:
+        return self.convert(async_sort(self.iterator, key=key))
+
+    def sort_reverse(self: AsyncIter[ST]) -> AsyncIter[ST]:
+        return self.convert(async_sort(self.iterator, reverse=True))
+
+    def sort_reverse_by(self, key: Unary[T, ST]) -> AsyncIter[T]:
+        return self.convert(async_sort(self.iterator, key=key, reverse=True))
+
+    def sort_by_await(self, key: Unary[T, Awaitable[ST]]) -> AsyncIter[T]:
+        return self.convert(async_sort_await(self.iterator, key=key))
+
+    def sort_reverse_by_await(self, key: Unary[T, Awaitable[ST]]) -> AsyncIter[T]:
+        return self.convert(async_sort_await(self.iterator, key=key, reverse=True))
+
+    async def is_sorted(self: AsyncIter[LT]) -> bool:
+        return await async_is_sorted(self.iterator)
+
+    async def is_sorted_by(self, key: Unary[T, LT]) -> bool:
+        return await async_is_sorted(self.iterator, key)
+
+    async def is_sorted_reverse(self: AsyncIter[LT]) -> bool:
+        return await async_is_sorted(self.iterator, reverse=True)
+
+    async def is_sorted_reverse_by(self, key: Unary[T, LT]) -> bool:
+        return await async_is_sorted(self.iterator, key, reverse=True)
+
+    async def is_sorted_strict(self: AsyncIter[ST]) -> bool:
+        return await async_is_sorted(self.iterator, strict=True)
+
+    async def is_sorted_strict_by(self, key: Unary[T, ST]) -> bool:
+        return await async_is_sorted(self.iterator, key, strict=True)
+
+    async def is_sorted_reverse_strict(self: AsyncIter[ST]) -> bool:
+        return await async_is_sorted(self.iterator, strict=True, reverse=True)
+
+    async def is_sorted_reverse_strict_by(self, key: Unary[T, ST]) -> bool:
+        return await async_is_sorted(self.iterator, key, strict=True, reverse=True)
+
+    async def is_sorted_by_await(self, key: Unary[T, Awaitable[LT]]) -> bool:
+        return await async_is_sorted_await(self.iterator, key)
+
+    async def is_sorted_reverse_by_await(self, key: Unary[T, Awaitable[LT]]) -> bool:
+        return await async_is_sorted_await(self.iterator, key, reverse=True)
+
+    async def is_sorted_strict_by_await(self, key: Unary[T, Awaitable[ST]]) -> bool:
+        return await async_is_sorted_await(self.iterator, key, strict=True)
+
+    async def is_sorted_reverse_strict_by_await(self, key: Unary[T, Awaitable[ST]]) -> bool:
+        return await async_is_sorted_await(self.iterator, key, strict=True, reverse=True)
+
+    def duplicates_fast(self: AsyncIter[Q]) -> AsyncIter[Q]:
+        return self.convert(async_duplicates_fast(self.iterator))
+
+    def duplicates_fast_by(self, key: Unary[T, Q]) -> AsyncIter[T]:
+        return self.convert(async_duplicates_fast(self.iterator, key))
+
+    def duplicates_fast_by_await(self, key: Unary[T, Awaitable[Q]]) -> AsyncIter[T]:
+        return self.convert(async_duplicates_fast_await(self.iterator, key))
+
+    def duplicates(self) -> AsyncIter[T]:
+        return self.convert(async_duplicates(self.iterator))
+
+    def duplicates_by(self, key: Unary[T, V]) -> AsyncIter[T]:
+        return self.convert(async_duplicates(self.iterator, key))
+
+    def duplicates_by_await(self, key: Unary[T, Awaitable[V]]) -> AsyncIter[T]:
+        return self.convert(async_duplicates_await(self.iterator, key))
+
+    def unique_fast(self: AsyncIter[Q]) -> AsyncIter[Q]:
+        return self.convert(async_unique_fast(self.iterator))
+
+    def unique_fast_by(self, key: Unary[T, Q]) -> AsyncIter[T]:
+        return self.convert(async_unique_fast(self.iterator, key))
+
+    def unique_fast_by_await(self, key: Unary[T, Awaitable[Q]]) -> AsyncIter[T]:
+        return self.convert(async_unique_fast_await(self.iterator, key))
+
+    def unique(self) -> AsyncIter[T]:
+        return self.convert(async_unique(self.iterator))
+
+    def unique_by(self, key: Unary[T, V]) -> AsyncIter[T]:
+        return self.convert(async_unique(self.iterator, key))
+
+    def unique_by_await(self, key: Unary[T, Awaitable[V]]) -> AsyncIter[T]:
+        return self.convert(async_unique_await(self.iterator, key))
+
+    def partition(self, predicate: Predicate[T]) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+        true, false = async_partition(predicate, self.iterator)
+
+        return (self.convert(true), self.convert(false))
+
+    def partition_await(self, predicate: AsyncPredicate[T]) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+        true, false = async_partition_await(predicate, self.iterator)
+
+        return (self.convert(true), self.convert(false))
+
+    def partition_unsafe(self, predicate: Predicate[T]) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+        true, false = async_partition_unsafe(predicate, self.iterator)
+
+        return (self.convert(true), self.convert(false))
+
+    def partition_unsafe_await(
+        self, predicate: AsyncPredicate[T]
+    ) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+        true, false = async_partition_unsafe_await(predicate, self.iterator)
+
+        return (self.convert(true), self.convert(false))
+
+    partition_infinite = partition_unsafe
+
+    def copy(self) -> AsyncIter[T]:
+        iterator, result = async_copy(self.iterator)
+
+        self._replace(iterator)
+
+        return self.convert(result)
+
+    def copy_unsafe(self) -> AsyncIter[T]:
+        iterator, result = async_copy_unsafe(self.iterator)
+
+        self._replace(iterator)
+
+        return self.convert(result)
+
+    copy_infinite = copy_unsafe
+
+    async def spy(self, size: int) -> List[T]:
+        result, iterator = await async_spy(size, self.iterator)
+
+        self._replace(iterator)
+
+        return result
+
+    async def peek(self) -> T:
+        item, iterator = await async_peek(self.iterator)
+
+        self._replace(iterator)
+
+        return item
+
+    async def peek_or(self, default: V) -> Union[T, V]:
+        item, iterator = await async_peek(self.iterator, default)
+
+        self._replace(iterator)
+
+        return item
+
+    async def peek_or_none(self) -> Optional[T]:
+        return await self.peek_or(None)
+
+    async def has_next(self) -> bool:
+        result, iterator = await async_has_next(self.iterator)
+
+        self._replace(iterator)
+
+        return result
+
+    async def is_empty(self) -> bool:
+        result, iterator = await async_is_empty(self.iterator)
+
+        self._replace(iterator)
+
+        return result
+
+    def repeat_last(self) -> AsyncIter[T]:
+        return self.convert(async_repeat_last(self.iterator))
+
+    def repeat_last_or(self, default: V) -> AsyncIter[Union[T, V]]:
+        return self.convert(async_repeat_last(self.iterator, default))
+
+    def repeat_last_or_none(self) -> AsyncIter[Optional[T]]:
+        return self.repeat_last_or(None)
+
+    def repeat_each(self, count: int) -> AsyncIter[T]:
+        return self.convert(async_repeat_each(self.iterator, count))
+
+    def side_effect(self, function: Unary[T, Any]) -> AsyncIter[T]:
+        return self.convert(async_side_effect(function, self.iterator))
+
+    def side_effect_await(self, function: Unary[T, Awaitable[Any]]) -> AsyncIter[T]:
+        return self.convert(async_side_effect_await(function, self.iterator))
+
+    def wait(self: AsyncIter[Awaitable[U]]) -> AsyncIter[U]:
+        return self.convert(async_wait(self.iterator))
 
 
 async_iter = AsyncIter
-async_reversed = async_iter.reversed
 
 
-def return_async_iter(function: Callable[..., AsyncIterable[T]]) -> Callable[..., AsyncIter[T]]:
+def async_iter_result(function: Callable[PS, AnyIterable[T]]) -> Callable[PS, AsyncIter[T]]:
     @wraps(function)
-    def wrapper(*args: Any, **kwargs: Any) -> AsyncIter[T]:
+    def wrap(*args: PS.args, **kwargs: PS.kwargs) -> AsyncIter[T]:
         return async_iter(function(*args, **kwargs))
 
-    return wrapper
+    return wrap

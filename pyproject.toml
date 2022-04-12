@@ -1,0 +1,127 @@
+[tool.poetry]
+name = "iters.py"
+version = "1.0.0-alpha.1"
+description = "Composable external iteration."
+authors = ["nekitdev"]
+license = "MIT"
+
+readme = "README.md"
+
+# homepage = "https://github.com/nekitdev/iters.py"
+repository = "https://github.com/nekitdev/iters.py"
+# documentation = "https://iters-py.readthedocs.io/"
+
+keywords = ["python", "iter", "iterator", "iterators"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+
+include = ["CHANGELOG.md", "iters/py.typed"]
+
+[tool.poetry.urls]
+Discord = "https://nekit.dev/discord"
+Funding = "https://patreon.com/nekitdev"
+Tracker = "https://github.com/nekitdev/iters.py/issues"
+
+[[tool.poetry.packages]]
+include = "iters"
+
+[tool.poetry.dependencies]
+python = ">= 3.8"
+typing-extensions = ">= 4.1.1"
+
+anyio = ">= 3.5.0"
+
+[tool.poetry.dev-dependencies]
+black = "22.3.0"
+coverage = "6.3.2"
+flake8 = "4.0.1"
+flake8-bugbear = "22.3.23"
+flake8-isort = "4.1.1"
+flake8-string-format = "0.3.0"
+flake8-tidy-imports = "4.6.0"
+mypy = "0.942"
+pytest = "7.1.1"
+pytest-cov = "3.0.0"
+pytest-xdist = "2.5.0"
+
+[tool.black]
+line_length = 100
+
+[tool.isort]
+line_length = 100
+profile = "black"
+
+[tool.flake8]
+max_line_length = 100
+count = true
+
+[tool.coverage.run]
+source = ["iters"]
+
+[tool.coverage.report]
+ignore_errors = true
+exclude_lines = [
+    "pragma: no cover",
+    "pragma: overload",
+    "pragma: protocol",
+    "pragma: unlikely",
+    "if TYPE_CHECKING",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
+
+[tool.coverage.html]
+directory = "coverage"
+title = "Coverage"
+
+[tool.mypy]
+show_column_numbers = true
+
+disallow_any_decorated = true
+disallow_any_generics = true
+warn_return_any = true
+
+no_implicit_optional = true
+strict_optional = true
+
+strict_equality = true
+
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_untyped_decorators = true
+
+disallow_incomplete_defs = true
+
+warn_no_return = true
+
+warn_redundant_casts = true
+warn_unused_ignores = false  # compatibility
+
+[tool.changelog]
+name = "iters.py"
+version = "1.0.0-alpha.1"
+url = "https://github.com/nekitdev/iters.py"
+directory = "changes"
+output = "CHANGELOG.md"
+
+start_string = "<!-- changelog: start -->"
+
+title_format = "{name} {version} ({date})"
+issue_format = "[#{issue}]({url}/issues/{issue})"
+
+bullet = "-"
+wrap = true
+wrap_size = 100
+
+display = ["feature", "change", "fix", "security", "deprecation", "removal", "internal"]
+
+[build-system]
+requires = ["poetry-core >= 1.0.0"]
+build-backend = "poetry.core.masonry.api"

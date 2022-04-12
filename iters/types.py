@@ -1,30 +1,90 @@
+from __future__ import annotations
+
+from enum import Enum
 from threading import Lock
-from typing import Any, Dict, Type, TypeVar, Union, cast
+from typing import Any, TypeVar
 
-from typing_extensions import Protocol
+__all__ = (
+    # ordering
+    "Ordering",
+    # markers
+    "Marker",
+    "marker",
+    # no default
+    "NoDefault",
+    "no_default",
+    # singletons
+    "Singleton",
+    "SingletonMeta",
+    # simple utils
+    "format_type",
+    "type_name",
+)
 
-__all__ = ("Marker", "MarkerOr", "Order", "Singleton", "marker")
 
-S = TypeVar("S", bound="Singleton")
+class Ordering(Enum):
+    LESS = -1
+    EQUAL = 0
+    GREATER = 1
+
+    def is_less(self) -> bool:
+        return self is type(self).LESS
+
+    def is_equal(self) -> bool:
+        return self is type(self).EQUAL
+
+    def is_greater(self) -> bool:
+        return self is type(self).GREATER
+
+    def is_less_or_equal(self) -> bool:
+        return self.is_less() or self.is_equal()
+
+    def is_not_equal(self) -> bool:
+        return not self.is_equal()
+
+    def is_greater_or_equal(self) -> bool:
+        return self.is_greater() or self.is_equal()
+
+
 T = TypeVar("T")
 
-LOCK = Lock()
+TYPE_FORMAT = "<{}>"
+
+format_type = TYPE_FORMAT.format
 
 
-class Singleton:
-    INSTANCES: Dict[Type[Any], Any] = {}
+def type_name(item: T) -> str:
+    return type(item).__name__
 
-    def __new__(cls: Type[S], *args: Any, **kwargs: Any) -> S:
-        # use double-checked locking optimization
-        if cls not in cls.INSTANCES:  # check
-            with LOCK:  # lock
-                if cls not in cls.INSTANCES:  # check
-                    cls.INSTANCES[cls] = super().__new__(cls)  # instantiate
 
-        return cast(S, cls.INSTANCES[cls])
+class SingletonMeta(type):
+    _INSTANCES = {}  # type: ignore
+    _LOCK = Lock()  # single lock is enough here
 
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # slightly too magical
+        instances = cls._INSTANCES
+        lock = cls._LOCK
+
+        # use double-checked locking
+
+        if cls not in instances:
+            with lock:
+                if cls not in instances:
+                    instances[cls] = super().__call__(*args, **kwargs)
+
+        return instances[cls]
+
+
+class Singleton(metaclass=SingletonMeta):
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
+        return format_type(type_name(self))
+
+
+class NoDefault(Singleton):
+    pass
+
+
+no_default = NoDefault()
 
 
 class Marker(Singleton):
@@ -32,13 +92,3 @@ class Marker(Singleton):
 
 
 marker = Marker()
-
-MarkerOr = Union[Marker, T]
-
-
-class Order(Protocol):
-    def __lt__(self, __other: Any) -> bool:
-        ...
-
-    def __gt__(self, __other: Any) -> bool:
-        ...

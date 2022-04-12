@@ -1,645 +1,2612 @@
-from builtins import zip as std_zip
+from builtins import zip as standard_zip
+from collections import Counter as counter_dict
 from collections import deque
-from functools import reduce
-from itertools import (
-    chain,
-    compress,
-    count,
-    cycle,
-    dropwhile as drop_while,
-    filterfalse as filter_false,
-    islice as iter_slice,
-    repeat,
-    starmap as star_map,
-    takewhile as take_while,
-    tee as copy,
-    zip_longest as std_zip_longest,
-)
-from operator import add, attrgetter as get_attr_factory, mul
-from sys import hexversion as hex_version
+from functools import reduce as standard_reduce
+from itertools import accumulate as standard_accumulate
+from itertools import chain, compress
+from itertools import count as standard_count
+from itertools import cycle
+from itertools import dropwhile as drop_while
+from itertools import filterfalse as filter_false
+from itertools import groupby as standard_group
+from itertools import islice as iter_slice
+from itertools import takewhile as take_while
+from itertools import tee as standard_copy
+from itertools import zip_longest as standard_zip_longest
+from operator import add
+from operator import ge as greater_or_equal
+from operator import gt as greater
+from operator import le as less_or_equal
+from operator import lt as less
+from operator import mul
+from sys import version_info
 from typing import (
     Any,
     Callable,
     ContextManager,
+    Counter,
+    Dict,
+    Hashable,
     Iterable,
     Iterator,
     List,
+    Literal,
     Optional,
-    Reversible,
-    Sequence,
     Set,
     Tuple,
     Type,
     TypeVar,
     Union,
-    cast,
-    no_type_check,
     overload,
 )
 
-from iters.types import Marker, MarkerOr, marker
+from typing_extensions import Never, TypeVarTuple, Unpack
+
+from iters.types import Ordering, marker, no_default
+from iters.typing import (
+    AnyException,
+    Binary,
+    Compare,
+    DynamicTuple,
+    EitherLenientOrdered,
+    EitherStrictOrdered,
+    EmptyTuple,
+    Nullary,
+    Predicate,
+    Product,
+    Quaternary,
+    RecursiveIterable,
+    Sum,
+    Ternary,
+    Tuple1,
+    Tuple2,
+    Tuple3,
+    Tuple4,
+    Tuple5,
+    Tuple6,
+    Tuple7,
+    Tuple8,
+    Unary,
+    is_bytes,
+    is_string,
+)
 
 __all__ = (
+    "accumulate_fold",
+    "accumulate_reduce",
+    "accumulate_product",
+    "accumulate_sum",
+    "all_equal",
+    "all_unique",
+    "all_unique_fast",
     "append",
     "at",
     "at_or_last",
     "chain",
     "chain_from_iterable",
+    "chunks",
     "collapse",
+    "combine",
+    "compare",
     "compress",
+    "consume",
+    "contains",
+    "contains_identity",
     "copy",
     "copy_infinite",
-    "copy_safe",
+    "copy_unsafe",
     "count",
+    "count_dict",
     "cycle",
-    "distinct",
+    "distribute",
+    "distribute_infinite",
+    "distribute_unsafe",
+    "divide",
     "drop",
     "drop_while",
-    "exhaust",
+    "duplicates",
+    "duplicates_fast",
+    "empty",
+    "filter_except",
     "filter_false",
+    "find_all",
+    "find",
+    "find_or_first",
+    "find_or_last",
     "first",
+    "flat_map",
     "flatten",
     "fold",
-    "get",
+    "for_each",
     "group",
-    "group_longest",
-    "iter_chunk",
-    "iter_len",
+    "group_dict",
+    "group_list",
+    "groups",
+    "groups_longest",
+    "has_next",
+    "interleave",
+    "interleave_longest",
+    "intersperse",
+    "intersperse_with",
+    "is_empty",
+    "is_sorted",
+    "iter_chunks",
+    "iter_chunks_infinite",
+    "iter_chunks_unsafe",
+    "iter_except",
+    "iter_function",
+    "iter_length",
     "iter_slice",
+    "iter_windows",
+    "iter_with",
     "iterate",
     "last",
-    "list_chunk",
+    "last_with_tail",
+    "list_windows",
+    "map_except",
+    "min_max",
+    "next_of",
+    "once",
+    "once_with",
+    "pad",
+    "pad_with",
+    "pairs",
+    "pairs_longest",
+    "pairs_windows",
     "partition",
     "partition_infinite",
-    "partition_safe",
+    "partition_unsafe",
+    "peek",
+    "position_all",
+    "position",
     "prepend",
     "product",
     "reduce",
+    "remove",
+    "remove_duplicates",
     "repeat",
+    "repeat_each",
+    "repeat_last",
+    "repeat_with",
+    "reverse",
     "side_effect",
-    "star_map",
+    "skip",
+    "skip_while",
+    "sort",
+    "spy",
     "step_by",
     "sum",
+    "tail",
     "take",
     "take_while",
-    "tuple_chunk",
-    "with_iter",
+    "tuple_windows",
+    "unique",
+    "unique_fast",
+    "unpack_any",
+    "unpack_binary",
+    "unpack_quaternary",
+    "unpack_ternary",
+    "unpack_unary",
     "zip",
+    "zip_equal",
     "zip_longest",
 )
 
-PY_380 = hex_version == 0x30800F0  # 3.8.0
+PYTHON_3_10 = version_info >= (3, 10, 0)
+
+Shape = TypeVarTuple("Shape")
 
 T = TypeVar("T")
 U = TypeVar("U")
+V = TypeVar("V")
+W = TypeVar("W")
 
-T1 = TypeVar("T1")
-T2 = TypeVar("T2")
-T3 = TypeVar("T3")
-T4 = TypeVar("T4")
-T5 = TypeVar("T5")
+R = TypeVar("R")
 
+A = TypeVar("A")
+B = TypeVar("B")
+C = TypeVar("C")
+D = TypeVar("D")
+E = TypeVar("E")
+F = TypeVar("F")
+G = TypeVar("G")
+H = TypeVar("H")
 
-@overload
-def zip(__iterable_1: Iterable[T1]) -> Iterator[Tuple[T1]]:
-    ...
+# I = TypeVar("I", bound=Iterable)  # I[T]
 
+Q = TypeVar("Q", bound=Hashable)
 
-@overload
-def zip(__iterable_1: Iterable[T1], __iterable_2: Iterable[T2]) -> Iterator[Tuple[T1, T2]]:
-    ...
+S = TypeVar("S", bound=Sum)
+P = TypeVar("P", bound=Product)
 
-
-@overload
-def zip(
-    __iterable_1: Iterable[T1], __iterable_2: Iterable[T2], __iterable_3: Iterable[T3]
-) -> Iterator[Tuple[T1, T2, T3]]:
-    ...
-
-
-@overload
-def zip(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-    __iterable_4: Iterable[T4],
-) -> Iterator[Tuple[T1, T2, T3, T4]]:
-    ...
-
-
-@overload
-def zip(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-    __iterable_4: Iterable[T4],
-    __iterable_5: Iterable[T5],
-) -> Iterator[Tuple[T1, T2, T3, T4, T5]]:
-    ...
-
-
-@overload
-def zip(
-    __iterable_1: Iterable[Any],
-    __iterable_2: Iterable[Any],
-    __iterable_3: Iterable[Any],
-    __iterable_4: Iterable[Any],
-    __iterable_5: Iterable[Any],
-    __iterable_6: Iterable[Any],
-    *iterables: Iterable[Any],
-) -> Iterator[Tuple[Any, ...]]:
-    ...
-
-
-def zip(*iterables: Iterable[Any]) -> Iterator[Tuple[Any, ...]]:
-    return std_zip(*iterables)
-
-
-@overload
-def zip_longest(__iterable_1: Iterable[T1]) -> Iterator[Tuple[Optional[T1]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-) -> Iterator[Tuple[Optional[T1], Optional[T2]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-) -> Iterator[Tuple[Optional[T1], Optional[T2], Optional[T3]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-    __iterable_4: Iterable[T4],
-) -> Iterator[Tuple[Optional[T1], Optional[T2], Optional[T3], Optional[T4]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-    __iterable_4: Iterable[T4],
-    __iterable_5: Iterable[T5],
-) -> Iterator[Tuple[Optional[T1], Optional[T2], Optional[T3], Optional[T4], Optional[T5]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[Any],
-    __iterable_2: Iterable[Any],
-    __iterable_3: Iterable[Any],
-    __iterable_4: Iterable[Any],
-    __iterable_5: Iterable[Any],
-    __iterable_6: Iterable[Any],
-    *iterables: Iterable[Any],
-) -> Iterator[Tuple[Optional[Any], ...]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1], *, fill: T
-) -> Iterator[Tuple[Union[T1, T]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1], __iterable_2: Iterable[T2], *, fill: T
-) -> Iterator[Tuple[Union[T1, T], Union[T2, T]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-    *,
-    fill: T,
-) -> Iterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-    __iterable_4: Iterable[T4],
-    *,
-    fill: T,
-) -> Iterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T], Union[T4, T]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[T1],
-    __iterable_2: Iterable[T2],
-    __iterable_3: Iterable[T3],
-    __iterable_4: Iterable[T4],
-    __iterable_5: Iterable[T5],
-    *,
-    fill: T,
-) -> Iterator[Tuple[Union[T1, T], Union[T2, T], Union[T3, T], Union[T4, T], Union[T5, T]]]:
-    ...
-
-
-@overload
-def zip_longest(
-    __iterable_1: Iterable[Any],
-    __iterable_2: Iterable[Any],
-    __iterable_3: Iterable[Any],
-    __iterable_4: Iterable[Any],
-    __iterable_5: Iterable[Any],
-    __iterable_6: Iterable[Any],
-    *iterables: Iterable[Any],
-    fill: T,
-) -> Iterator[Tuple[Union[Any, T], ...]]:
-    ...
-
-
-@no_type_check
-def zip_longest(
-    *iterables: Iterable[Any], fill: Optional[T] = None
-) -> Iterator[Tuple[Union[Any, Optional[T]], ...]]:
-    return std_zip_longest(*iterables, fillvalue=fill)
-
+LT = TypeVar("LT", bound=EitherLenientOrdered)
+ST = TypeVar("ST", bound=EitherStrictOrdered)
 
 chain_from_iterable = chain.from_iterable
-
-
-def exhaust(iterator: Iterator[T], amount: Optional[int] = None) -> None:
-    if amount is None:
-        deque(iterator, 0)
-
-    else:
-        exhaust(take(iterator, amount))
+skip_while = drop_while
 
 
 @overload
-def first(iterable: Iterable[T], default: Marker = marker) -> T:
-    ...
+def compare(left_iterable: Iterable[ST], right_iterable: Iterable[ST], key: None = ...) -> Ordering:
+    ...  # pragma: overload
+
+
+@overload
+def compare(left_iterable: Iterable[T], right_iterable: Iterable[T], key: Unary[T, ST]) -> Ordering:
+    ...  # pragma: overload
+
+
+def compare(
+    left_iterable: Iterable[Any],
+    right_iterable: Iterable[Any],
+    key: Optional[Unary[Any, Any]] = None,
+) -> Ordering:
+    if key is None:
+        return compare_simple(left_iterable, right_iterable)
+
+    return compare_by(left_iterable, right_iterable, key)
+
+
+def compare_simple(left_iterable: Iterable[ST], right_iterable: Iterable[ST]) -> Ordering:
+    for left, right in zip_longest(left_iterable, right_iterable, fill=marker):
+        if left is marker:
+            return Ordering.LESS
+
+        if right is marker:
+            return Ordering.GREATER
+
+        if left < right:  # type: ignore  # investigate
+            return Ordering.LESS
+
+        if left > right:  # type: ignore  # investigate
+            return Ordering.GREATER
+
+    return Ordering.EQUAL
+
+
+def compare_by(
+    left_iterable: Iterable[T], right_iterable: Iterable[T], key: Unary[T, ST]
+) -> Ordering:
+    return compare_simple(map(key, left_iterable), map(key, right_iterable))
+
+
+def iter_function(function: Nullary[T], sentinel: V) -> Iterator[T]:
+    return iter(function, sentinel)
+
+
+def empty() -> Iterator[Never]:
+    return
+    yield
+
+
+def once(value: T) -> Iterator[T]:
+    yield value
+
+
+def once_with(function: Nullary[T]) -> Iterator[T]:
+    yield function()
+
+
+def repeat(value: T, count: Optional[int] = None) -> Iterator[T]:
+    if count is None:
+        while True:
+            yield value
+
+    else:
+        for _ in range(count):
+            yield value
+
+
+def repeat_with(function: Nullary[T], count: Optional[int] = None) -> Iterator[T]:
+    if count is None:
+        while True:
+            yield function()
+
+    else:
+        for _ in range(count):
+            yield function()
+
+
+def repeat_factory(count: int) -> Unary[T, Iterator[T]]:
+    def actual_repeat(item: T) -> Iterator[T]:
+        return repeat(item, count)
+
+    return actual_repeat
+
+
+def repeat_each(iterable: Iterable[T], count: int = 2) -> Iterator[T]:
+    return flat_map(repeat_factory(count), iterable)
+
+
+@overload
+def repeat_last(iterable: Iterable[T]) -> Iterator[T]:
+    ...  # pragma: overload
+
+
+@overload
+def repeat_last(iterable: Iterable[T], default: U) -> Iterator[Union[T, U]]:
+    ...  # pragma: overload
+
+
+def repeat_last(iterable: Iterable[Any], default: Any = no_default) -> Iterator[Any]:
+    item = marker
+
+    for item in iterable:
+        yield item
+
+    if item is marker:
+        if default is no_default:
+            return
+
+        item = default
+
+    yield from repeat(item)
+
+
+def count(start: int = 0, step: int = 1) -> Iterator[int]:
+    return standard_count(start, step)
+
+
+def consume(iterable: Iterable[T]) -> None:
+    deque(iterable, 0)
+
+
+def for_each(function: Unary[T, Any], iterable: Iterable[T]) -> None:
+    for item in iterable:
+        function(item)
+
+
+FIRST_ON_EMPTY = "first() called on an empty iterable"
+
+
+@overload
+def first(iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
 
 
 @overload
 def first(iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+    ...  # pragma: overload
 
 
-def first(iterable: Iterable[T], default: MarkerOr[U] = marker) -> Union[T, U]:
-    try:
-        return next(iter(iterable))
+def first(iterable: Iterable[Any], default: Any = no_default) -> Any:
+    iterator = iter(iterable)
 
-    except StopIteration as error:
-        if default is marker:
-            raise ValueError("first() called on an empty iterable.") from error
+    result = next(iterator, marker)
 
-        return cast(T, default)
+    if result is marker:
+        if default is no_default:
+            raise ValueError(FIRST_ON_EMPTY)
+
+        return default
+
+    return result
+
+
+LAST_ON_EMPTY = "last() called on an empty iterable"
 
 
 @overload
-def last(iterable: Iterable[T], default: Marker = marker) -> T:
-    ...
+def last(iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
 
 
 @overload
 def last(iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+    ...  # pragma: overload
 
 
-def last(iterable: Iterable[T], default: MarkerOr[T] = marker) -> T:
+def last(iterable: Iterable[Any], default: Any = no_default) -> Any:
+    result = marker
+
     try:
-        if isinstance(iterable, Sequence):
-            return cast(Sequence[T], iterable)[-1]
+        iterator = reversed(iterable)  # type: ignore
 
-        elif isinstance(iterable, Reversible) and not PY_380:
-            return next(reversed(cast(Reversible[T], iterable)))
+        result = next(iterator, marker)
 
-        else:
-            return deque(iterable, 1)[-1]
+    except TypeError:
+        for result in iterable:  # noqa
+            pass
 
-    except (IndexError, ValueError, StopIteration) as error:
-        if default is marker:
-            raise ValueError("last() called on an empty iterable.") from error
+    if result is marker:
+        if default is no_default:
+            raise ValueError(LAST_ON_EMPTY)
 
-        return cast(T, default)
+        return default
 
-
-def fold(iterable: Iterable[T], function: Callable[[U, T], U], initial: U) -> U:
-    return reduce(function, iterable, initial)
+    return result
 
 
-DOT = "."
-DUNDER = "__"
+def unpack_unary(unary: Unary[T, R]) -> Unary[Tuple[T], R]:
+    def unpack(args: Tuple[T]) -> R:
+        (t,) = args
+
+        return unary(t)
+
+    return unpack
 
 
-def get(iterable: Iterable[T], **attrs: U) -> Iterator[T]:
-    names = tuple(attr.replace(DUNDER, DOT) for attr in attrs.keys())
-    expected = tuple(attrs.values())
+def unpack_binary(binary: Binary[T, U, R]) -> Unary[Tuple[T, U], R]:
+    def unpack(args: Tuple[T, U]) -> R:
+        (t, u) = args
 
-    # special case for one attribute -> we recieve pure values instead of tuples
+        return binary(t, u)
 
-    if len(expected) == 1:
-        expected = first(expected)  # type: ignore
+    return unpack
 
-    get_attrs = get_attr_factory(*names)
 
-    def predicate(item: T) -> bool:
-        return get_attrs(item) == expected
+def unpack_ternary(ternary: Ternary[T, U, V, R]) -> Unary[Tuple[T, U, V], R]:
+    def unpack(args: Tuple[T, U, V]) -> R:
+        (t, u, v) = args
 
-    return filter(predicate, iterable)
+        return ternary(t, u, v)
+
+    return unpack
+
+
+def unpack_quaternary(quaternary: Quaternary[T, U, V, W, R]) -> Unary[Tuple[T, U, V, W], R]:
+    def unpack(args: Tuple[T, U, V, W]) -> R:
+        (t, u, v, w) = args
+
+        return quaternary(t, u, v, w)
+
+    return unpack
+
+
+def unpack_any(function: Callable[[Unpack[Shape]], T]) -> Unary[Tuple[Unpack[Shape]], T]:
+    def unpack(args: Tuple[Unpack[Shape]]) -> T:
+        return function(*args)
+
+    return unpack
+
+
+REDUCE_ON_EMPTY = "reduce() called on an empty iterable"
+
+
+def reduce(function: Binary[T, T, T], iterable: Iterable[T]) -> T:
+    empty, iterator = is_empty(iterable)
+
+    if empty:
+        raise ValueError(REDUCE_ON_EMPTY)
+
+    return standard_reduce(function, iterator)
+
+
+def fold(initial: U, function: Binary[U, T, U], iterable: Iterable[T]) -> U:
+    return standard_reduce(function, iterable, initial)
+
+
+def accumulate_reduce(function: Binary[T, T, T], iterable: Iterable[T]) -> Iterator[T]:
+    return standard_accumulate(iterable, function)
+
+
+def accumulate_fold(initial: U, function: Binary[U, T, U], iterable: Iterable[T]) -> Iterator[U]:
+    return standard_accumulate(iterable, function, initial=initial)
 
 
 @overload
-def at(iterable: Iterable[T], n: int, default: Marker = marker) -> T:
-    ...
+def accumulate_sum(iterable: Iterable[S]) -> Iterator[S]:
+    ...  # pragma: overload
 
 
 @overload
-def at(iterable: Iterable[T], n: int, default: U) -> Union[T, U]:
-    ...
+def accumulate_sum(iterable: Iterable[S], initial: S) -> Iterator[S]:
+    ...  # pragma: overload
 
 
-def at(iterable: Iterable[T], n: int, default: MarkerOr[U] = marker) -> Union[T, U]:
-    try:
-        return next(iter_slice(iterable, n, None))
+def accumulate_sum(iterable: Iterable[Any], initial: Any = no_default) -> Iterator[Any]:
+    if initial is no_default:
+        return accumulate_reduce(add, iterable)
 
-    except StopIteration as error:
-        if default is marker:
-            raise ValueError("at() called with n larger than iterable length.") from error
-
-        return cast(U, default)
+    return accumulate_fold(initial, add, iterable)
 
 
 @overload
-def at_or_last(iterable: Iterable[T], n: int, default: Marker = marker) -> T:
-    ...
+def accumulate_product(iterable: Iterable[P]) -> Iterator[P]:
+    ...  # pragma: overload
 
 
 @overload
-def at_or_last(iterable: Iterable[T], n: int, default: U) -> Union[T, U]:
-    ...
+def accumulate_product(iterable: Iterable[P], initial: P) -> Iterator[P]:
+    ...  # pragma: overload
 
 
-def at_or_last(
-    iterable: Iterable[T], n: int, default: MarkerOr[U] = marker
-) -> Union[T, U]:
-    return last(iter_slice(iterable, n + 1), default=default)
+def accumulate_product(iterable: Iterable[Any], initial: Any = no_default) -> Iterator[Any]:
+    if initial is no_default:
+        return accumulate_reduce(mul, iterable)
+
+    return accumulate_fold(initial, mul, iterable)
 
 
-def copy_safe(iterable: Iterable[T], n: int = 2) -> Tuple[Iterator[T], ...]:
+AT_ON_EMPTY = "at() called on an empty iterable"
+
+
+@overload
+def at(index: int, iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
+
+
+@overload
+def at(index: int, iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...  # pragma: overload
+
+
+def at(index: int, iterable: Iterable[Any], default: Any = no_default) -> Any:
+    iterator = drop(index, iterable)
+
+    result = next(iterator, marker)
+
+    if result is marker:
+        if default is no_default:
+            raise ValueError(AT_ON_EMPTY)
+
+        return default
+
+    return result
+
+
+AT_OR_LAST_ON_EMPTY = "at_or_last() called on an empty iterable"
+
+
+@overload
+def at_or_last(index: int, iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
+
+
+@overload
+def at_or_last(index: int, iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...  # pragma: overload
+
+
+def at_or_last(index: int, iterable: Iterable[Any], default: Any = no_default) -> Any:
+    iterator = take(index + 1, iterable)
+
+    result = last(iterator, marker)
+
+    if result is marker:
+        if default is no_default:
+            raise ValueError(AT_OR_LAST_ON_EMPTY)
+
+        return default
+
+    return result
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[0]) -> EmptyTuple:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[1]) -> Tuple1[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[2]) -> Tuple2[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[3]) -> Tuple3[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[4]) -> Tuple4[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[5]) -> Tuple5[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[6]) -> Tuple6[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[7]) -> Tuple7[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: Literal[8]) -> Tuple8[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy_unsafe(iterable: Iterable[T], copies: int) -> DynamicTuple[Iterator[T]]:
+    ...  # pragma: overload
+
+
+def copy_unsafe(iterable: Iterable[T], copies: int = 2) -> DynamicTuple[Iterator[T]]:
+    return standard_copy(iterable, copies)
+
+
+copy_infinite = copy_unsafe
+
+
+@overload
+def copy(iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[0]) -> EmptyTuple:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[1]) -> Tuple1[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[2]) -> Tuple2[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[3]) -> Tuple3[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[4]) -> Tuple4[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[5]) -> Tuple5[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[6]) -> Tuple6[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[7]) -> Tuple7[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: Literal[8]) -> Tuple8[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def copy(iterable: Iterable[T], copies: int) -> DynamicTuple[Iterator[T]]:
+    ...  # pragma: overload
+
+
+def copy(iterable: Iterable[T], copies: int = 2) -> DynamicTuple[Iterator[T]]:
     collected = tuple(iterable)
 
-    return tuple(iter(collected) for _ in range(n))
+    return tuple(iter(collected) for _ in range(copies))
 
 
-copy_infinite = copy
+def drop(size: int, iterable: Iterable[T]) -> Iterator[T]:
+    return iter_slice(iterable, size, None)
 
 
-def drop(iterable: Iterable[T], n: int) -> Iterator[T]:
-    return iter_slice(iterable, n, None)
+skip = drop
 
 
-def take(iterable: Iterable[T], n: int) -> Iterator[T]:
-    return iter_slice(iterable, n)
+def take(size: int, iterable: Iterable[T]) -> Iterator[T]:
+    return iter_slice(iterable, size)
 
 
-def step_by(iterable: Iterable[T], step: int) -> Iterator[T]:
+def step_by(step: int, iterable: Iterable[T]) -> Iterator[T]:
     return iter_slice(iterable, None, None, step)
 
 
-def group(iterable: Iterable[T], n: int) -> Iterator[Tuple[T, ...]]:
-    iterators = (iter(iterable),) * n
-
-    return zip(*iterators)
+@overload
+def groups(size: Literal[0], iterable: Iterable[T]) -> Iterator[Never]:
+    ...  # pragma: overload
 
 
 @overload
-def group_longest(iterable: Iterable[T], n: int) -> Iterator[Tuple[Optional[T], ...]]:
-    ...
+def groups(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
+    ...  # pragma: overload
 
 
 @overload
-def group_longest(iterable: Iterable[T], n: int, fill: T) -> Iterator[Tuple[T, ...]]:
-    ...
+def groups(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
+    ...  # pragma: overload
 
 
-def group_longest(
-    iterable: Iterable[T], n: int, fill: Optional[T] = None
-) -> Iterator[Tuple[Optional[T], ...]]:
-    iterators = (iter(iterable),) * n
-
-    return zip_longest(*iterators, fill=fill)
+@overload
+def groups(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
+    ...  # pragma: overload
 
 
-def flatten(iterable: Iterable[Iterable[T]]) -> Iterator[T]:
-    return chain_from_iterable(iterable)
+@overload
+def groups(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
+    ...  # pragma: overload
 
 
-def partition(
-    iterable: Iterable[T], predicate: Callable[[T], Any] = bool
+@overload
+def groups(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    ...  # pragma: overload
+
+
+def groups(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    return zip(*repeat(iter(iterable), size))
+
+
+@overload
+def groups_longest(size: Literal[0], iterable: Iterable[T]) -> Iterator[Never]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[0], iterable: Iterable[T], fill: U) -> Iterator[Never]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(size: Literal[1], iterable: Iterable[T], fill: U) -> Iterator[Tuple1[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: Literal[2], iterable: Iterable[T], fill: U
+) -> Iterator[Tuple2[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: Literal[3], iterable: Iterable[T], fill: U
+) -> Iterator[Tuple3[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: Literal[4], iterable: Iterable[T], fill: U
+) -> Iterator[Tuple4[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: Literal[5], iterable: Iterable[T], fill: U
+) -> Iterator[Tuple5[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: Literal[6], iterable: Iterable[T], fill: U
+) -> Iterator[Tuple6[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: Literal[7], iterable: Iterable[T], fill: U
+) -> Iterator[Tuple7[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: Literal[8], iterable: Iterable[T], fill: U
+) -> Iterator[Tuple8[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+@overload
+def groups_longest(
+    size: int, iterable: Iterable[T], fill: U
+) -> Iterator[DynamicTuple[Union[T, U]]]:
+    ...  # pragma: overload
+
+
+def groups_longest(
+    size: int, iterable: Iterable[Any], fill: Optional[Any] = None
+) -> Iterator[DynamicTuple[Any]]:
+    return zip_longest(*repeat(iter(iterable), size), fill=fill)
+
+
+@overload
+def pairs_longest(iterable: Iterable[T]) -> Iterator[Tuple[Optional[T], Optional[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def pairs_longest(iterable: Iterable[T], fill: U) -> Iterator[Tuple[Union[T, U], Union[T, U]]]:
+    ...  # pragma: overload
+
+
+def pairs_longest(iterable: Iterable[Any], fill: Optional[Any] = None) -> Iterator[Tuple[Any, Any]]:
+    return groups_longest(2, iterable, fill)
+
+
+def pairs(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
+    return groups(2, iterable)
+
+
+def flatten(nested: Iterable[Iterable[T]]) -> Iterator[T]:
+    return chain_from_iterable(nested)
+
+
+def flat_map(function: Unary[T, Iterable[U]], iterable: Iterable[T]) -> Iterator[U]:
+    return flatten(map(function, iterable))
+
+
+def partition_unsafe(
+    predicate: Predicate[T], iterable: Iterable[T]
 ) -> Tuple[Iterator[T], Iterator[T]]:
+    for_true, for_false = copy_unsafe(iterable)
+
+    return filter(predicate, for_true), filter_false(predicate, for_false)
+
+
+partition_infinite = partition_unsafe
+
+
+def partition(predicate: Predicate[T], iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
     for_true, for_false = copy(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
 
 
-partition_infinite = partition
+def prepend(item: T, iterable: Iterable[T]) -> Iterator[T]:
+    return chain(once(item), iterable)
 
 
-def partition_safe(
-    iterable: Iterable[T], predicate: Callable[[T], Any] = bool
-) -> Tuple[Iterator[T], Iterator[T]]:
-    for_true, for_false = copy_safe(iterable)
-
-    return filter(predicate, for_true), filter_false(predicate, for_false)
+def append(item: T, iterable: Iterable[T]) -> Iterator[T]:
+    return chain(iterable, once(item))
 
 
-def prepend(iterable: Iterable[T], item: T) -> Iterator[T]:
-    return chain((item,), iterable)
+@overload
+def group(iterable: Iterable[T], key: None = ...) -> Iterator[Tuple[T, Iterator[T]]]:
+    ...  # pragma: overload
 
 
-def append(iterable: Iterable[T], item: T) -> Iterator[T]:
-    return chain(iterable, (item,))
+@overload
+def group(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[Tuple[U, Iterator[T]]]:
+    ...  # pragma: overload
 
 
-def list_chunk(iterable: Iterable[T], n: int) -> Iterator[List[T]]:
+def group(
+    iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None
+) -> Iterator[Tuple[Any, Iterator[Any]]]:
+    return standard_group(iterable, key)
+
+
+@overload
+def group_list(iterable: Iterable[T], key: None = ...) -> Iterator[Tuple[T, List[T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def group_list(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[Tuple[U, List[T]]]:
+    ...  # pragma: overload
+
+
+def group_list(
+    iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None
+) -> Iterator[Tuple[Any, List[Any]]]:
+    for group_key, group_iterator in group(iterable, key):
+        yield (group_key, list(group_iterator))
+
+
+@overload
+def group_dict(iterable: Iterable[Q], key: None = ...) -> Dict[Q, List[Q]]:
+    ...  # pragma: overload
+
+
+@overload
+def group_dict(iterable: Iterable[T], key: Unary[T, Q]) -> Dict[Q, List[T]]:
+    ...  # pragma: overload
+
+
+def group_dict(
+    iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None
+) -> Dict[Any, List[Any]]:
+    result: Dict[Any, List[Any]] = {}
+
+    for group_key, group_iterator in group(iterable, key):
+        result.setdefault(group_key, []).extend(group_iterator)
+
+    return result
+
+
+@overload
+def count_dict(iterable: Iterable[Q], key: None = ...) -> Counter[Q]:
+    ...  # pragma: overload
+
+
+@overload
+def count_dict(iterable: Iterable[T], key: Unary[T, Q]) -> Counter[Q]:
+    ...  # pragma: overload
+
+
+def count_dict(iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None) -> Counter[Any]:
+    return counter_dict(iterable if key is None else map(key, iterable))
+
+
+def chunks(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
     iterator = iter(iterable)
 
     while True:
-        part = list(take(iterator, n))
+        chunk = list(take(size, iterator))
 
-        if not part:
+        if not chunk:
             break
 
-        yield part
+        yield chunk
 
 
-def tuple_chunk(iterable: Iterable[T], n: int) -> Iterator[Tuple[T, ...]]:
-    iterator = iter(iterable)
-
-    while True:
-        part = tuple(take(iterator, n))
-
-        if not part:
-            break
-
-        yield part
-
-
-def iter_chunk(iterable: Iterable[T], n: int) -> Iterator[Iterator[T]]:
+def iter_chunks_unsafe(size: int, iterable: Iterable[T]) -> Iterator[Iterator[T]]:
     source = iter(iterable)
 
     while True:
-        item = next(source, marker)
+        empty, source = is_empty(source)
 
-        if item is marker:
+        if empty:
             return
 
-        source, iterator = copy(prepend(source, cast(T, item)))
+        source, iterator = copy_unsafe(source)
 
-        yield take(iterator, n)
+        yield take(size, iterator)
 
-        exhaust(source, n)
-
-
-def iter_len(iterable: Iterable[T]) -> int:
-    counter = count()
-
-    deque(zip(iterable, counter), 0)
-
-    return next(counter)
+        consume(take(size, source))
 
 
-def sum(iterable: Iterable[T], start: MarkerOr[T] = marker) -> T:
-    if start is marker:
+iter_chunks_infinite = iter_chunks_unsafe
+
+
+def iter_chunks(size: int, iterable: Iterable[T]) -> Iterator[Iterator[T]]:
+    source = iter(iterable)
+
+    while True:
+        empty, source = is_empty(source)
+
+        if empty:
+            return
+
+        source, iterator = copy(source)
+
+        yield take(size, iterator)
+
+        consume(take(size, source))
+
+
+def iter_length(iterable: Iterable[T]) -> int:
+    counting = count()
+
+    consume(zip(iterable, counting))
+
+    return next(counting)
+
+
+@overload
+def sum(iterable: Iterable[S]) -> S:
+    ...  # pragma: overload
+
+
+@overload
+def sum(iterable: Iterable[S], initial: S) -> S:
+    ...  # pragma: overload
+
+
+def sum(iterable: Iterable[Any], initial: Any = no_default) -> Any:
+    if initial is no_default:
         return reduce(add, iterable)
 
-    return reduce(add, iterable, cast(T, start))
+    return fold(initial, add, iterable)
 
 
-def product(iterable: Iterable[T], start: MarkerOr[T] = marker) -> T:
-    if start is marker:
+@overload
+def product(iterable: Iterable[P]) -> P:
+    ...  # pragma: overload
+
+
+@overload
+def product(iterable: Iterable[P], initial: P) -> P:
+    ...  # pragma: overload
+
+
+def product(iterable: Iterable[Any], initial: Any = no_default) -> Any:
+    if initial is no_default:
         return reduce(mul, iterable)
 
-    return reduce(mul, iterable, cast(T, start))
+    return fold(initial, mul, iterable)
 
 
-def iterate(function: Callable[[T], T], value: T) -> Iterator[T]:
+def iterate(function: Unary[T, T], value: T) -> Iterator[T]:
     while True:
         yield value
         value = function(value)
 
 
-def with_iter(context_manager: ContextManager[Iterable[T]]) -> Iterator[T]:
+def iter_with(context_manager: ContextManager[Iterable[T]]) -> Iterator[T]:
     with context_manager as iterable:
         yield from iterable
 
 
-def collapse(
-    iterable: Iterable[T],
-    base_type: Optional[Type[Any]] = None,
-    levels: Optional[int] = None,
-) -> Iterator[T]:
-    def walk(node: Union[T, Iterable[T]], level: int) -> Iterator[T]:
-        if (
-            ((levels is not None) and (level > levels))
-            or isinstance(node, (str, bytes))
-            or ((base_type is not None) and isinstance(node, base_type))
-        ):
-            yield cast(T, node)
-            return
+def walk(node: RecursiveIterable[T]) -> Iterator[T]:
+    if is_string(node) or is_bytes(node):
+        yield node  # type: ignore
+        return
 
-        try:
-            tree = iter(node)  # type: ignore
-
-        except TypeError:
-            yield cast(T, node)
-
-            return
-
-        else:
-            for child in tree:
-                for item in walk(child, level + 1):
-                    yield item
-
-    yield from walk(iterable, 0)
-
-
-def side_effect(
-    iterable: Iterable[T],
-    function: Callable[[T], None],
-    before: Optional[Callable[[], None]] = None,
-    after: Optional[Callable[[], None]] = None,
-) -> Iterator[T]:
     try:
-        if before is not None:
-            before()
+        tree = iter(node)  # type: ignore
+
+    except TypeError:
+        yield node  # type: ignore
+        return
+
+    else:
+        for child in tree:
+            yield from walk(child)
+
+
+def collapse(iterable: Iterable[RecursiveIterable[T]]) -> Iterator[T]:
+    return walk(iterable)
+
+
+def pad(
+    value: U,
+    iterable: Iterable[T],
+    size: Optional[int] = None,
+    *,
+    multiple: bool = False,
+) -> Iterator[Union[T, U]]:
+    if size is None:
+        yield from chain(iterable, repeat(value))  # type: ignore
+
+    else:
+        count = 0
 
         for item in iterable:
-            function(item)
+            count += 1
+            yield item
+
+        length = (size - count) % size if multiple else (size - count)
+
+        if length > 0:
+            yield from repeat(value, length)
+
+
+def pad_with(
+    function: Unary[int, U],
+    iterable: Iterable[T],
+    size: Optional[int] = None,
+    *,
+    multiple: bool = False,
+) -> Iterator[Union[T, U]]:
+    index = 0
+
+    for item in iterable:
+        yield item
+        index += 1
+
+    if size is None:
+        while True:
+            yield function(index)
+            index += 1
+
+    else:
+        length = (size - index) % size if multiple else (size - index)
+
+        if length > 0:
+            for index in range(index, index + length):
+                yield function(index)
+
+
+def contains(value: U, iterable: Iterable[T]) -> bool:
+    return any(item == value for item in iterable)
+
+
+def contains_identity(value: T, iterable: Iterable[T]) -> bool:
+    return any(item is value for item in iterable)
+
+
+@overload
+def all_unique_fast(iterable: Iterable[Q], key: None = ...) -> bool:
+    ...  # pragma: overload
+
+
+@overload
+def all_unique_fast(iterable: Iterable[T], key: Unary[T, Q]) -> bool:
+    ...  # pragma: overload
+
+
+def all_unique_fast(iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None) -> bool:
+    is_unique, _ = is_empty(duplicates_fast(iterable, key))
+
+    return is_unique
+
+
+def all_unique(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> bool:
+    is_unique, _ = is_empty(duplicates(iterable, key))
+
+    return is_unique
+
+
+def all_equal(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> bool:
+    groups = group(iterable, key)
+
+    return next(groups, marker) is marker or next(groups, marker) is marker
+
+
+def remove(predicate: Predicate[T], iterable: Iterable[T]) -> Iterator[T]:
+    return filter_false(predicate, iterable)
+
+
+# XXX: more concise name?
+
+
+def remove_duplicates(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> Iterator[T]:
+    for item in group(iterable, key):
+        _, iterator = item
+
+        yield next(iterator)
+
+
+def spy(size: int, iterable: Iterable[T]) -> Tuple[List[T], Iterator[T]]:
+    iterator = iter(iterable)
+
+    head = list(take(size, iterator))
+
+    return head.copy(), chain(head, iterator)
+
+
+PEEK_ON_EMPTY = "peek() called on an empty iterable"
+
+
+@overload
+def peek(iterable: Iterable[T]) -> Tuple[T, Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def peek(iterable: Iterable[T], default: U) -> Tuple[Union[T, U], Iterator[T]]:
+    ...  # pragma: overload
+
+
+def peek(iterable: Iterable[Any], default: Any = no_default) -> Tuple[Any, Iterator[Any]]:
+    iterator = iter(iterable)
+
+    result = next(iterator, marker)
+
+    if result is marker:
+        if default is no_default:
+            raise ValueError(PEEK_ON_EMPTY)
+
+        return (default, iterator)
+
+    return (result, prepend(result, iterator))
+
+
+def has_next(iterable: Iterable[T]) -> Tuple[bool, Iterator[T]]:
+    iterator = iter(iterable)
+
+    result = next(iterator, marker)
+
+    if result is marker:
+        return (False, iterator)
+
+    return (True, prepend(result, iterator))  # type: ignore
+
+
+def is_empty(iterable: Iterable[T]) -> Tuple[bool, Iterator[T]]:
+    has_some, iterator = has_next(iterable)
+
+    return (not has_some, iterator)
+
+
+def next_of(iterator: Iterator[T]) -> Nullary[T]:
+    def call() -> T:
+        return next(iterator)
+
+    return call
+
+
+def combine(*iterables: Iterable[T]) -> Iterator[T]:
+    pending = len(iterables)
+    nexts = cycle(next_of(iter(iterable)) for iterable in iterables)
+
+    while pending:
+        try:
+            for next in nexts:
+                yield next()
+
+        except StopIteration:
+            pending -= 1
+            nexts = cycle(take(pending, nexts))
+
+
+@overload
+def distribute_unsafe(count: Literal[0], iterable: Iterable[T]) -> EmptyTuple:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[1], iterable: Iterable[T]) -> Tuple1[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[2], iterable: Iterable[T]) -> Tuple2[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[3], iterable: Iterable[T]) -> Tuple3[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[4], iterable: Iterable[T]) -> Tuple4[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[5], iterable: Iterable[T]) -> Tuple5[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[6], iterable: Iterable[T]) -> Tuple6[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[7], iterable: Iterable[T]) -> Tuple7[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: Literal[8], iterable: Iterable[T]) -> Tuple8[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute_unsafe(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
+    ...  # pragma: overload
+
+
+def distribute_unsafe(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
+    iterators = copy_unsafe(iterable, count)
+
+    return tuple(step_by(count, drop(index, iterator)) for index, iterator in enumerate(iterators))
+
+
+distribute_infinite = distribute_unsafe
+
+
+@overload
+def distribute(count: Literal[0], iterable: Iterable[T]) -> EmptyTuple:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[1], iterable: Iterable[T]) -> Tuple1[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[2], iterable: Iterable[T]) -> Tuple2[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[3], iterable: Iterable[T]) -> Tuple3[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[4], iterable: Iterable[T]) -> Tuple4[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[5], iterable: Iterable[T]) -> Tuple5[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[6], iterable: Iterable[T]) -> Tuple6[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[7], iterable: Iterable[T]) -> Tuple7[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: Literal[8], iterable: Iterable[T]) -> Tuple8[Iterator[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def distribute(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
+    ...  # pragma: overload
+
+
+def distribute(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
+    iterators = copy(iterable, count)
+
+    return tuple(step_by(count, drop(index, iterator)) for index, iterator in enumerate(iterators))
+
+
+def divide(count: int, iterable: Iterable[T]) -> Iterator[Iterator[T]]:
+    array = list(iterable)
+
+    size, last = divmod(len(array), count)
+
+    stop = 0
+
+    for index in range(count):
+        start = stop
+        stop += size
+
+        if index < last:
+            stop += 1
+
+        yield iter(array[start:stop])
+
+
+# interleave(repeat(value), iterable) -> (value, item_1, ..., value, item_n)
+# drop(1, ...) -> (item_1, ..., value, item_n)
+
+
+def intersperse(value: T, iterable: Iterable[T]) -> Iterator[T]:
+    return drop(1, interleave(repeat(value), iterable))
+
+
+def intersperse_with(function: Nullary[T], iterable: Iterable[T]) -> Iterator[T]:
+    return drop(1, interleave(repeat_with(function), iterable))
+
+
+def interleave(*iterables: Iterable[T]) -> Iterator[T]:
+    return flatten(zip(*iterables))
+
+
+def interleave_longest(*iterables: Iterable[T]) -> Iterator[T]:
+    iterator = flatten(zip_longest(*iterables, fill=marker))
+    return (item for item in iterator if item is not marker)  # type: ignore
+
+
+def position_all(predicate: Predicate[T], iterable: Iterable[T]) -> Iterator[int]:
+    for index, item in enumerate(iterable):
+        if predicate(item):
+            yield index
+
+
+POSITION_NO_MATCH = "position() has not found any matches"
+
+
+@overload
+def position(predicate: Predicate[T], iterable: Iterable[T]) -> int:
+    ...  # pragma: overload
+
+
+@overload
+def position(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[int, U]:
+    ...  # pragma: overload
+
+
+def position(predicate: Predicate[T], iterable: Iterable[T], default: Any = no_default) -> Any:
+    index = next(position_all(predicate, iterable), None)
+
+    if index is None:
+        if default is no_default:
+            raise ValueError(POSITION_NO_MATCH)
+
+        return default
+
+    return index
+
+
+def find_all(predicate: Predicate[T], iterable: Iterable[T]) -> Iterator[T]:
+    return filter(predicate, iterable)
+
+
+FIND_NO_MATCH = "find() has not found any matches"
+FIND_ON_EMPTY = "find() called on an empty iterable"
+
+
+@overload
+def find(predicate: Predicate[T], iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
+
+
+@overload
+def find(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...  # pragma: overload
+
+
+def find(predicate: Predicate[Any], iterable: Iterable[Any], default: Any = no_default) -> Any:
+    item = marker
+
+    for item in iterable:
+        if predicate(item):
+            return item
+
+    if default is no_default:
+        raise ValueError(FIND_ON_EMPTY if item is marker else FIND_NO_MATCH)
+
+    return default
+
+
+FIND_OR_FIRST_ON_EMPTY = "find_or_first() called on an empty iterable"
+
+
+@overload
+def find_or_first(predicate: Predicate[T], iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
+
+
+@overload
+def find_or_first(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...  # pragma: overload
+
+
+def find_or_first(
+    predicate: Predicate[Any], iterable: Iterable[Any], default: Any = no_default
+) -> Any:
+    iterator = iter(iterable)
+
+    first = next(iterator, marker)
+
+    if first is marker:
+        if default is no_default:
+            raise ValueError(FIND_OR_FIRST_ON_EMPTY)
+
+        first = default
+
+    for item in prepend(first, iterator):
+        if predicate(item):
+            return item
+
+    return first
+
+
+FIND_OR_LAST_ON_EMPTY = "find_or_last() called on an empty iterable"
+
+
+@overload
+def find_or_last(predicate: Predicate[T], iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
+
+
+@overload
+def find_or_last(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...  # pragma: overload
+
+
+def find_or_last(
+    predicate: Predicate[Any], iterable: Iterable[Any], default: Any = no_default
+) -> Any:
+    item = marker
+
+    for item in iterable:
+        if predicate(item):
+            return item
+
+    if item is marker:
+        if default is no_default:
+            raise ValueError(FIND_OR_LAST_ON_EMPTY)
+
+        return default
+
+    return item
+
+
+MIN_MAX_ON_EMPTY = "min_max() called on an empty iterable"
+
+
+@overload
+def min_max(iterable: Iterable[ST], *, key: None = ...) -> Tuple[ST, ST]:
+    ...
+
+
+@overload
+def min_max(iterable: Iterable[T], *, key: Unary[T, ST]) -> Tuple[T, T]:
+    ...
+
+
+@overload
+def min_max(
+    iterable: Iterable[ST], *, key: None = ..., default: Tuple[U, V]
+) -> Union[Tuple[ST, ST], Tuple[U, V]]:
+    ...
+
+
+@overload
+def min_max(
+    iterable: Iterable[T], *, key: Unary[T, ST], default: Tuple[U, V]
+) -> Union[Tuple[T, T], Tuple[U, V]]:
+    ...
+
+
+def min_max(
+    iterable: Iterable[Any],
+    *,
+    key: Optional[Unary[Any, Any]] = None,
+    default: Any = no_default,
+) -> Tuple[Any, Any]:
+    iterator = iter(iterable)
+
+    result = next(iterator, marker)
+
+    if result is marker:
+        if default is no_default:
+            raise ValueError(MIN_MAX_ON_EMPTY)
+
+        default_min, default_max = default
+
+        return (default_min, default_max)
+
+    return min_max_simple(iterator, result) if key is None else min_max_by(iterator, result, key)
+
+
+def min_max_simple(iterable: Iterable[ST], value: ST) -> Tuple[ST, ST]:
+    low = high = value
+
+    for item in iterable:
+        if item < low:  # type: ignore  # investigate
+            low = item
+
+        if high < item:  # type: ignore  # investigate
+            high = item
+
+    return (low, high)
+
+
+def min_max_by(iterable: Iterable[T], value: T, key: Unary[T, ST]) -> Tuple[T, T]:
+    low = high = value
+    low_key = high_key = key(value)
+
+    for item in iterable:
+        item_key = key(item)
+
+        if item_key < low_key:  # type: ignore  # investigate
+            low_key = item_key
+            low = item
+
+        if high_key < item_key:  # type: ignore  # investigate
+            high_key = item_key
+            high = item
+
+    return (low, high)
+
+
+def filter_except(
+    validate: Unary[T, Any], iterable: Iterable[T], *errors: Type[AnyException]
+) -> Iterator[T]:
+    for item in iterable:
+        try:
+            validate(item)
+
+        except errors:
+            pass
+
+        else:
+            yield item
+
+
+def map_except(
+    function: Unary[T, U], iterable: Iterable[T], *errors: Type[AnyException]
+) -> Iterator[U]:
+    for item in iterable:
+        try:
+            yield function(item)
+
+        except errors:
+            pass
+
+
+def iter_except(function: Nullary[T], *errors: Type[AnyException]) -> Iterator[T]:
+    try:
+        while True:
+            yield function()
+
+    except errors:
+        pass
+
+
+LAST_WITH_TAIL_ON_EMPTY = "last_with_tail() called on an empty iterable"
+
+
+@overload
+def last_with_tail(iterable: Iterable[T]) -> T:
+    ...  # pragma: overload
+
+
+@overload
+def last_with_tail(iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...  # pragma: overload
+
+
+def last_with_tail(iterable: Iterable[Any], default: Any = no_default) -> Any:
+    try:
+        iterator = reversed(iterable)  # type: ignore
+
+    except TypeError:
+        iterator = tail(1, iterable)
+
+    result = next(iterator, marker)
+
+    if result is marker:
+        if default is no_default:
+            raise ValueError(LAST_WITH_TAIL_ON_EMPTY)
+
+        return default
+
+    return result
+
+
+def tail(size: int, iterable: Iterable[T]) -> Iterator[T]:
+    return iter(deque(iterable, size))
+
+
+STRICT_TRUE = True
+STRICT_FALSE = False
+REVERSE_TRUE = True
+REVERSE_FALSE = False
+
+
+COMPARE: Dict[Tuple[bool, bool], Union[Compare[LT, LT], Compare[ST, ST]]] = {  # type: ignore
+    (STRICT_FALSE, REVERSE_FALSE): less_or_equal,
+    (STRICT_FALSE, REVERSE_TRUE): greater_or_equal,
+    (STRICT_TRUE, REVERSE_FALSE): less,
+    (STRICT_TRUE, REVERSE_TRUE): greater,
+}
+
+
+@overload
+def is_sorted(
+    iterable: Iterable[LT],
+    key: None = ...,
+    *,
+    strict: Literal[False] = ...,
+    reverse: bool = ...,
+) -> bool:
+    ...  # pragma: overload
+
+
+@overload
+def is_sorted(
+    iterable: Iterable[ST],
+    key: None = ...,
+    *,
+    strict: Literal[True],
+    reverse: bool = ...,
+) -> bool:
+    ...  # pragma: overload
+
+
+@overload
+def is_sorted(
+    iterable: Iterable[T],
+    key: Unary[T, LT],
+    *,
+    strict: Literal[False] = ...,
+    reverse: bool = ...,
+) -> bool:
+    ...  # pragma: overload
+
+
+@overload
+def is_sorted(
+    iterable: Iterable[T],
+    key: Unary[T, ST],
+    *,
+    strict: Literal[True],
+    reverse: bool = ...,
+) -> bool:
+    ...  # pragma: overload
+
+
+def is_sorted(
+    iterable: Iterable[Any],
+    key: Optional[Unary[Any, Any]] = None,
+    *,
+    strict: bool = False,
+    reverse: bool = False,
+) -> bool:
+    if key is None:
+        return is_sorted_simple(iterable, strict=strict, reverse=reverse)
+
+    return is_sorted_by(iterable, key, strict=strict, reverse=reverse)
+
+
+def is_sorted_simple(
+    iterable: Iterable[Any], *, strict: bool = False, reverse: bool = False
+) -> bool:
+    compare = COMPARE[(strict, reverse)]
+    return all(map(unpack_binary(compare), pairs_windows(iterable)))
+
+
+def is_sorted_by(
+    iterable: Iterable[Any], key: Unary[Any, Any], *, strict: bool = False, reverse: bool = False
+) -> bool:
+    return is_sorted_simple(map(key, iterable), strict=strict, reverse=reverse)
+
+
+@overload
+def sort(iterable: Iterable[ST], *, key: None = ..., reverse: bool = ...) -> Iterator[ST]:
+    ...  # pragma: overload
+
+
+@overload
+def sort(iterable: Iterable[T], *, key: Unary[T, ST], reverse: bool = ...) -> Iterator[T]:
+    ...  # pragma: overload
+
+
+def sort(
+    iterable: Iterable[Any],
+    *,
+    key: Optional[Unary[Any, Any]] = None,
+    reverse: bool = False,
+) -> Iterator[Any]:
+    return iter(sorted(iterable, key=key, reverse=reverse))
+
+
+def reverse(iterable: Iterable[T]) -> Iterator[T]:
+    try:
+        return reversed(iterable)  # type: ignore
+
+    except TypeError:
+        return reversed(list(iterable))
+
+
+def list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
+    iterator = iter(iterable)
+
+    window = deque(take(size, iterator), size)
+
+    # list(window) to copy, since windows are mutable
+
+    if len(window) == size:
+        yield list(window)
+
+    for item in iterator:
+        window.append(item)
+        yield list(window)
+
+
+@overload
+def tuple_windows(size: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    ...  # pragma: overload
+
+
+def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    for window in list_windows(size, iterable):
+        yield tuple(window)
+
+
+def pairs_windows(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
+    return tuple_windows(2, iterable)
+
+
+def iter_windows(size: int, iterable: Iterable[T]) -> Iterator[Iterator[T]]:
+    for window in list_windows(size, iterable):
+        yield iter(window)
+
+
+def side_effect(function: Unary[T, Any], iterable: Iterable[T]) -> Iterator[T]:
+    for item in iterable:
+        function(item)
+        yield item
+
+
+def duplicates_fast_simple(iterable: Iterable[Q]) -> Iterator[Q]:
+    seen: Set[Q] = set()
+    add_to_seen = seen.add
+
+    for item in iterable:
+        if item in seen:
+            yield item
+
+        else:
+            add_to_seen(item)
+
+
+def duplicates_fast_by(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
+    seen_values: Set[Q] = set()
+    add_to_seen_values = seen_values.add
+
+    for item in iterable:
+        value = key(item)
+
+        if value in seen_values:
+            yield item
+
+        else:
+            add_to_seen_values(value)
+
+
+@overload
+def duplicates_fast(iterable: Iterable[Q], key: None = ...) -> Iterator[Q]:
+    ...  # pragma: overload
+
+
+@overload
+def duplicates_fast(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
+    ...  # pragma: overload
+
+
+def duplicates_fast(
+    iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None
+) -> Iterator[Any]:
+    return duplicates_fast_simple(iterable) if key is None else duplicates_fast_by(iterable, key)
+
+
+def duplicates_simple(iterable: Iterable[T]) -> Iterator[T]:
+    seen_set: Set[T] = set()
+    add_to_seen_set = seen_set.add
+    seen_list: List[T] = []
+    add_to_seen_list = seen_list.append
+
+    for item in iterable:
+        try:
+            if item in seen_set:
+                yield item
+
+            else:
+                add_to_seen_set(item)
+
+        except TypeError:
+            if item in seen_list:
+                yield item
+
+            else:
+                add_to_seen_list(item)
+
+
+def duplicates_by(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[T]:
+    seen_values_set: Set[U] = set()
+    add_to_seen_values_set = seen_values_set.add
+    seen_values_list: List[U] = []
+    add_to_seen_values_list = seen_values_list.append
+
+    for item in iterable:
+        value = key(item)
+
+        try:
+            if value in seen_values_set:
+                yield item
+
+            else:
+                add_to_seen_values_set(value)
+
+        except TypeError:
+            if value in seen_values_list:
+                yield item
+
+            else:
+                add_to_seen_values_list(value)
+
+
+def duplicates(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> Iterator[T]:
+    return duplicates_simple(iterable) if key is None else duplicates_by(iterable, key)
+
+
+def unique_fast_simple(iterable: Iterable[Q]) -> Iterator[Q]:
+    seen: Set[Q] = set()
+    add_to_seen = seen.add
+
+    for item in iterable:
+        if item not in seen:
+            add_to_seen(item)
 
             yield item
 
-    finally:
-        if after is not None:
-            after()
+
+def unique_fast_by(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
+    seen_values: Set[Q] = set()
+    add_to_seen_values = seen_values.add
+
+    for item in iterable:
+        value = key(item)
+
+        if value not in seen_values:
+            add_to_seen_values(value)
+
+            yield item
 
 
-def distinct(iterable: Iterable[T], key: Optional[Callable[[T], U]] = None) -> Iterator[T]:
-    if key is None:
-        seen_set: Set[T] = set()
-        add_to_seen_set = seen_set.add
-        seen_list: List[T] = []
-        add_to_seen_list = seen_list.append
+@overload
+def unique_fast(iterable: Iterable[Q], key: None = ...) -> Iterator[Q]:
+    ...  # pragma: overload
 
-        for element in iterable:
-            try:
-                if element not in seen_set:
-                    add_to_seen_set(element)
 
-                    yield element
+@overload
+def unique_fast(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
+    ...  # pragma: overload
 
-            except TypeError:
-                if element not in seen_list:
-                    add_to_seen_list(element)
 
-                    yield element
+def unique_fast(iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None) -> Iterator[Any]:
+    return unique_fast_simple(iterable) if key is None else unique_fast_by(iterable, key)
 
-    else:
-        seen_value_set: Set[U] = set()
-        add_to_seen_value_set = seen_value_set.add
-        seen_value_list: List[U] = []
-        add_to_seen_value_list = seen_value_list.append
 
-        for element in iterable:
-            value = key(element)
+def unique_simple(iterable: Iterable[T]) -> Iterator[T]:
+    seen_set: Set[T] = set()
+    add_to_seen_set = seen_set.add
+    seen_list: List[T] = []
+    add_to_seen_list = seen_list.append
 
-            try:
-                if value not in seen_value_set:
-                    add_to_seen_value_set(value)
+    for item in iterable:
+        try:
+            if item not in seen_set:
+                add_to_seen_set(item)
 
-                    yield element
+                yield item
 
-            except TypeError:
-                if value not in seen_value_list:
-                    add_to_seen_value_list(value)
+        except TypeError:
+            if item not in seen_list:
+                add_to_seen_list(item)
 
-                    yield element
+                yield item
+
+
+def unique_by(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[T]:
+    seen_values_set: Set[U] = set()
+    add_to_seen_values_set = seen_values_set.add
+    seen_values_list: List[U] = []
+    add_to_seen_values_list = seen_values_list.append
+
+    for item in iterable:
+        value = key(item)
+
+        try:
+            if value not in seen_values_set:
+                add_to_seen_values_set(value)
+
+                yield item
+
+        except TypeError:
+            if value not in seen_values_list:
+                add_to_seen_values_list(value)
+
+                yield item
+
+
+def unique(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> Iterator[T]:
+    return unique_simple(iterable) if key is None else unique_by(iterable, key)
+
+
+@overload
+def zip() -> Iterator[Never]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(__iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iterator[Tuple[A, B]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(
+    __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
+) -> Iterator[Tuple[A, B, C]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+) -> Iterator[Tuple[A, B, C, D]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+) -> Iterator[Tuple[A, B, C, D, E]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+) -> Iterator[Tuple[A, B, C, D, E, F]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+) -> Iterator[Tuple[A, B, C, D, E, F, G]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+    __iterable_h: Iterable[H],
+) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip(
+    __iterable_a: Iterable[Any],
+    __iterable_b: Iterable[Any],
+    __iterable_c: Iterable[Any],
+    __iterable_d: Iterable[Any],
+    __iterable_e: Iterable[Any],
+    __iterable_f: Iterable[Any],
+    __iterable_g: Iterable[Any],
+    __iterable_h: Iterable[Any],
+    __iterable_next: Iterable[Any],
+    *iterables: Iterable[Any],
+) -> Iterator[DynamicTuple[Any]]:
+    ...  # pragma: overload
+
+
+def zip(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
+    return standard_zip(*iterables)
+
+
+@overload
+def zip_equal() -> Iterator[Never]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(__iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iterator[Tuple[A, B]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(
+    __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
+) -> Iterator[Tuple[A, B, C]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+) -> Iterator[Tuple[A, B, C, D]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+) -> Iterator[Tuple[A, B, C, D, E]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+) -> Iterator[Tuple[A, B, C, D, E, F]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+) -> Iterator[Tuple[A, B, C, D, E, F, G]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+    __iterable_h: Iterable[H],
+) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_equal(
+    __iterable_a: Iterable[Any],
+    __iterable_b: Iterable[Any],
+    __iterable_c: Iterable[Any],
+    __iterable_d: Iterable[Any],
+    __iterable_e: Iterable[Any],
+    __iterable_f: Iterable[Any],
+    __iterable_g: Iterable[Any],
+    __iterable_h: Iterable[Any],
+    __iterable_next: Iterable[Any],
+    *iterables: Iterable[Any],
+) -> Iterator[DynamicTuple[Any]]:
+    ...  # pragma: overload
+
+
+def zip_equal(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
+    if PYTHON_3_10:
+        return standard_zip(*iterables, strict=True)
+
+    return zip_equal_simple(*iterables)
+
+
+SINGULAR = " "
+PLURAL = "s 1-"
+
+SHORTER = "zip_equal() argument {short} is shorter than argument{plural}{index}"
+LONGER = "zip_equal() argument {long} is longer than argument{plural}{index}"
+
+
+def format_shorter(index: int) -> str:
+    return SHORTER.format(
+        short=index + 1,
+        index=index,
+        plural=(PLURAL if index - 1 else SINGULAR),
+    )
+
+
+def format_longer(index: int) -> str:
+    return LONGER.format(
+        long=index + 1,
+        index=index,
+        plural=(PLURAL if index - 1 else SINGULAR),
+    )
+
+
+def zip_equal_simple(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
+    if not iterables:
+        return  # early return
+
+    for item in zip_longest(*iterables, fill=marker):  # check for length
+        head, *tail = item
+
+        if head is marker:  # argument longer than previous arguments
+            for index, value in enumerate(tail, 1):
+                if value is not marker:
+                    raise ValueError(format_longer(index))
+
+        else:  # argument shorter than previous ones
+            for index, value in enumerate(tail, 1):
+                if value is marker:
+                    raise ValueError(format_shorter(index))
+
+        yield item  # simply yield if everything is alright
+
+
+@overload
+def zip_longest() -> Iterator[Never]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A], __iterable_b: Iterable[B]
+) -> Iterator[Tuple[Optional[A], Optional[B]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+) -> Iterator[
+    Tuple[
+        Optional[A],
+        Optional[B],
+        Optional[C],
+        Optional[D],
+        Optional[E],
+        Optional[F],
+        Optional[G],
+    ]
+]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+    __iterable_h: Iterable[H],
+) -> Iterator[
+    Tuple[
+        Optional[A],
+        Optional[B],
+        Optional[C],
+        Optional[D],
+        Optional[E],
+        Optional[F],
+        Optional[G],
+        Optional[H],
+    ]
+]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[Any],
+    __iterable_b: Iterable[Any],
+    __iterable_c: Iterable[Any],
+    __iterable_d: Iterable[Any],
+    __iterable_e: Iterable[Any],
+    __iterable_f: Iterable[Any],
+    __iterable_g: Iterable[Any],
+    __iterable_h: Iterable[Any],
+    __iterable_next: Iterable[Any],
+    *iterables: Iterable[Any],
+) -> Iterator[DynamicTuple[Optional[Any]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(*, fill: T) -> Iterator[Never]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(__iterable_a: Iterable[A], *, fill: T) -> Iterator[Tuple[A]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A], __iterable_b: Iterable[B], *, fill: T
+) -> Iterator[Tuple[Union[A, T], Union[B, T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    *,
+    fill: T,
+) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    *,
+    fill: T,
+) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    *,
+    fill: T,
+) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    *,
+    fill: T,
+) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T], Union[F, T]]]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+    *,
+    fill: T,
+) -> Iterator[
+    Tuple[
+        Union[A, T],
+        Union[B, T],
+        Union[C, T],
+        Union[D, T],
+        Union[E, T],
+        Union[F, T],
+        Union[G, T],
+    ]
+]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+    __iterable_h: Iterable[H],
+    *,
+    fill: T,
+) -> Iterator[
+    Tuple[
+        Union[A, T],
+        Union[B, T],
+        Union[C, T],
+        Union[D, T],
+        Union[E, T],
+        Union[F, T],
+        Union[G, T],
+        Union[H, T],
+    ]
+]:
+    ...  # pragma: overload
+
+
+@overload
+def zip_longest(
+    __iterable_a: Iterable[Any],
+    __iterable_b: Iterable[Any],
+    __iterable_c: Iterable[Any],
+    __iterable_d: Iterable[Any],
+    __iterable_e: Iterable[Any],
+    __iterable_f: Iterable[Any],
+    __iterable_g: Iterable[Any],
+    __iterable_h: Iterable[Any],
+    __iterable_next: Iterable[Any],
+    *iterables: Iterable[Any],
+    fill: T,
+) -> Iterator[DynamicTuple[Union[Any, T]]]:
+    ...  # pragma: overload
+
+
+def zip_longest(
+    *iterables: Iterable[Any], fill: Optional[Any] = None
+) -> Iterator[DynamicTuple[Any]]:
+    return standard_zip_longest(*iterables, fillvalue=fill)
