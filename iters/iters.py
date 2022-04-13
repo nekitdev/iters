@@ -203,7 +203,7 @@ EMPTY_BYTES = bytes()
 EMPTY_STRING = str()
 
 
-class Iter(Iterable[T]):
+class Iter(Iterator[T]):
     _iterator: Iterator[T]
 
     @property
