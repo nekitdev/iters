@@ -406,13 +406,18 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip(cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]) -> AsyncIter[Tuple[A, B]]:
+    def create_zip(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[A, B]]:
         ...  # pragma: overload
 
     @overload
     @classmethod
     def create_zip(
-        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
     ) -> AsyncIter[Tuple[A, B, C]]:
         ...  # pragma: overload
 
@@ -523,7 +528,10 @@ class AsyncIter(AsyncIterator[T]):
     @overload
     @classmethod
     def create_zip_equal(
-        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
     ) -> AsyncIter[Tuple[A, B, C]]:
         ...  # pragma: overload
 
@@ -634,7 +642,10 @@ class AsyncIter(AsyncIterator[T]):
     @overload
     @classmethod
     def create_zip_longest(
-        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
     ) -> AsyncIter[Tuple[Optional[A], Optional[B], Optional[C]]]:
         ...  # pragma: overload
 
@@ -671,7 +682,9 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]]:
+    ) -> AsyncIter[
+        Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]
+    ]:
         ...  # pragma: overload
 
     @overload
@@ -743,8 +756,10 @@ class AsyncIter(AsyncIterator[T]):
 
     @no_type_check
     @classmethod
-    def create_zip_longest(cls, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Optional[Any]]]:
-        return cls.convert(zip_longest(*iterables))
+    def create_zip_longest(
+        cls, *iterables: AnyIterable[Any]
+    ) -> AsyncIter[DynamicTuple[Optional[Any]]]:
+        return cls.convert(async_zip_longest(*iterables))
 
     @overload
     @classmethod
@@ -753,7 +768,9 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip_longest_with(cls, __iterable_a: AnyIterable[A], *, fill: V) -> AsyncIter[Tuple[A]]:
+    def create_zip_longest_with(
+        cls, __iterable_a: AnyIterable[A], *, fill: V
+    ) -> AsyncIter[Tuple[A]]:
         ...  # pragma: overload
 
     @overload
@@ -814,7 +831,9 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_f: AnyIterable[F],
         *,
         fill: V,
-    ) -> AsyncIter[Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V], Union[F, V]]]:
+    ) -> AsyncIter[
+        Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V], Union[F, V]]
+    ]:
         ...  # pragma: overload
 
     @overload

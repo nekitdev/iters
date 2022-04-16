@@ -35,8 +35,6 @@ include = "iters"
 python = ">= 3.8"
 typing-extensions = ">= 4.1.1"
 
-anyio = ">= 3.5.0"
-
 [tool.poetry.dev-dependencies]
 black = "22.3.0"
 coverage = "6.3.2"

@@ -7,6 +7,7 @@ from typing import (
     Any,
     AsyncContextManager,
     AsyncGenerator,
+    AsyncIterable,
     AsyncIterator,
     Awaitable,
     Callable,
@@ -70,14 +71,6 @@ from iters.typing import (
     is_string,
 )
 from iters.utils import COMPARE, PYTHON_3_10, repeat, repeat_with, take, unpack_binary
-
-if PYTHON_3_10:
-    from builtins import aiter as standard_async_iter
-    from builtins import anext as standard_async_next
-
-else:
-    from iters.async_extensions import aiter as standard_async_iter
-    from iters.async_extensions import anext as standard_async_next
 
 __all__ = (
     "async_accumulate_fold",
@@ -302,6 +295,42 @@ LT = TypeVar("LT", bound=EitherLenientOrdered)
 ST = TypeVar("ST", bound=EitherStrictOrdered)
 
 
+if PYTHON_3_10:
+    from builtins import aiter as standard_async_iter
+    from builtins import anext as standard_async_next
+
+else:
+
+    def standard_async_iter(async_iterable: AsyncIterable[T]) -> AsyncIterator[T]:
+        if is_async_iterable(async_iterable):
+            return async_iterable.__aiter__()
+
+        raise not_async_iterable(async_iterable)
+
+    @overload
+    async def standard_async_next(async_iterator: AsyncIterator[T]) -> T:
+        ...
+
+    @overload
+    async def standard_async_next(async_iterator: AsyncIterator[T], default: U) -> Union[T, U]:
+        ...
+
+    async def standard_async_next(
+        async_iterator: AsyncIterator[Any], default: Any = no_default
+    ) -> Any:
+        if is_async_iterator(async_iterator):
+            try:
+                return await async_iterator.__anext__()
+
+            except StopAsyncIteration:
+                if default is no_default:
+                    raise
+
+                return default
+
+        raise not_async_iterator(async_iterator)
+
+
 @overload
 async def async_compare(
     left_iterable: AnyIterable[ST], right_iterable: AnyIterable[ST], key: None = ...
@@ -498,6 +527,18 @@ async def async_repeat_last(
 async def async_consume(iterable: AnyIterable[T]) -> None:
     async for _ in async_iter(iterable):
         pass
+
+
+NOT_ASYNC_ITERABLE = "{!r} is not an async iterable"
+NOT_ASYNC_ITERATOR = "{!r} is not an async iterator"
+
+
+def not_async_iterable(item: T) -> TypeError:
+    return TypeError(NOT_ASYNC_ITERABLE.format(type_name(item)))
+
+
+def not_async_iterator(item: T) -> TypeError:
+    return TypeError(NOT_ASYNC_ITERATOR.format(type_name(item)))
 
 
 NOT_ANY_ITERABLE = "{!r} is not an (async) iterable"
