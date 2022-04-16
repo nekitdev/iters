@@ -103,10 +103,11 @@ If you are interested in contributing to the project, please make sure to take a
 [Changelog]: https://github.com/nekitdev/iters.py/blob/main/CHANGELOG.md
 [Code of Conduct]: https://github.com/nekitdev/iters.py/blob/main/CODE_OF_CONDUCT.md
 [Contributing Guide]: https://github.com/nekitdev/iters.py/blob/main/CONTRIBUTING.md
+[Security]: https://github.com/nekitdev/iters.py/blob/main/SECURITY.md
 
 [License]: https://github.com/nekitdev/iters.py/blob/main/LICENSE
 [Package]: https://pypi.org/project/iters.py
-[Coverage]: https://codecov.io/github/nekitdev/iters.py
+[Coverage]: https://codecov.io/gh/nekitdev/iters.py
 
 [Documentation]: https://iters-py.readthedocs.io/
 
@@ -117,5 +118,5 @@ If you are interested in contributing to the project, please make sure to take a
 
 [Documentation Badge]: https://readthedocs.org/projects/iters-py/badge
 
-[Tests Badge]: https://github.com/nekitdev/iters.py/actions/workflows/tests.yml/badge.svg
-[Coverage Badge]: https://codecov.io/github/nekitdev/iters.py/branch/main/graph/badge.svg
+[Tests Badge]: https://github.com/nekitdev/iters.py/workflows/tests/badge.svg
+[Coverage Badge]: https://codecov.io/gh/nekitdev/iters.py/branch/main/graph/badge.svg
