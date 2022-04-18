@@ -30,7 +30,6 @@ from typing import (
     Iterable,
     Iterator,
     List,
-    Literal,
     Optional,
     Set,
     Tuple,
@@ -40,7 +39,7 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Never, TypeVarTuple, Unpack
+from typing_extensions import Literal, Never, TypeVarTuple, Unpack
 
 from iters.types import Ordering, marker, no_default
 from iters.typing import (

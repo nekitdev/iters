@@ -14,7 +14,6 @@ from typing import (
     Iterable,
     Iterator,
     List,
-    Literal,
     Optional,
     Reversible,
     Set,
@@ -26,7 +25,7 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Never, ParamSpec
+from typing_extensions import Literal, Never, ParamSpec
 
 from iters.types import Ordering
 from iters.typing import (

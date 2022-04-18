@@ -15,7 +15,6 @@ from typing import (
     Hashable,
     Iterator,
     List,
-    Literal,
     Optional,
     Reversible,
     Set,
@@ -27,7 +26,7 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Never, ParamSpec
+from typing_extensions import Literal, Never, ParamSpec
 
 from iters.async_utils import (
     async_accumulate_fold,

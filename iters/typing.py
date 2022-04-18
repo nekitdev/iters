@@ -12,10 +12,9 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
-    runtime_checkable,
 )
 
-from typing_extensions import Protocol, Self, TypeAlias, TypeGuard
+from typing_extensions import Protocol, Self, TypeAlias, TypeGuard, runtime_checkable
 
 __all__ = (
     # exceptions

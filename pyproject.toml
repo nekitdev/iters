@@ -11,7 +11,7 @@ readme = "README.md"
 repository = "https://github.com/nekitdev/iters.py"
 # documentation = "https://iters-py.readthedocs.io/"
 
-keywords = ["python", "iter", "iterator", "iterators"]
+keywords = ["python", "iter", "iterator"]
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -26,14 +26,14 @@ include = ["CHANGELOG.md", "iters/py.typed"]
 [tool.poetry.urls]
 Discord = "https://nekit.dev/discord"
 Funding = "https://patreon.com/nekitdev"
-Tracker = "https://github.com/nekitdev/iters.py/issues"
+Issues = "https://github.com/nekitdev/iters.py/issues"
 
 [[tool.poetry.packages]]
 include = "iters"
 
 [tool.poetry.dependencies]
-python = ">= 3.8"
-typing-extensions = ">= 4.1.1"
+python = ">= 3.7"
+typing-extensions = ">= 4.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "22.3.0"
