@@ -20,8 +20,8 @@
 - [Documentation](#documenation)
 -->
 - [Installing](#installing)
-    - [pip](#pip)
-    - [poetry](#poetry)
+  - [pip](#pip)
+  - [poetry](#poetry)
 - [Examples](#examples)
 - [Changelog](#changelog)
 - [Support](#support)
@@ -31,7 +31,7 @@
 
 ## Installing
 
-**Python 3.8 or above is required.**
+**Python 3.7 or above is required.**
 
 ### pip
 

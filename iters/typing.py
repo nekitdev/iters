@@ -161,14 +161,14 @@ def is_awaitable(maybe_awaitable: MaybeAwaitable[T]) -> TypeGuard[Awaitable[T]]:
 
 
 def is_string(item: Any) -> TypeGuard[str]:
-    return isinstance(item, str)
+    return is_instance(item, str)
 
 
 def is_bytes(item: Any) -> TypeGuard[bytes]:
-    return isinstance(item, bytes)
+    return is_instance(item, bytes)
 
 
-# XXX: perhaps even `Any` could work here...
+# XXX: perhaps `Any` could work here...
 
 RecursiveIterable: TypeAlias = Union[T, Iterable["RecursiveIterable[T]"]]
 RecursiveAsyncIterable: TypeAlias = Union[T, AsyncIterable["RecursiveAsyncIterable[T]"]]
