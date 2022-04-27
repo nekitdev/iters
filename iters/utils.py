@@ -10,6 +10,7 @@ from itertools import dropwhile as drop_while
 from itertools import filterfalse as filter_false
 from itertools import groupby as standard_group
 from itertools import islice as iter_slice
+from itertools import product as standard_product
 from itertools import takewhile as take_while
 from itertools import tee as standard_copy
 from itertools import zip_longest as standard_zip_longest
@@ -81,6 +82,8 @@ __all__ = (
     "append",
     "at",
     "at_or_last",
+    "cartesian_power",
+    "cartesian_product",
     "chain",
     "chain_from_iterable",
     "chunks",
@@ -1093,10 +1096,16 @@ def product(iterable: Iterable[Any], initial: Any = no_default) -> Any:
     return fold(initial, mul, iterable)
 
 
-def iterate(function: Unary[T, T], value: T) -> Iterator[T]:
-    while True:
-        yield value
-        value = function(value)
+def iterate(function: Unary[T, T], value: T, count: Optional[int] = None) -> Iterator[T]:
+    if count is None:
+        while True:
+            yield value
+            value = function(value)
+
+    else:
+        for _ in range(count):
+            yield value
+            value = function(value)
 
 
 def iter_with(context_manager: ContextManager[Iterable[T]]) -> Iterator[T]:
@@ -2609,3 +2618,161 @@ def zip_longest(
     *iterables: Iterable[Any], fill: Optional[Any] = None
 ) -> Iterator[DynamicTuple[Any]]:
     return standard_zip_longest(*iterables, fillvalue=fill)
+
+
+@overload
+def cartesian_product() -> Iterator[EmptyTuple]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[A], __iterable_b: Iterable[B]
+) -> Iterator[Tuple[A, B]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
+) -> Iterator[Tuple[A, B, C]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+) -> Iterator[Tuple[A, B, C, D]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+) -> Iterator[Tuple[A, B, C, D, E]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+) -> Iterator[Tuple[A, B, C, D, E, F]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+) -> Iterator[Tuple[A, B, C, D, E, F, G]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[A],
+    __iterable_b: Iterable[B],
+    __iterable_c: Iterable[C],
+    __iterable_d: Iterable[D],
+    __iterable_e: Iterable[E],
+    __iterable_f: Iterable[F],
+    __iterable_g: Iterable[G],
+    __iterable_h: Iterable[H],
+) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_product(
+    __iterable_a: Iterable[Any],
+    __iterable_b: Iterable[Any],
+    __iterable_c: Iterable[Any],
+    __iterable_d: Iterable[Any],
+    __iterable_e: Iterable[Any],
+    __iterable_f: Iterable[Any],
+    __iterable_g: Iterable[Any],
+    __iterable_h: Iterable[Any],
+    __iterable_next: Iterable[Any],
+    *iterables: Iterable[Any],
+) -> Iterator[DynamicTuple[Any]]:
+    ...  # pragma: overload
+
+
+def cartesian_product(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
+    return standard_product(*iterables)
+
+
+@overload
+def cartesian_power(power: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    ...  # pragma: overload
+
+
+def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    return standard_product(iterable, repeat=power)

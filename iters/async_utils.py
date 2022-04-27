@@ -29,7 +29,7 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Literal, Never, ParamSpec
+from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 
 from iters.types import Ordering, marker, no_default, type_name
 from iters.typing import (
@@ -89,6 +89,8 @@ __all__ = (
     "async_append",
     "async_at",
     "async_at_or_last",
+    "async_cartesian_power",
+    "async_cartesian_product",
     "async_chain",
     "async_chain_from_iterable",
     "async_chunks",
@@ -263,6 +265,8 @@ __all__ = (
     "standard_async_map_await",
     "standard_async_next",
 )
+
+Shape = TypeVarTuple("Shape")
 
 PS = ParamSpec("PS")
 
@@ -1914,16 +1918,32 @@ async def async_product(iterable: AnyIterable[Any], initial: Any = no_default) -
     return await async_fold(initial, mul, iterable)
 
 
-async def async_iterate(function: Unary[T, T], value: T) -> AsyncIterator[T]:
-    while True:
-        yield value
-        value = function(value)
+async def async_iterate(
+    function: Unary[T, T], value: T, count: Optional[int] = None
+) -> AsyncIterator[T]:
+    if count is None:
+        while True:
+            yield value
+            value = function(value)
+
+    else:
+        for _ in range(count):
+            yield value
+            value = function(value)
 
 
-async def async_iterate_await(function: Unary[T, Awaitable[T]], value: T) -> AsyncIterator[T]:
-    while True:
-        yield value
-        value = await function(value)
+async def async_iterate_await(
+    function: Unary[T, Awaitable[T]], value: T, count: Optional[int] = None
+) -> AsyncIterator[T]:
+    if count is None:
+        while True:
+            yield value
+            value = await function(value)
+
+    else:
+        for _ in range(count):
+            yield value
+            value = await function(value)
 
 
 async def async_walk(node: RecursiveAnyIterable[T]) -> AsyncIterator[T]:
@@ -4605,3 +4625,195 @@ async def async_reverse_with_list(iterable: AnyIterable[T]) -> AsyncIterator[T]:
 
     for item in reversed(array):
         yield item
+
+
+@overload
+def async_cartesian_product() -> AsyncIterator[EmptyTuple]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+) -> AsyncIterator[Tuple[A, B]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
+) -> AsyncIterator[Tuple[A, B, C]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[A],
+    __iterable_b: AnyIterable[B],
+    __iterable_c: AnyIterable[C],
+    __iterable_d: AnyIterable[D],
+) -> AsyncIterator[Tuple[A, B, C, D]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[A],
+    __iterable_b: AnyIterable[B],
+    __iterable_c: AnyIterable[C],
+    __iterable_d: AnyIterable[D],
+    __iterable_e: AnyIterable[E],
+) -> AsyncIterator[Tuple[A, B, C, D, E]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[A],
+    __iterable_b: AnyIterable[B],
+    __iterable_c: AnyIterable[C],
+    __iterable_d: AnyIterable[D],
+    __iterable_e: AnyIterable[E],
+    __iterable_f: AnyIterable[F],
+) -> AsyncIterator[Tuple[A, B, C, D, E, F]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[A],
+    __iterable_b: AnyIterable[B],
+    __iterable_c: AnyIterable[C],
+    __iterable_d: AnyIterable[D],
+    __iterable_e: AnyIterable[E],
+    __iterable_f: AnyIterable[F],
+    __iterable_g: AnyIterable[G],
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[A],
+    __iterable_b: AnyIterable[B],
+    __iterable_c: AnyIterable[C],
+    __iterable_d: AnyIterable[D],
+    __iterable_e: AnyIterable[E],
+    __iterable_f: AnyIterable[F],
+    __iterable_g: AnyIterable[G],
+    __iterable_h: AnyIterable[H],
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_product(
+    __iterable_a: AnyIterable[Any],
+    __iterable_b: AnyIterable[Any],
+    __iterable_c: AnyIterable[Any],
+    __iterable_d: AnyIterable[Any],
+    __iterable_e: AnyIterable[Any],
+    __iterable_f: AnyIterable[Any],
+    __iterable_g: AnyIterable[Any],
+    __iterable_h: AnyIterable[Any],
+    __iterable_next: AnyIterable[Any],
+    *iterables: AnyIterable[Any],
+) -> AsyncIterator[DynamicTuple[Any]]:
+    ...  # pragma: overload
+
+
+def async_cartesian_product(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[Any]]:
+    stack = async_once(())
+
+    for iterable in iterables:
+        stack = async_cartesian_product_step(stack, iterable)  # type: ignore
+
+    return stack
+
+
+async def async_cartesian_product_step(
+    stack: AnyIterable[Tuple[Unpack[Shape]]], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple[Unpack[Shape], T]]:
+    array = await async_list(iterable)
+
+    async for items in async_iter(stack):
+        for item in array:
+            yield items + (item,)
+
+
+@overload
+def async_cartesian_power(power: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
+    ...  # pragma: overload
+
+
+@overload
+def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
+    ...  # pragma: overload
+
+
+def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
+    state = None
+
+    async def async_cartesian_power_step(
+        stack: AnyIterable[Tuple[Unpack[Shape]]],
+    ) -> AsyncIterator[Tuple[Unpack[Shape], T]]:
+        nonlocal state
+
+        if state is None:
+            state = await async_list(iterable)
+
+        async for items in async_iter(stack):
+            for item in state:
+                yield items + (item,)
+
+    stack = async_once(())
+
+    for _ in range(power):
+        stack = async_cartesian_power_step(stack)  # type: ignore
+
+    return stack

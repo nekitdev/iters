@@ -46,6 +46,8 @@ from iters.async_utils import (
     async_append,
     async_at,
     async_at_or_last,
+    async_cartesian_power,
+    async_cartesian_product,
     async_chain,
     async_chain_from_iterable,
     async_chunks,
@@ -350,8 +352,18 @@ class AsyncIter(AsyncIterator[T]):
         return cls.convert(async_iterate(function, value))
 
     @classmethod
+    def iterate_exactly(cls, function: Unary[V, V], value: V, count: int) -> AsyncIter[V]:
+        return cls.convert(async_iterate(function, value, count))
+
+    @classmethod
     def iterate_await(cls, function: Unary[V, Awaitable[V]], value: V) -> AsyncIter[V]:
         return cls.convert(async_iterate_await(function, value))
+
+    @classmethod
+    def iterate_exactly_await(
+        cls, function: Unary[V, Awaitable[V]], value: V, count: int
+    ) -> AsyncIter[V]:
+        return cls.convert(async_iterate_await(function, value, count))
 
     @classmethod
     def iter_except(cls, function: Nullary[T], *errors: Type[AnyException]) -> AsyncIter[T]:
@@ -913,6 +925,120 @@ class AsyncIter(AsyncIterator[T]):
         cls, *iterables: AnyIterable[Any], fill: V
     ) -> AsyncIter[DynamicTuple[Union[Any, V]]]:
         return cls.convert(async_zip_longest(*iterables, fill=fill))
+
+    @overload
+    @classmethod
+    def create_cartesian_product(cls) -> AsyncIter[EmptyTuple]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[A, B]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+    ) -> AsyncIter[Tuple[A, B, C]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[A, B, C, D]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[Tuple[A, B, C, D, E]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
+        *iterables: AnyIterable[Any],
+    ) -> AsyncIter[DynamicTuple[Any]]:
+        ...  # pragma: overload
+
+    @no_type_check
+    @classmethod
+    def create_cartesian_product(cls, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
+        return cls.convert(async_cartesian_product(*iterables))
 
     @classmethod
     def reversed(cls, reversible: Reversible[T]) -> AsyncIter[T]:
@@ -2343,6 +2469,147 @@ class AsyncIter(AsyncIterator[T]):
         self, *iterables: AnyIterable[Any], fill: V
     ) -> AsyncIter[DynamicTuple[Union[Any, V]]]:
         return self.convert(async_zip_longest(self.iterator, *iterables, fill=fill))
+
+    @overload
+    def cartesian_product(self) -> AsyncIter[Tuple[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
+    ) -> AsyncIter[Tuple[T, A, B]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+    ) -> AsyncIter[Tuple[T, A, B, C]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+    ) -> AsyncIter[Tuple[T, A, B, C, D]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: AnyIterable[A],
+        __iterable_b: AnyIterable[B],
+        __iterable_c: AnyIterable[C],
+        __iterable_d: AnyIterable[D],
+        __iterable_e: AnyIterable[E],
+        __iterable_f: AnyIterable[F],
+        __iterable_g: AnyIterable[G],
+        __iterable_h: AnyIterable[H],
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: AnyIterable[Any],
+        __iterable_b: AnyIterable[Any],
+        __iterable_c: AnyIterable[Any],
+        __iterable_d: AnyIterable[Any],
+        __iterable_e: AnyIterable[Any],
+        __iterable_f: AnyIterable[Any],
+        __iterable_g: AnyIterable[Any],
+        __iterable_h: AnyIterable[Any],
+        __iterable_next: AnyIterable[Any],
+        *iterables: AnyIterable[Any],
+    ) -> AsyncIter[DynamicTuple[Any]]:
+        ...  # pragma: overload
+
+    def cartesian_product(self, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
+        return self.convert(async_cartesian_product(self.iterator, *iterables))
+
+    @overload
+    def cartesian_power(self, power: Literal[0]) -> AsyncIter[EmptyTuple]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[1]) -> AsyncIter[Tuple1[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[2]) -> AsyncIter[Tuple2[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[3]) -> AsyncIter[Tuple3[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[4]) -> AsyncIter[Tuple4[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[5]) -> AsyncIter[Tuple5[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[6]) -> AsyncIter[Tuple6[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[7]) -> AsyncIter[Tuple7[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[8]) -> AsyncIter[Tuple8[T]]:
+        ...  # pragma: overload
+
+    def cartesian_power(self, power: int) -> AsyncIter[DynamicTuple[T]]:
+        return self.convert(async_cartesian_power(power, self.iterator))
 
     def reverse(self) -> AsyncIter[T]:
         return self.convert(async_reverse(self.iterator))

@@ -62,6 +62,8 @@ from iters.utils import (
     append,
     at,
     at_or_last,
+    cartesian_power,
+    cartesian_product,
     chain,
     chain_from_iterable,
     chunks,
@@ -259,6 +261,10 @@ class Iter(Iterator[T]):
     @classmethod
     def iterate(cls, function: Unary[V, V], value: V) -> Iter[V]:
         return cls.convert(iterate(function, value))
+
+    @classmethod
+    def iterate_exactly(cls, function: Unary[V, V], value: V, count: int) -> Iter[V]:
+        return cls.convert(iterate(function, value, count))
 
     @classmethod
     def iter_except(cls, function: Nullary[T], *errors: Type[AnyException]) -> Iter[T]:
@@ -789,6 +795,117 @@ class Iter(Iterator[T]):
         cls, *iterables: Iterable[Any], fill: V
     ) -> Iter[DynamicTuple[Union[Any, V]]]:
         return cls.convert(zip_longest(*iterables, fill=fill))
+
+    @overload
+    @classmethod
+    def create_cartesian_product(cls) -> Iter[EmptyTuple]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
+    ) -> Iter[Tuple[A, B]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
+    ) -> Iter[Tuple[A, B, C]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+    ) -> Iter[Tuple[A, B, C, D]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+    ) -> Iter[Tuple[A, B, C, D, E]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+        __iterable_f: Iterable[F],
+    ) -> Iter[Tuple[A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+        __iterable_f: Iterable[F],
+        __iterable_g: Iterable[G],
+    ) -> Iter[Tuple[A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+        __iterable_f: Iterable[F],
+        __iterable_g: Iterable[G],
+        __iterable_h: Iterable[H],
+    ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    @classmethod
+    def create_cartesian_product(
+        cls,
+        __iterable_a: Iterable[Any],
+        __iterable_b: Iterable[Any],
+        __iterable_c: Iterable[Any],
+        __iterable_d: Iterable[Any],
+        __iterable_e: Iterable[Any],
+        __iterable_f: Iterable[Any],
+        __iterable_g: Iterable[Any],
+        __iterable_h: Iterable[Any],
+        __iterable_next: Iterable[Any],
+        *iterables: Iterable[Any],
+    ) -> Iter[DynamicTuple[Any]]:
+        ...  # pragma: overload
+
+    @no_type_check
+    @classmethod
+    def create_cartesian_product(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
+        return cls.convert(cartesian_product(*iterables))
 
     @classmethod
     def reversed(cls, reversible: Reversible[T]) -> Iter[T]:
@@ -2018,6 +2135,144 @@ class Iter(Iterator[T]):
         self, *iterables: Iterable[Any], fill: V
     ) -> Iter[DynamicTuple[Union[Any, V]]]:
         return self.convert(zip_longest(self.iterator, *iterables, fill=fill))
+
+    @overload
+    def cartesian_product(self) -> Iter[Tuple[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
+    ) -> Iter[Tuple[T, A, B]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
+    ) -> Iter[Tuple[T, A, B, C]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+    ) -> Iter[Tuple[T, A, B, C, D]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+    ) -> Iter[Tuple[T, A, B, C, D, E]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+        __iterable_f: Iterable[F],
+    ) -> Iter[Tuple[T, A, B, C, D, E, F]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+        __iterable_f: Iterable[F],
+        __iterable_g: Iterable[G],
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: Iterable[A],
+        __iterable_b: Iterable[B],
+        __iterable_c: Iterable[C],
+        __iterable_d: Iterable[D],
+        __iterable_e: Iterable[E],
+        __iterable_f: Iterable[F],
+        __iterable_g: Iterable[G],
+        __iterable_h: Iterable[H],
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_product(
+        self,
+        __iterable_a: Iterable[Any],
+        __iterable_b: Iterable[Any],
+        __iterable_c: Iterable[Any],
+        __iterable_d: Iterable[Any],
+        __iterable_e: Iterable[Any],
+        __iterable_f: Iterable[Any],
+        __iterable_g: Iterable[Any],
+        __iterable_h: Iterable[Any],
+        __iterable_next: Iterable[Any],
+        *iterables: Iterable[Any],
+    ) -> Iter[DynamicTuple[Any]]:
+        ...  # pragma: overload
+
+    def cartesian_product(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
+        return self.convert(cartesian_product(self.iterator, *iterables))
+
+    @overload
+    def cartesian_power(self, power: Literal[0]) -> Iter[EmptyTuple]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[1]) -> Iter[Tuple1[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[2]) -> Iter[Tuple2[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[3]) -> Iter[Tuple3[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[4]) -> Iter[Tuple4[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[5]) -> Iter[Tuple5[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[6]) -> Iter[Tuple6[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[7]) -> Iter[Tuple7[T]]:
+        ...  # pragma: overload
+
+    @overload
+    def cartesian_power(self, power: Literal[8]) -> Iter[Tuple8[T]]:
+        ...  # pragma: overload
+
+    def cartesian_power(self, power: int) -> Iter[DynamicTuple[T]]:
+        return self.convert(cartesian_power(power, self.iterator))
 
     def reverse(self) -> Iter[T]:
         return self.convert(reverse(self.iterator))
