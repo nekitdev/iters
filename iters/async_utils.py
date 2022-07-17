@@ -31,6 +31,7 @@ from typing import (
 
 from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 
+from iters.concurrent import CONCURRENT
 from iters.types import Ordering, marker, no_default
 from iters.typing import (
     AnyException,
@@ -77,14 +78,10 @@ from iters.typing import (
 )
 from iters.utils import COMPARE, repeat, repeat_with, take, unpack_binary
 
-try:
-    from iters.concurrent import collect_iterable, collect_iterable_with_errors
 
-except ImportError:
-    CONCURRENT = False
+if CONCURRENT:
+    from iters.concurrent import collect_iterable
 
-else:
-    CONCURRENT = True
 
 __all__ = (
     "async_accumulate_fold",
@@ -4194,9 +4191,20 @@ if CONCURRENT:
         for result in results:
             yield result
 
-
-    def async_wait_concurrent_bound(iterable: AnyIterable[Awaitable[T]], bound: int) -> AsyncIterator[T]:
+    def async_wait_concurrent_bound(
+        bound: int, iterable: AnyIterable[Awaitable[T]]
+    ) -> AsyncIterator[T]:
         return async_flat_map(async_wait_concurrent, async_chunks(bound, iterable))
+
+    def async_map_concurrent(
+        function: Unary[T, Awaitable[U]], iterable: AnyIterable[T]
+    ) -> AsyncIterator[U]:
+        return async_wait_concurrent(async_map(function, iterable))
+
+    def async_map_concurrent_bound(
+        bound: int, function: Unary[T, Awaitable[U]], iterable: AnyIterable[T]
+    ) -> AsyncIterator[U]:
+        return async_wait_concurrent_bound(bound, async_map(function, iterable))
 
 
 async def async_all(iterable: AnyIterable[T]) -> bool:

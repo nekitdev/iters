@@ -7,6 +7,7 @@ updates:
     labels:
       - A-dependencies
       - P-normal
+      - S-triage
 
     schedule:
       interval: daily
@@ -19,6 +20,7 @@ updates:
     labels:
       - A-dependencies
       - P-normal
+      - S-triage
 
     schedule:
       interval: daily

@@ -199,23 +199,23 @@ RecursiveAnyIterable: TypeAlias = Union[T, AnyIterable[Any]]
 # which would be required to put the bound on T
 
 
-L = TypeVar("L", bound="Less")
+LT = TypeVar("LT", bound="Less")
 
 
 @runtime_checkable
 class Less(Protocol):
     @abstractmethod
-    def __lt__(self: L, __other: L) -> MaybeBool:
+    def __lt__(self: LT, __other: LT) -> MaybeBool:
         raise NotImplementedError
 
 
-G = TypeVar("G", bound="Greater")
+GT = TypeVar("GT", bound="Greater")
 
 
 @runtime_checkable
 class Greater(Protocol):
     @abstractmethod
-    def __gt__(self: G, __other: G) -> MaybeBool:
+    def __gt__(self: GT, __other: GT) -> MaybeBool:
         raise NotImplementedError
 
 
@@ -263,17 +263,23 @@ class FullyOrdered(StrictOrdered, LenientOrdered, Protocol):
 EitherFullyOrdered = Union[EitherStrictOrdered, EitherLenientOrdered]
 
 
+S = TypeVar("S", bound="Sum")
+
+
 @runtime_checkable
 class Sum(Protocol):
     @abstractmethod
-    def __add__(self, __other: Self) -> Self:
+    def __add__(self: S, __other: S) -> S:
         raise NotImplementedError
+
+
+P = TypeVar("P", bound="Product")
 
 
 @runtime_checkable
 class Product(Protocol):
     @abstractmethod
-    def __mul__(self, __other: Self) -> Self:
+    def __mul__(self: P, __other: P) -> P:
         raise NotImplementedError
 
 

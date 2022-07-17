@@ -218,6 +218,7 @@ from iters.async_utils import (
     standard_async_iter,
     standard_async_next,
 )
+from iters.concurrent import CONCURRENT
 from iters.types import Ordering
 from iters.typing import (
     AnyException,
@@ -244,6 +245,14 @@ from iters.typing import (
     Tuple8,
     Unary,
 )
+
+if CONCURRENT:
+    from iters.async_utils import (
+        async_map_concurrent,
+        async_map_concurrent_bound,
+        async_wait_concurrent,
+        async_wait_concurrent_bound,
+    )
 
 __all__ = (
     # async iterator class
@@ -1526,6 +1535,12 @@ class AsyncIter(AsyncIterator[T]):
         self, function: Unary[T, Awaitable[U]], *errors: Type[AnyException]
     ) -> AsyncIter[U]:
         return self.create(async_map_except_await(function, self.iterator, *errors))
+
+    def map_concurrent(self, function: Unary[T, Awaitable[U]]) -> AsyncIter[U]:
+        return self.create(async_map_concurrent(function, self.iterator))
+
+    def map_concurrent_bound(self, bound: int, function: Unary[T, Awaitable[U]]) -> AsyncIter[U]:
+        return self.create(async_map_concurrent_bound(bound, function, self.iterator))
 
     def flat_map(self, function: Unary[T, AnyIterable[U]]) -> AsyncIter[U]:
         return self.create(async_flat_map(function, self.iterator))
@@ -2862,6 +2877,12 @@ class AsyncIter(AsyncIterator[T]):
 
     def wait(self: AsyncIter[Awaitable[U]]) -> AsyncIter[U]:
         return self.create(async_wait(self.iterator))
+
+    def wait_concurrent(self: AsyncIter[Awaitable[U]]) -> AsyncIter[U]:
+        return self.create(async_wait_concurrent(self.iterator))
+
+    def wait_concurrent_bound(self: AsyncIter[Awaitable[U]], bound: int) -> AsyncIter[U]:
+        return self.create(async_wait_concurrent_bound(bound, self.iterator))
 
 
 def async_iter(

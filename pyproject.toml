@@ -33,7 +33,6 @@ include = "iters"
 python = ">= 3.7"
 typing-extensions = ">= 4.3.0"
 
-<<<<<<< HEAD
 [tool.poetry.dependencies.anyio]
 version = ">= 3.6.1"
 optional = true
@@ -61,17 +60,6 @@ mypy = "0.961"
 optional = true
 
 [tool.poetry.group.test.dependencies]
-=======
-[tool.poetry.dev-dependencies]
-black = "22.3.0"
-coverage = "6.3.2"
-flake8 = "4.0.1"
-flake8-bugbear = "22.4.25"
-flake8-isort = "4.1.1"
-flake8-string-format = "0.3.0"
-flake8-tidy-imports = "4.6.0"
-mypy = "0.960"
->>>>>>> 9a4c0900dcf564d2dac353dc53931fe2cf3f6a30
 pytest = "7.1.2"
 pytest-cov = "3.0.0"
 
