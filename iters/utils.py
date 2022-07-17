@@ -456,7 +456,7 @@ def unpack_quaternary(quaternary: Quaternary[T, U, V, W, R]) -> Unary[Tuple[T, U
     return unpack
 
 
-Ts = TypeVarTuple("Ts")
+Ts = TypeVarTuple("Ts")  # type: ignore
 
 
 def unpack_any(

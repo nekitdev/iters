@@ -4850,7 +4850,7 @@ def async_cartesian_product(*iterables: AnyIterable[Any]) -> AsyncIterator[Dynam
     return stack
 
 
-Ts = TypeVarTuple("Ts")
+Ts = TypeVarTuple("Ts")  # type: ignore
 
 
 async def async_cartesian_product_step(
