@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from enum import Enum
 from threading import Lock
-from typing import Any, TypeVar
+from typing import Any, Type, TypeVar
+
+from iters.typing import get_name
 
 __all__ = (
     # ordering
@@ -13,12 +15,6 @@ __all__ = (
     # no default
     "NoDefault",
     "no_default",
-    # singletons
-    "Singleton",
-    "SingletonMeta",
-    # simple utils
-    "format_type",
-    "type_name",
 )
 
 
@@ -46,38 +42,30 @@ class Ordering(Enum):
         return self.is_greater() or self.is_equal()
 
 
-T = TypeVar("T")
-
-TYPE_FORMAT = "<{}>"
-
-format_type = TYPE_FORMAT.format
+S = TypeVar("S")
 
 
-def type_name(item: T) -> str:
-    return type(item).__name__
-
-
-class SingletonMeta(type):
+class SingletonType(type):
     _INSTANCES = {}  # type: ignore
-    _LOCK = Lock()  # single lock is enough here
+    _LOCK = Lock()
 
-    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # slightly too magical
-        instances = cls._INSTANCES
-        lock = cls._LOCK
+    def __call__(cls: Type[S], *args: Any, **kwargs: Any) -> S:
+        instances = cls._INSTANCES  # type: ignore
+        lock = cls._LOCK  # type: ignore
 
         # use double-checked locking
 
         if cls not in instances:
             with lock:
                 if cls not in instances:
-                    instances[cls] = super().__call__(*args, **kwargs)
+                    instances[cls] = super().__call__(*args, **kwargs)  # type: ignore
 
-        return instances[cls]
+        return instances[cls]  # type: ignore
 
 
-class Singleton(metaclass=SingletonMeta):
+class Singleton(metaclass=SingletonType):
     def __repr__(self) -> str:
-        return format_type(type_name(self))
+        return get_name(type(self))
 
 
 class NoDefault(Singleton):

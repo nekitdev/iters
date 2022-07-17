@@ -89,6 +89,8 @@ from iters.utils import (
     empty,
     filter_except,
     filter_false,
+    filter_false_map,
+    filter_map,
     find,
     find_all,
     find_or_first,
@@ -172,7 +174,7 @@ __all__ = (
     "standard_iter",
     "standard_reversed",
     # wrap results of function calls into iterators
-    "iter_result",
+    "wrap_iter",
 )
 
 T = TypeVar("T", covariant=True)
@@ -216,35 +218,35 @@ class Iter(Iterator[T]):
 
     @classmethod
     def empty(cls) -> Iter[T]:
-        return cls.convert(empty())
+        return cls.create(empty())
 
     @classmethod
     def once(cls, value: V) -> Iter[V]:
-        return cls.convert(once(value))
+        return cls.create(once(value))
 
     @classmethod
     def once_with(cls, function: Nullary[V]) -> Iter[V]:
-        return cls.convert(once_with(function))
+        return cls.create(once_with(function))
 
     @classmethod
     def repeat(cls, value: V) -> Iter[V]:
-        return cls.convert(repeat(value))
+        return cls.create(repeat(value))
 
     @classmethod
     def repeat_exactly(cls, value: V, count: int) -> Iter[V]:
-        return cls.convert(repeat(value, count))
+        return cls.create(repeat(value, count))
 
     @classmethod
     def repeat_with(cls, function: Nullary[V]) -> Iter[V]:
-        return cls.convert(repeat_with(function))
+        return cls.create(repeat_with(function))
 
     @classmethod
     def repeat_exactly_with(cls, function: Nullary[V], count: int) -> Iter[V]:
-        return cls.convert(repeat_with(function, count))
+        return cls.create(repeat_with(function, count))
 
     @classmethod
     def count_from_by(cls, start: int, step: int) -> Iter[int]:
-        return cls.convert(count(start, step))
+        return cls.create(count(start, step))
 
     @classmethod
     def count_from(cls, start: int) -> Iter[int]:
@@ -260,39 +262,39 @@ class Iter(Iterator[T]):
 
     @classmethod
     def iterate(cls, function: Unary[V, V], value: V) -> Iter[V]:
-        return cls.convert(iterate(function, value))
+        return cls.create(iterate(function, value))
 
     @classmethod
     def iterate_exactly(cls, function: Unary[V, V], value: V, count: int) -> Iter[V]:
-        return cls.convert(iterate(function, value, count))
+        return cls.create(iterate(function, value, count))
 
     @classmethod
     def iter_except(cls, function: Nullary[T], *errors: Type[AnyException]) -> Iter[T]:
-        return cls.convert(iter_except(function, *errors))
+        return cls.create(iter_except(function, *errors))
 
     @classmethod
     def iter_with(cls, context_manager: ContextManager[Iterable[T]]) -> Iter[T]:
-        return cls.convert(iter_with(context_manager))
+        return cls.create(iter_with(context_manager))
 
     @classmethod
     def create_chain(cls, *iterables: Iterable[T]) -> Iter[T]:
-        return cls.convert(chain(*iterables))
+        return cls.create(chain(*iterables))
 
     @classmethod
     def create_chain_from_iterable(cls, iterable: Iterable[Iterable[T]]) -> Iter[T]:
-        return cls.convert(chain_from_iterable(iterable))
+        return cls.create(chain_from_iterable(iterable))
 
     @classmethod
     def create_combine(cls, *iterables: Iterable[T]) -> Iter[T]:
-        return cls.convert(combine(*iterables))
+        return cls.create(combine(*iterables))
 
     @classmethod
     def create_interleave(cls, *iterables: Iterable[T]) -> Iter[T]:
-        return cls.convert(interleave(*iterables))
+        return cls.create(interleave(*iterables))
 
     @classmethod
     def create_interleave_longest(cls, *iterables: Iterable[T]) -> Iter[T]:
-        return cls.convert(interleave_longest(*iterables))
+        return cls.create(interleave_longest(*iterables))
 
     @overload
     @classmethod
@@ -401,7 +403,7 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_zip(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
-        return cls.convert(zip(*iterables))
+        return cls.create(zip(*iterables))
 
     @overload
     @classmethod
@@ -512,7 +514,7 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_zip_equal(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
-        return cls.convert(zip_equal(*iterables))
+        return cls.create(zip_equal(*iterables))
 
     @overload
     @classmethod
@@ -644,7 +646,7 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_zip_longest(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Optional[Any]]]:
-        return cls.convert(zip_longest(*iterables))
+        return cls.create(zip_longest(*iterables))
 
     @overload
     @classmethod
@@ -794,7 +796,7 @@ class Iter(Iterator[T]):
     def create_zip_longest_with(
         cls, *iterables: Iterable[Any], fill: V
     ) -> Iter[DynamicTuple[Union[Any, V]]]:
-        return cls.convert(zip_longest(*iterables, fill=fill))
+        return cls.create(zip_longest(*iterables, fill=fill))
 
     @overload
     @classmethod
@@ -905,26 +907,26 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_cartesian_product(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
-        return cls.convert(cartesian_product(*iterables))
+        return cls.create(cartesian_product(*iterables))
 
     @classmethod
     def reversed(cls, reversible: Reversible[T]) -> Iter[T]:
-        return cls.convert(standard_reversed(reversible))
+        return cls.create(standard_reversed(reversible))
 
     @classmethod
     def function(cls, function: Nullary[T], sentinel: V) -> Iter[T]:
-        return cls.convert(iter_function(function, sentinel))
+        return cls.create(iter_function(function, sentinel))
 
     @classmethod
-    def convert(cls, iterable: Iterable[U]) -> Iter[U]:
+    def create(cls, iterable: Iterable[U]) -> Iter[U]:
         return cls(iterable)  # type: ignore
 
     @classmethod
-    def convert_tuple(cls, iterables: DynamicTuple[Iterable[U]]) -> DynamicTuple[Iter[U]]:
+    def create_tuple(cls, iterables: DynamicTuple[Iterable[U]]) -> DynamicTuple[Iter[U]]:
         return tuple(map(cls, iterables))  # type: ignore
 
     @classmethod
-    def convert_nested(cls, nested: Iterable[Iterable[U]]) -> Iter[Iter[U]]:
+    def create_nested(cls, nested: Iterable[Iterable[U]]) -> Iter[Iter[U]]:
         return cls(map(cls, nested))  # type: ignore
 
     def __init__(self, iterable: Iterable[T]) -> None:
@@ -1024,22 +1026,22 @@ class Iter(Iterator[T]):
         return group_dict(self.iterator, key)
 
     def group(self) -> Iter[Tuple[T, Iter[T]]]:
-        return self.convert(
-            (group_key, self.convert(group_iterator))
+        return self.create(
+            (group_key, self.create(group_iterator))
             for group_key, group_iterator in group(self.iterator)
         )
 
     def group_by(self, key: Unary[T, U]) -> Iter[Tuple[U, Iter[T]]]:
-        return self.convert(
-            (group_key, self.convert(group_iterator))
+        return self.create(
+            (group_key, self.create(group_iterator))
             for group_key, group_iterator in group(self.iterator, key)
         )
 
     def group_list(self) -> Iter[Tuple[T, List[T]]]:
-        return self.convert(group_list(self.iterator))
+        return self.create(group_list(self.iterator))
 
     def group_list_by(self, key: Unary[T, U]) -> Iter[Tuple[U, List[T]]]:
-        return self.convert(group_list(self.iterator, key))
+        return self.create(group_list(self.iterator, key))
 
     def all(self) -> bool:
         return all(self.iterator)
@@ -1072,28 +1074,28 @@ class Iter(Iterator[T]):
         return all_unique_fast(self.iterator, key)
 
     def remove(self, predicate: Predicate[T]) -> Iter[T]:
-        return self.convert(remove(predicate, self.iterator))
+        return self.create(remove(predicate, self.iterator))
 
     def remove_duplicates(self) -> Iter[T]:
-        return self.convert(remove_duplicates(self.iterator))
+        return self.create(remove_duplicates(self.iterator))
 
     def remove_duplicates_by(self, key: Unary[T, U]) -> Iter[T]:
-        return self.convert(remove_duplicates(self.iterator, key))
+        return self.create(remove_duplicates(self.iterator, key))
 
     def filter(self, predicate: Predicate[T]) -> Iter[T]:
-        return self.convert(filter(predicate, self.iterator))
+        return self.create(filter(predicate, self.iterator))
 
     def filter_false(self, predicate: Predicate[T]) -> Iter[T]:
-        return self.convert(filter_false(predicate, self.iterator))
+        return self.create(filter_false(predicate, self.iterator))
 
     def filter_except(self, validate: Unary[T, Any], *errors: Type[AnyException]) -> Iter[T]:
-        return self.convert(filter_except(validate, self.iterator, *errors))
+        return self.create(filter_except(validate, self.iterator, *errors))
 
     def compress(self, selectors: Selectors) -> Iter[T]:
-        return self.convert(compress(self.iterator, selectors))
+        return self.create(compress(self.iterator, selectors))
 
     def position_all(self, predicate: Predicate[T]) -> Iter[int]:
-        return self.convert(position_all(predicate, self.iterator))
+        return self.create(position_all(predicate, self.iterator))
 
     def position(self, predicate: Predicate[T]) -> int:
         return position(predicate, self.iterator)
@@ -1105,7 +1107,7 @@ class Iter(Iterator[T]):
         return self.position_or(predicate, None)
 
     def find_all(self, predicate: Predicate[T]) -> Iter[T]:
-        return self.convert(find_all(predicate, self.iterator))
+        return self.create(find_all(predicate, self.iterator))
 
     def find(self, predicate: Predicate[T]) -> T:
         return find(predicate, self.iterator)
@@ -1159,22 +1161,22 @@ class Iter(Iterator[T]):
         return product(self.iterator, initial)
 
     def accumulate_reduce(self, function: Binary[T, T, T]) -> Iter[T]:
-        return self.convert(accumulate_reduce(function, self.iterator))
+        return self.create(accumulate_reduce(function, self.iterator))
 
     def accumulate_fold(self, initial: V, function: Binary[V, T, V]) -> Iter[V]:
-        return self.convert(accumulate_fold(initial, function, self.iterator))
+        return self.create(accumulate_fold(initial, function, self.iterator))
 
     def accumulate_sum(self: Iter[S]) -> Iter[S]:
-        return self.convert(accumulate_sum(self.iterator))
+        return self.create(accumulate_sum(self.iterator))
 
     def accumulate_sum_with(self: Iter[S], initial: S) -> Iter[S]:
-        return self.convert(accumulate_sum(self.iterator, initial))
+        return self.create(accumulate_sum(self.iterator, initial))
 
     def accumulate_product(self: Iter[P]) -> Iter[P]:
-        return self.convert(accumulate_product(self.iterator))
+        return self.create(accumulate_product(self.iterator))
 
     def accumulate_product_with(self: Iter[P], initial: P) -> Iter[P]:
-        return self.convert(accumulate_product(self.iterator, initial))
+        return self.create(accumulate_product(self.iterator, initial))
 
     def min(self: Iter[ST]) -> ST:
         return min(self.iterator)
@@ -1227,25 +1229,31 @@ class Iter(Iterator[T]):
         return min_max(self.iterator, key=key, default=default)
 
     def map(self, function: Unary[T, U]) -> Iter[U]:
-        return self.convert(map(function, self.iterator))
+        return self.create(map(function, self.iterator))
 
     def map_except(self, function: Unary[T, U], *errors: Type[AnyException]) -> Iter[U]:
-        return self.convert(map_except(function, self.iterator, *errors))
+        return self.create(map_except(function, self.iterator, *errors))
 
     def flat_map(self, function: Unary[T, Iterable[U]]) -> Iter[U]:
-        return self.convert(flat_map(function, self.iterator))
+        return self.create(flat_map(function, self.iterator))
+
+    def filter_map(self, predicate: Predicate[T], function: Unary[T, U]) -> Iter[U]:
+        return self.create(filter_map(predicate, function, self.iterator))
+
+    def filter_false_map(self, predicate: Predicate[T], function: Unary[T, U]) -> Iter[U]:
+        return self.create(filter_false_map(predicate, function, self.iterator))
 
     def flatten(self: Iter[Iterable[U]]) -> Iter[U]:
-        return self.convert(flatten(self.iterator))
+        return self.create(flatten(self.iterator))
 
     def collapse(self: Iter[RecursiveIterable[U]]) -> Iter[U]:
-        return self.convert(collapse(self.iterator))
+        return self.create(collapse(self.iterator))
 
     def enumerate(self) -> Iter[Tuple[int, T]]:
-        return self.convert(enumerate(self.iterator))
+        return self.create(enumerate(self.iterator))
 
     def enumerate_from(self, start: int) -> Iter[Tuple[int, T]]:
-        return self.convert(enumerate(self.iterator, start))
+        return self.create(enumerate(self.iterator, start))
 
     def consume(self) -> None:
         consume(self.iterator)
@@ -1254,10 +1262,10 @@ class Iter(Iterator[T]):
         for_each(function, self.iterator)
 
     def append(self: Iter[V], item: V) -> Iter[V]:
-        return self.convert(append(item, self.iterator))
+        return self.create(append(item, self.iterator))
 
     def prepend(self: Iter[V], item: V) -> Iter[V]:
-        return self.convert(prepend(item, self.iterator))
+        return self.create(prepend(item, self.iterator))
 
     def at(self, index: int) -> T:
         return at(index, self.iterator)
@@ -1288,53 +1296,53 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def slice(self, *slice_args: Optional[int]) -> Iter[T]:
-        return self.convert(iter_slice(self.iterator, *slice_args))
+        return self.create(iter_slice(self.iterator, *slice_args))
 
     def drop(self, size: int) -> Iter[T]:
-        return self.convert(drop(size, self.iterator))
+        return self.create(drop(size, self.iterator))
 
     skip = drop
 
     def drop_while(self, predicate: Predicate[T]) -> Iter[T]:
-        return self.convert(drop_while(predicate, self.iterator))
+        return self.create(drop_while(predicate, self.iterator))
 
     skip_while = drop_while
 
     def take(self, size: int) -> Iter[T]:
-        return self.convert(take(size, self.iterator))
+        return self.create(take(size, self.iterator))
 
     def take_while(self, predicate: Predicate[T]) -> Iter[T]:
-        return self.convert(take_while(predicate, self.iterator))
+        return self.create(take_while(predicate, self.iterator))
 
     def step_by(self, step: int) -> Iter[T]:
-        return self.convert(step_by(step, self.iterator))
+        return self.create(step_by(step, self.iterator))
 
     def tail(self, size: int) -> Iter[T]:
-        return self.convert(tail(size, self.iterator))
+        return self.create(tail(size, self.iterator))
 
     def chain(self, *iterables: Iterable[T]) -> Iter[T]:
-        return self.convert(chain(self.iterator, *iterables))
+        return self.create(chain(self.iterator, *iterables))
 
     def chain_with(self, iterables: Iterable[Iterable[T]]) -> Iter[T]:
         return self.chain(chain_from_iterable(iterables))
 
     def cycle(self) -> Iter[T]:
-        return self.convert(cycle(self.iterator))
+        return self.create(cycle(self.iterator))
 
     def intersperse(self: Iter[V], value: V) -> Iter[V]:
-        return self.convert(intersperse(value, self.iterator))
+        return self.create(intersperse(value, self.iterator))
 
     def intersperse_with(self, function: Nullary[T]) -> Iter[T]:
-        return self.convert(intersperse_with(function, self.iterator))
+        return self.create(intersperse_with(function, self.iterator))
 
     def interleave(self, *iterables: Iterable[T]) -> Iter[T]:
-        return self.convert(interleave(self.iterator, *iterables))
+        return self.create(interleave(self.iterator, *iterables))
 
     def interleave_longest(self, *iterables: Iterable[T]) -> Iter[T]:
-        return self.convert(interleave_longest(self.iterator, *iterables))
+        return self.create(interleave_longest(self.iterator, *iterables))
 
     def combine(self, *iterables: Iterable[T]) -> Iter[T]:
-        return self.convert(combine(*iterables))
+        return self.create(combine(*iterables))
 
     @overload
     def distribute_unsafe(self, count: Literal[0]) -> EmptyTuple:
@@ -1377,7 +1385,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def distribute_unsafe(self, count: int) -> DynamicTuple[Iter[T]]:
-        return self.convert_tuple(distribute_unsafe(count, self.iterator))
+        return self.create_tuple(distribute_unsafe(count, self.iterator))
 
     distribute_infinite = distribute_unsafe
 
@@ -1422,19 +1430,19 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def distribute(self, count: int) -> DynamicTuple[Iter[T]]:
-        return self.convert_tuple(distribute(count, self.iterator))
+        return self.create_tuple(distribute(count, self.iterator))
 
     def divide(self, count: int) -> Iter[Iter[T]]:
-        return self.convert_nested(divide(count, self.iterator))
+        return self.create_nested(divide(count, self.iterator))
 
     def pad(self, value: V) -> Iter[Union[T, V]]:
-        return self.convert(pad(value, self.iterator))
+        return self.create(pad(value, self.iterator))
 
     def pad_exactly(self, value: V, size: int) -> Iter[Union[T, V]]:
-        return self.convert(pad(value, self.iterator, size))
+        return self.create(pad(value, self.iterator, size))
 
     def pad_multiple(self, value: V, size: int) -> Iter[Union[T, V]]:
-        return self.convert(pad(value, self.iterator, size, multiple=True))
+        return self.create(pad(value, self.iterator, size, multiple=True))
 
     def pad_none(self) -> Iter[Optional[T]]:
         return self.pad(None)
@@ -1446,22 +1454,22 @@ class Iter(Iterator[T]):
         return self.pad_multiple(None, size)
 
     def pad_with(self, function: Unary[int, V]) -> Iter[Union[T, V]]:
-        return self.convert(pad_with(function, self.iterator))
+        return self.create(pad_with(function, self.iterator))
 
     def pad_exactly_with(self, function: Unary[int, V], size: int) -> Iter[Union[T, V]]:
-        return self.convert(pad_with(function, self.iterator, size))
+        return self.create(pad_with(function, self.iterator, size))
 
     def pad_multiple_with(self, function: Unary[int, V], size: int) -> Iter[Union[T, V]]:
-        return self.convert(pad_with(function, self.iterator, size, multiple=True))
+        return self.create(pad_with(function, self.iterator, size, multiple=True))
 
     def chunks(self, size: int) -> Iter[List[T]]:
-        return self.convert(chunks(size, self.iterator))
+        return self.create(chunks(size, self.iterator))
 
     def iter_chunks(self, size: int) -> Iter[Iter[T]]:
-        return self.convert_nested(iter_chunks(size, self.iterator))
+        return self.create_nested(iter_chunks(size, self.iterator))
 
     def iter_chunks_unsafe(self, size: int) -> Iter[Iter[T]]:
-        return self.convert_nested(iter_chunks_unsafe(size, self.iterator))
+        return self.create_nested(iter_chunks_unsafe(size, self.iterator))
 
     iter_chunks_infinite = iter_chunks_unsafe
 
@@ -1506,7 +1514,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def groups(self, size: int) -> Iter[DynamicTuple[T]]:
-        return self.convert(groups(size, self.iterator))
+        return self.create(groups(size, self.iterator))
 
     @overload
     def groups_longest(self, size: Literal[0]) -> Iter[Never]:
@@ -1549,7 +1557,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def groups_longest(self, size: int) -> Iter[DynamicTuple[Optional[T]]]:
-        return self.convert(groups_longest(size, self.iterator))
+        return self.create(groups_longest(size, self.iterator))
 
     @overload
     def groups_longest_with(self, size: Literal[0], fill: V) -> Iter[Never]:
@@ -1592,25 +1600,25 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def groups_longest_with(self, size: int, fill: V) -> Iter[DynamicTuple[Union[T, V]]]:
-        return self.convert(groups_longest(size, self.iterator, fill))
+        return self.create(groups_longest(size, self.iterator, fill))
 
     def pairs(self) -> Iter[Tuple[T, T]]:
-        return self.convert(pairs(self.iterator))
+        return self.create(pairs(self.iterator))
 
     def pairs_longest(self) -> Iter[Tuple[Optional[T], Optional[T]]]:
-        return self.convert(pairs_longest(self.iterator))
+        return self.create(pairs_longest(self.iterator))
 
     def pairs_longest_with(self, fill: V) -> Iter[Tuple[Union[T, V], Union[T, V]]]:
-        return self.convert(pairs_longest(self.iterator, fill))
+        return self.create(pairs_longest(self.iterator, fill))
 
     def iter_windows(self, size: int) -> Iter[Iter[T]]:
-        return self.convert_nested(iter_windows(size, self.iterator))
+        return self.create_nested(iter_windows(size, self.iterator))
 
     def list_windows(self, size: int) -> Iter[List[T]]:
-        return self.convert(list_windows(size, self.iterator))
+        return self.create(list_windows(size, self.iterator))
 
     def pairs_windows(self) -> Iter[Tuple[T, T]]:
-        return self.convert(pairs_windows(self.iterator))
+        return self.create(pairs_windows(self.iterator))
 
     @overload
     def tuple_windows(self, size: Literal[0]) -> Iter[EmptyTuple]:
@@ -1653,7 +1661,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def tuple_windows(self, size: int) -> Iter[DynamicTuple[T]]:
-        return self.convert(tuple_windows(size, self.iterator))
+        return self.create(tuple_windows(size, self.iterator))
 
     @overload
     def zip(self) -> Iter[Tuple[T]]:
@@ -1750,7 +1758,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def zip(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
-        return self.convert(zip(self.iterator, *iterables))
+        return self.create(zip(self.iterator, *iterables))
 
     @overload
     def zip_equal(self) -> Iter[Tuple[T]]:
@@ -1849,7 +1857,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def zip_equal(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
-        return self.convert(zip_equal(self.iterator, *iterables))
+        return self.create(zip_equal(self.iterator, *iterables))
 
     @overload
     def zip_longest(self) -> Iter[Tuple[T]]:
@@ -1981,7 +1989,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def zip_longest(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Optional[Any]]]:
-        return self.convert(zip_longest(self.iterator, *iterables))
+        return self.create(zip_longest(self.iterator, *iterables))
 
     @overload
     def zip_longest_with(self, *, fill: V) -> Iter[Tuple[T]]:
@@ -2134,7 +2142,7 @@ class Iter(Iterator[T]):
     def zip_longest_with(
         self, *iterables: Iterable[Any], fill: V
     ) -> Iter[DynamicTuple[Union[Any, V]]]:
-        return self.convert(zip_longest(self.iterator, *iterables, fill=fill))
+        return self.create(zip_longest(self.iterator, *iterables, fill=fill))
 
     @overload
     def cartesian_product(self) -> Iter[Tuple[T]]:
@@ -2233,7 +2241,7 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def cartesian_product(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
-        return self.convert(cartesian_product(self.iterator, *iterables))
+        return self.create(cartesian_product(self.iterator, *iterables))
 
     @overload
     def cartesian_power(self, power: Literal[0]) -> Iter[EmptyTuple]:
@@ -2272,10 +2280,10 @@ class Iter(Iterator[T]):
         ...  # pragma: overload
 
     def cartesian_power(self, power: int) -> Iter[DynamicTuple[T]]:
-        return self.convert(cartesian_power(power, self.iterator))
+        return self.create(cartesian_power(power, self.iterator))
 
     def reverse(self) -> Iter[T]:
-        return self.convert(reverse(self.iterator))
+        return self.create(reverse(self.iterator))
 
     def sorted(self: Iter[ST]) -> List[ST]:
         return sorted(self.iterator)
@@ -2290,16 +2298,16 @@ class Iter(Iterator[T]):
         return sorted(self.iterator, key=key, reverse=True)
 
     def sort(self: Iter[ST]) -> Iter[ST]:
-        return self.convert(sort(self.iterator))
+        return self.create(sort(self.iterator))
 
     def sort_by(self, key: Unary[T, ST]) -> Iter[T]:
-        return self.convert(sort(self.iterator, key=key))
+        return self.create(sort(self.iterator, key=key))
 
     def sort_reverse(self: Iter[ST]) -> Iter[ST]:
-        return self.convert(sort(self.iterator, reverse=True))
+        return self.create(sort(self.iterator, reverse=True))
 
     def sort_reverse_by(self, key: Unary[T, ST]) -> Iter[T]:
-        return self.convert(sort(self.iterator, key=key, reverse=True))
+        return self.create(sort(self.iterator, key=key, reverse=True))
 
     def is_sorted(self: Iter[LT]) -> bool:
         return is_sorted(self.iterator)
@@ -2326,38 +2334,38 @@ class Iter(Iterator[T]):
         return is_sorted(self.iterator, key, strict=True, reverse=True)
 
     def duplicates_fast(self: Iter[Q]) -> Iter[Q]:
-        return self.convert(duplicates_fast(self.iterator))
+        return self.create(duplicates_fast(self.iterator))
 
     def duplicates_fast_by(self, key: Unary[T, Q]) -> Iter[T]:
-        return self.convert(duplicates_fast(self.iterator, key))
+        return self.create(duplicates_fast(self.iterator, key))
 
     def duplicates(self) -> Iter[T]:
-        return self.convert(duplicates(self.iterator))
+        return self.create(duplicates(self.iterator))
 
     def duplicates_by(self, key: Unary[T, V]) -> Iter[T]:
-        return self.convert(duplicates(self.iterator, key))
+        return self.create(duplicates(self.iterator, key))
 
     def unique_fast(self: Iter[Q]) -> Iter[Q]:
-        return self.convert(unique_fast(self.iterator))
+        return self.create(unique_fast(self.iterator))
 
     def unique_fast_by(self, key: Unary[T, Q]) -> Iter[T]:
-        return self.convert(unique_fast(self.iterator, key))
+        return self.create(unique_fast(self.iterator, key))
 
     def unique(self) -> Iter[T]:
-        return self.convert(unique(self.iterator))
+        return self.create(unique(self.iterator))
 
     def unique_by(self, key: Unary[T, V]) -> Iter[T]:
-        return self.convert(unique(self.iterator, key))
+        return self.create(unique(self.iterator, key))
 
     def partition(self, predicate: Predicate[T]) -> Tuple[Iter[T], Iter[T]]:
         true, false = partition(predicate, self.iterator)
 
-        return (self.convert(true), self.convert(false))
+        return (self.create(true), self.create(false))
 
     def partition_unsafe(self, predicate: Predicate[T]) -> Tuple[Iter[T], Iter[T]]:
         true, false = partition_unsafe(predicate, self.iterator)
 
-        return (self.convert(true), self.convert(false))
+        return (self.create(true), self.create(false))
 
     partition_infinite = partition_unsafe
 
@@ -2366,14 +2374,14 @@ class Iter(Iterator[T]):
 
         self._replace(iterator)
 
-        return self.convert(result)
+        return self.create(result)
 
     def copy_unsafe(self) -> Iter[T]:
         iterator, result = copy_unsafe(self.iterator)
 
         self._replace(iterator)
 
-        return self.convert(result)
+        return self.create(result)
 
     copy_infinite = copy_unsafe
 
@@ -2416,26 +2424,30 @@ class Iter(Iterator[T]):
         return result
 
     def repeat_last(self) -> Iter[T]:
-        return self.convert(repeat_last(self.iterator))
+        return self.create(repeat_last(self.iterator))
 
     def repeat_last_or(self, default: V) -> Iter[Union[T, V]]:
-        return self.convert(repeat_last(self.iterator, default))
+        return self.create(repeat_last(self.iterator, default))
 
     def repeat_last_or_none(self) -> Iter[Optional[T]]:
         return self.repeat_last_or(None)
 
     def repeat_each(self, count: int) -> Iter[T]:
-        return self.convert(repeat_each(self.iterator, count))
+        return self.create(repeat_each(self.iterator, count))
 
     def side_effect(self, function: Unary[T, Any]) -> Iter[T]:
-        return self.convert(side_effect(function, self.iterator))
+        return self.create(side_effect(function, self.iterator))
 
 
-iter = Iter
-reversed = iter.reversed
+def iter(iterable: Iterable[T], iter_type: Type[Iter[T]] = Iter) -> Iter[T]:
+    return iter_type(iterable)
 
 
-def iter_result(function: Callable[PS, Iterable[T]]) -> Callable[PS, Iter[T]]:
+def reversed(iterable: Reversible[T], iter_type: Type[Iter[T]] = Iter) -> Iter[T]:
+    return iter_type.reversed(iterable)
+
+
+def wrap_iter(function: Callable[PS, Iterable[T]]) -> Callable[PS, Iter[T]]:
     @wraps(function)
     def wrap(*args: PS.args, **kwargs: PS.kwargs) -> Iter[T]:
         return iter(function(*args, **kwargs))

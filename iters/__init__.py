@@ -1,23 +1,23 @@
 """Composable external iteration."""
 
 __description__ = "Composable external iteration."
-__url__ = "https://github.com/nekitdev/iters.py"
+__url__ = "https://github.com/nekitdev/iters"
 
 __title__ = "iters"
 __author__ = "nekitdev"
 __license__ = "MIT"
-__version__ = "1.0.0-alpha.1"
+__version__ = "0.1.0"
 
 from iters.async_iters import (
     AsyncIter,
     async_iter,
-    async_iter_result,
     async_next,
     async_next_unchecked,
     standard_async_iter,
     standard_async_next,
+    wrap_async_iter,
 )
-from iters.iters import Iter, iter, iter_result, reversed, standard_iter, standard_reversed
+from iters.iters import Iter, iter, reversed, standard_iter, standard_reversed, wrap_iter
 from iters.types import Ordering
 
 __all__ = (
@@ -32,7 +32,7 @@ __all__ = (
     "standard_async_iter",
     "standard_async_next",
     # wrap results of function calls into async iterators
-    "async_iter_result",
+    "wrap_async_iter",
     # iterator class
     "Iter",
     # convenient functions to get iterators
@@ -42,7 +42,7 @@ __all__ = (
     "standard_iter",
     "standard_reversed",
     # wrap results of function calls into iterators
-    "iter_result",
+    "wrap_iter",
     # ordering
     "Ordering",
 )

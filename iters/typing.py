@@ -35,9 +35,16 @@ __all__ = (
     "Binary",
     "Ternary",
     "Quaternary",
+    # async functions
+    "AsyncNullary",
+    "AsyncUnary",
+    "AsyncBinary",
+    "AsyncTernary",
+    "AsyncQuaternary",
     # dynamic size
     "DynamicCallable",
     "DynamicTuple",
+    "AsyncDynamicCallable",
     # ordering
     "Less",
     "Greater",
@@ -54,8 +61,7 @@ __all__ = (
     # sum / product
     "Sum",
     "Product",
-    # decorators and predicates
-    "Decorator",
+    # predicates
     "Predicate",
     "AsyncPredicate",
     # comparing
@@ -75,6 +81,10 @@ __all__ = (
     # "MaybeAnyIterable",
     # "MaybeAnyIterator",
     "MaybeAwaitable",
+    # named
+    "Named",
+    "get_name",
+    "is_named",
     # checks
     "is_awaitable",
     "is_async_iterable",
@@ -93,8 +103,13 @@ V = TypeVar("V")
 W = TypeVar("W")
 R = TypeVar("R")
 
-F = TypeVar("F", bound=Callable)  # type: ignore
-G = TypeVar("G", bound=Callable)  # type: ignore
+DynamicCallable = Callable[..., T]
+AnyCallable = DynamicCallable[Any]
+
+AsyncDynamicCallable = Callable[..., Awaitable[T]]
+
+F = TypeVar("F", bound=AnyCallable)
+G = TypeVar("G", bound=AnyCallable)
 
 Nullary = Callable[[], R]
 Unary = Callable[[T], R]
@@ -102,7 +117,11 @@ Binary = Callable[[T, U], R]
 Ternary = Callable[[T, U, V], R]
 Quaternary = Callable[[T, U, V, W], R]
 
-Decorator = Unary[F, G]  # D(F) = G (by definition)
+AsyncNullary = Nullary[Awaitable[R]]
+AsyncUnary = Unary[T, Awaitable[R]]
+AsyncBinary = Binary[T, U, Awaitable[R]]
+AsyncTernary = Ternary[T, U, V, Awaitable[R]]
+AsyncQuaternary = Quaternary[T, U, V, W, Awaitable[R]]
 
 MaybeBool = Union[bool, Any]
 
@@ -129,8 +148,6 @@ Tuple7 = Tuple[T, T, T, T, T, T, T]
 Tuple8 = Tuple[T, T, T, T, T, T, T, T]
 
 DynamicTuple = Tuple[T, ...]
-
-DynamicCallable = Callable[..., T]
 
 AnyIterable = Union[AsyncIterable[T], Iterable[T]]
 AnyIterator = Union[AsyncIterator[T], Iterator[T]]
@@ -168,11 +185,13 @@ def is_bytes(item: Any) -> TypeGuard[bytes]:
     return is_instance(item, bytes)
 
 
-# XXX: perhaps `Any` could work here...
+def is_error(item: Any) -> TypeGuard[AnyException]:
+    return is_instance(item, AnyException)
 
-RecursiveIterable: TypeAlias = Union[T, Iterable["RecursiveIterable[T]"]]
-RecursiveAsyncIterable: TypeAlias = Union[T, AsyncIterable["RecursiveAsyncIterable[T]"]]
-RecursiveAnyIterable: TypeAlias = Union[T, AnyIterable["RecursiveAnyIterable[T]"]]
+
+RecursiveIterable: TypeAlias = Union[T, Iterable[Any]]
+RecursiveAsyncIterable: TypeAlias = Union[T, AsyncIterable[Any]]
+RecursiveAnyIterable: TypeAlias = Union[T, AnyIterable[Any]]
 
 # we could define the following protocols to be generic,
 # but we are ultimately using them for T: Ordered[T] bounds,
@@ -180,17 +199,23 @@ RecursiveAnyIterable: TypeAlias = Union[T, AnyIterable["RecursiveAnyIterable[T]"
 # which would be required to put the bound on T
 
 
+L = TypeVar("L", bound="Less")
+
+
 @runtime_checkable
 class Less(Protocol):
     @abstractmethod
-    def __lt__(self, __other: Self) -> MaybeBool:
+    def __lt__(self: L, __other: L) -> MaybeBool:
         raise NotImplementedError
+
+
+G = TypeVar("G", bound="Greater")
 
 
 @runtime_checkable
 class Greater(Protocol):
     @abstractmethod
-    def __gt__(self, __other: Self) -> MaybeBool:
+    def __gt__(self: G, __other: G) -> MaybeBool:
         raise NotImplementedError
 
 
@@ -202,17 +227,23 @@ class StrictOrdered(Less, Greater, Protocol):
 EitherStrictOrdered = Union[Less, Greater]
 
 
+LE = TypeVar("LE", bound="LessOrEqual")
+
+
 @runtime_checkable
 class LessOrEqual(Protocol):
     @abstractmethod
-    def __le__(self, __other: Self) -> MaybeBool:
+    def __le__(self: LE, __other: LE) -> MaybeBool:
         raise NotImplementedError
+
+
+GE = TypeVar("GE", bound="GreaterOrEqual")
 
 
 @runtime_checkable
 class GreaterOrEqual(Protocol):
     @abstractmethod
-    def __ge__(self, __other: Self) -> MaybeBool:
+    def __ge__(self: GE, __other: GE) -> MaybeBool:
         raise NotImplementedError
 
 
@@ -244,3 +275,19 @@ class Product(Protocol):
     @abstractmethod
     def __mul__(self, __other: Self) -> Self:
         raise NotImplementedError
+
+
+NAME = "__name__"
+
+
+@runtime_checkable
+class Named(Protocol):
+    __name__: str
+
+
+def is_named(item: Any) -> TypeGuard[Named]:
+    return hasattr(item, NAME)
+
+
+def get_name(item: Named) -> str:
+    return item.__name__

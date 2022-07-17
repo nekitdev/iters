@@ -2,6 +2,7 @@ from builtins import zip as standard_zip
 from collections import Counter as counter_dict
 from collections import deque
 from functools import reduce as standard_reduce
+from heapq import merge as standard_merge
 from itertools import accumulate as standard_accumulate
 from itertools import chain, compress
 from itertools import count as standard_count
@@ -111,6 +112,8 @@ __all__ = (
     "empty",
     "filter_except",
     "filter_false",
+    "filter_false_map",
+    "filter_map",
     "find_all",
     "find",
     "find_or_first",
@@ -278,7 +281,7 @@ def iter_function(function: Nullary[T], sentinel: V) -> Iterator[T]:
 
 def empty() -> Iterator[Never]:
     return
-    yield
+    yield  # type: ignore
 
 
 def once(value: T) -> Iterator[T]:
@@ -455,8 +458,10 @@ def unpack_quaternary(quaternary: Quaternary[T, U, V, W, R]) -> Unary[Tuple[T, U
     return unpack
 
 
-def unpack_any(function: Callable[[Unpack[Shape]], T]) -> Unary[Tuple[Unpack[Shape]], T]:
-    def unpack(args: Tuple[Unpack[Shape]]) -> T:
+def unpack_any(
+    function: Callable[[Unpack[Shape]], T]  # type: ignore
+) -> Unary[Tuple[Unpack[Shape]], T]:  # type: ignore
+    def unpack(args: Tuple[Unpack[Shape]]) -> T:  # type: ignore
         return function(*args)
 
     return unpack
@@ -912,6 +917,34 @@ def flatten(nested: Iterable[Iterable[T]]) -> Iterator[T]:
 
 def flat_map(function: Unary[T, Iterable[U]], iterable: Iterable[T]) -> Iterator[U]:
     return flatten(map(function, iterable))
+
+
+def filter_map(
+    predicate: Optional[Predicate[T]], function: Unary[T, U], iterable: Iterable[T]
+) -> Iterator[U]:
+    if predicate is None:
+        for item in iterable:
+            if item:
+                yield function(item)
+
+    else:
+        for item in iterable:
+            if predicate(item):
+                yield function(item)
+
+
+def filter_false_map(
+    predicate: Optional[Predicate[T]], function: Unary[T, U], iterable: Iterable[T]
+) -> Iterator[U]:
+    if predicate is None:
+        for item in iterable:
+            if not item:
+                yield function(item)
+
+    else:
+        for item in iterable:
+            if not predicate(item):
+                yield function(item)
 
 
 def partition_unsafe(

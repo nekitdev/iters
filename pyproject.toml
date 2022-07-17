@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "iters.py"
-version = "1.0.0-alpha.1"
+name = "iters"
+version = "0.1.0"
 description = "Composable external iteration."
 authors = ["nekitdev"]
 license = "MIT"
 
 readme = "README.md"
 
-# homepage = "https://github.com/nekitdev/iters.py"
-repository = "https://github.com/nekitdev/iters.py"
-# documentation = "https://iters-py.readthedocs.io/"
+homepage = "https://github.com/nekitdev/iters"
+repository = "https://github.com/nekitdev/iters"
+documentation = "https://nekitdev.github.io/iters"
 
 keywords = ["python", "iter", "iterator"]
 
@@ -21,32 +21,54 @@ classifiers = [
     "Typing :: Typed",
 ]
 
-include = ["CHANGELOG.md", "iters/py.typed"]
-
 [tool.poetry.urls]
 Discord = "https://nekit.dev/discord"
 Funding = "https://patreon.com/nekitdev"
-Issues = "https://github.com/nekitdev/iters.py/issues"
+Issues = "https://github.com/nekitdev/iters/issues"
 
 [[tool.poetry.packages]]
 include = "iters"
 
 [tool.poetry.dependencies]
 python = ">= 3.7"
-typing-extensions = ">= 4.2.0"
+typing-extensions = ">= 4.3.0"
 
-[tool.poetry.dev-dependencies]
-black = "22.3.0"
-coverage = "6.3.2"
-flake8 = "4.0.1"
-flake8-bugbear = "22.4.25"
-flake8-isort = "4.1.1"
-flake8-string-format = "0.3.0"
-flake8-tidy-imports = "4.6.0"
-mypy = "0.950"
+[tool.poetry.dependencies.anyio]
+version = ">= 3.6.1"
+optional = true
+
+[tool.poetry.extras]
+concurrent = ["anyio"]
+
+[tool.poetry.group.format]
+optional = true
+
+[tool.poetry.group.format.dependencies]
+black = "22.6.0"
+
+[tool.poetry.group.format.dependencies.isort]
+version = "5.10.1"
+python = "^3.7"
+
+[tool.poetry.group.check]
+optional = true
+
+[tool.poetry.group.check.dependencies]
+mypy = "0.961"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
 pytest = "7.1.2"
 pytest-cov = "3.0.0"
-pytest-xdist = "2.5.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "1.3.0"
+mkdocs-material = "8.3.9"
 
 [tool.black]
 line_length = 100
@@ -55,9 +77,9 @@ line_length = 100
 line_length = 100
 profile = "black"
 
-[tool.flake8]
-max_line_length = 100
-count = true
+[tool.pytest.ini_options]
+addopts = "--cov iters"
+testpaths = ["tests"]
 
 [tool.coverage.run]
 source = ["iters"]
@@ -65,19 +87,18 @@ source = ["iters"]
 [tool.coverage.report]
 ignore_errors = true
 exclude_lines = [
+    "pragma: never",
     "pragma: no cover",
-    "pragma: overload",
-    "pragma: protocol",
-    "pragma: unlikely",
     "if TYPE_CHECKING",
-    "def __repr__",
-    "raise AssertionError",
+    "@overload",
+    "@abstractmethod",
     "raise NotImplementedError",
+    "raise AssertionError",
+    "def __repr__",
 ]
 
 [tool.coverage.html]
 directory = "coverage"
-title = "Coverage"
 
 [tool.mypy]
 show_column_numbers = true
@@ -94,25 +115,27 @@ strict_equality = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_untyped_decorators = true
+disallow_untyped_globals = true
 
 disallow_incomplete_defs = true
 
 warn_no_return = true
+warn_unreachable = true
 
 warn_redundant_casts = true
 warn_unused_ignores = false  # compatibility
 
 [tool.changelog]
-name = "iters.py"
-version = "1.0.0-alpha.1"
-url = "https://github.com/nekitdev/iters.py"
+name = "iters"
+version = "0.1.0"
+url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"
 
 start_string = "<!-- changelog: start -->"
 
-title_format = "{name} {version} ({date})"
-issue_format = "[#{issue}]({url}/issues/{issue})"
+title_format = "{version} ({date})"
+issue_format = "[#{issue}]({url}/pull/{issue})"
 
 bullet = "-"
 wrap = true
@@ -121,5 +144,5 @@ wrap_size = 100
 display = ["feature", "change", "fix", "security", "deprecation", "removal", "internal"]
 
 [build-system]
-requires = ["poetry-core >= 1.0.0"]
+requires = ["poetry-core >= 1.1.0b2"]
 build-backend = "poetry.core.masonry.api"
