@@ -287,8 +287,6 @@ __all__ = (
     "wrap_await",
 )
 
-Shape = TypeVarTuple("Shape")
-
 PS = ParamSpec("PS")
 
 T = TypeVar("T")
@@ -4852,9 +4850,12 @@ def async_cartesian_product(*iterables: AnyIterable[Any]) -> AsyncIterator[Dynam
     return stack
 
 
+Ts = TypeVarTuple("Ts")
+
+
 async def async_cartesian_product_step(
-    stack: AnyIterable[Tuple[Unpack[Shape]]], iterable: AnyIterable[T]  # type: ignore
-) -> AsyncIterator[Tuple[Unpack[Shape], T]]:  # type: ignore
+    stack: AnyIterable[Tuple[Unpack[Ts]]], iterable: AnyIterable[T]  # type: ignore
+) -> AsyncIterator[Tuple[Unpack[Ts], T]]:  # type: ignore
     array = await async_list(iterable)
 
     async for items in async_iter(stack):
@@ -4916,8 +4917,8 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
     state = None
 
     async def async_cartesian_power_step(
-        stack: AnyIterable[Tuple[Unpack[Shape]]],  # type: ignore
-    ) -> AsyncIterator[Tuple[Unpack[Shape], T]]:  # type: ignore
+        stack: AnyIterable[Tuple[Unpack[Ts]]],  # type: ignore
+    ) -> AsyncIterator[Tuple[Unpack[Ts], T]]:  # type: ignore
         nonlocal state
 
         if state is None:
@@ -4935,7 +4936,7 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
     return stack
 
 
-Args = TypeVarTuple("Args")
+Args = TypeVarTuple("Args")  # type: ignore
 
 
 def tuple_args(*args: Unpack[Args]) -> Tuple[Unpack[Args]]:  # type: ignore

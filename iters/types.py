@@ -68,6 +68,9 @@ class Singleton(metaclass=SingletonType):
         return get_name(type(self))
 
 
+singleton = Singleton()
+
+
 class NoDefault(Singleton):
     pass
 

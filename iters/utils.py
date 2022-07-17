@@ -199,8 +199,6 @@ __all__ = (
 
 PYTHON_3_10 = version_info >= (3, 10, 0)
 
-Shape = TypeVarTuple("Shape")
-
 T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
@@ -458,10 +456,13 @@ def unpack_quaternary(quaternary: Quaternary[T, U, V, W, R]) -> Unary[Tuple[T, U
     return unpack
 
 
+Ts = TypeVarTuple("Ts")
+
+
 def unpack_any(
-    function: Callable[[Unpack[Shape]], T]  # type: ignore
-) -> Unary[Tuple[Unpack[Shape]], T]:  # type: ignore
-    def unpack(args: Tuple[Unpack[Shape]]) -> T:  # type: ignore
+    function: Callable[[Unpack[Ts]], T]  # type: ignore
+) -> Unary[Tuple[Unpack[Ts]], T]:  # type: ignore
+    def unpack(args: Tuple[Unpack[Ts]]) -> T:  # type: ignore
         return function(*args)
 
     return unpack

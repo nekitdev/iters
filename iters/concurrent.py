@@ -319,4 +319,4 @@ if CONCURRENT:
         return list(map(unwrap_result, await collect_iterable_with_errors(iterable)))
 
     async def run_blocking(function: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
-        return await standard_run_blocking(partial(function, *args, **kwargs))
+        return await standard_run_blocking(partial(function, *args, **kwargs))  # type: ignore
