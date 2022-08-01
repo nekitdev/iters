@@ -54,7 +54,7 @@ python = "^3.7"
 optional = true
 
 [tool.poetry.group.check.dependencies]
-mypy = "0.961"
+mypy = "0.971"
 
 [tool.poetry.group.test]
 optional = true
@@ -129,14 +129,14 @@ warn_unreachable = true
 warn_redundant_casts = true
 warn_unused_ignores = false  # compatibility
 
-[tool.changelog]
+[tool.changelogging]
 name = "iters"
 version = "0.1.0"
 url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"
 
-start_string = "<!-- changelog: start -->"
+start_string = "<!-- changelogging: start -->"
 
 title_format = "{version} ({date})"
 issue_format = "[#{issue}]({url}/pull/{issue})"
