@@ -2,7 +2,7 @@ from builtins import zip as standard_zip
 from collections import Counter as counter_dict
 from collections import deque
 from functools import reduce as standard_reduce
-from heapq import merge as standard_merge
+# from heapq import merge as standard_merge
 from itertools import accumulate as standard_accumulate
 from itertools import chain, compress
 from itertools import count as standard_count
@@ -35,7 +35,6 @@ from typing import (
     Optional,
     Set,
     Tuple,
-    Type,
     TypeVar,
     Union,
     overload,
@@ -45,7 +44,7 @@ from typing_extensions import Literal, Never, TypeVarTuple, Unpack
 
 from iters.types import Ordering, marker, no_default
 from iters.typing import (
-    AnyException,
+    AnyExceptionType,
     Binary,
     Compare,
     DynamicTuple,
@@ -1699,7 +1698,7 @@ def min_max_by(iterable: Iterable[T], value: T, key: Unary[T, ST]) -> Tuple[T, T
 
 
 def filter_except(
-    validate: Unary[T, Any], iterable: Iterable[T], *errors: Type[AnyException]
+    validate: Unary[T, Any], iterable: Iterable[T], *errors: AnyExceptionType
 ) -> Iterator[T]:
     for item in iterable:
         try:
@@ -1713,7 +1712,7 @@ def filter_except(
 
 
 def map_except(
-    function: Unary[T, U], iterable: Iterable[T], *errors: Type[AnyException]
+    function: Unary[T, U], iterable: Iterable[T], *errors: AnyExceptionType
 ) -> Iterator[U]:
     for item in iterable:
         try:
@@ -1723,7 +1722,7 @@ def map_except(
             pass
 
 
-def iter_except(function: Nullary[T], *errors: Type[AnyException]) -> Iterator[T]:
+def iter_except(function: Nullary[T], *errors: AnyExceptionType) -> Iterator[T]:
     try:
         while True:
             yield function()

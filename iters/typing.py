@@ -10,15 +10,17 @@ from typing import (
     Iterable,
     Iterator,
     Tuple,
+    Type,
     TypeVar,
     Union,
 )
 
-from typing_extensions import Protocol, Self, TypeAlias, TypeGuard, runtime_checkable
+from typing_extensions import Protocol, TypeAlias, TypeGuard, runtime_checkable
 
 __all__ = (
     # exceptions
     "AnyException",
+    "AnyExceptionType",
     # tuples
     "EmptyTuple",
     "Tuple1",
@@ -96,6 +98,7 @@ __all__ = (
 )
 
 AnyException: TypeAlias = BaseException  # any exception type
+AnyExceptionType: TypeAlias = Type[AnyException]
 
 T = TypeVar("T")
 U = TypeVar("U")

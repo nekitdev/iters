@@ -221,7 +221,7 @@ from iters.async_utils import (
 from iters.concurrent import CONCURRENT
 from iters.types import Ordering
 from iters.typing import (
-    AnyException,
+    AnyExceptionType,
     AnyIterable,
     AnySelectors,
     AsyncPredicate,
@@ -297,6 +297,9 @@ PS = ParamSpec("PS")
 EMPTY_BYTES = bytes()
 EMPTY_STRING = str()
 
+DEFAULT_START = 0
+DEFAULT_STEP = 1
+
 
 class AsyncIter(AsyncIterator[T]):
     _iterator: AsyncIterator[T]
@@ -354,15 +357,15 @@ class AsyncIter(AsyncIterator[T]):
 
     @classmethod
     def count_from(cls, start: int) -> AsyncIter[int]:
-        return cls.count_from_by(start, 1)
+        return cls.count_from_by(start, DEFAULT_STEP)
 
     @classmethod
     def count_by(cls, step: int) -> AsyncIter[int]:
-        return cls.count_from_by(0, step)
+        return cls.count_from_by(DEFAULT_START, step)
 
     @classmethod
     def count(cls) -> AsyncIter[int]:
-        return cls.count_from_by(0, 1)
+        return cls.count_from_by(DEFAULT_START, DEFAULT_STEP)
 
     @classmethod
     def iterate(cls, function: Unary[V, V], value: V) -> AsyncIter[V]:
@@ -383,12 +386,12 @@ class AsyncIter(AsyncIterator[T]):
         return cls.create(async_iterate_await(function, value, count))
 
     @classmethod
-    def iter_except(cls, function: Nullary[T], *errors: Type[AnyException]) -> AsyncIter[T]:
+    def iter_except(cls, function: Nullary[T], *errors: AnyExceptionType) -> AsyncIter[T]:
         return cls.create(async_iter_except(function, *errors))
 
     @classmethod
     def iter_except_await(
-        cls, function: Nullary[Awaitable[T]], *errors: Type[AnyException]
+        cls, function: Nullary[Awaitable[T]], *errors: AnyExceptionType
     ) -> AsyncIter[T]:
         return cls.create(async_iter_except_await(function, *errors))
 
@@ -1293,11 +1296,11 @@ class AsyncIter(AsyncIterator[T]):
     def filter_false_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
         return self.create(async_filter_false_await(predicate, self.iterator))
 
-    def filter_except(self, validate: Unary[T, Any], *errors: Type[AnyException]) -> AsyncIter[T]:
+    def filter_except(self, validate: Unary[T, Any], *errors: AnyExceptionType) -> AsyncIter[T]:
         return self.create(async_filter_except(validate, self.iterator, *errors))
 
     def filter_except_await(
-        self, validate: Unary[T, Awaitable[Any]], *errors: Type[AnyException]
+        self, validate: Unary[T, Awaitable[Any]], *errors: AnyExceptionType
     ) -> AsyncIter[T]:
         return self.create(async_filter_except_await(validate, self.iterator, *errors))
 
@@ -1528,11 +1531,11 @@ class AsyncIter(AsyncIterator[T]):
     def map_await(self, function: Unary[T, Awaitable[U]]) -> AsyncIter[U]:
         return self.create(async_map_await(function, self.iterator))
 
-    def map_except(self, function: Unary[T, U], *errors: Type[AnyException]) -> AsyncIter[U]:
+    def map_except(self, function: Unary[T, U], *errors: AnyExceptionType) -> AsyncIter[U]:
         return self.create(async_map_except(function, self.iterator, *errors))
 
     def map_except_await(
-        self, function: Unary[T, Awaitable[U]], *errors: Type[AnyException]
+        self, function: Unary[T, Awaitable[U]], *errors: AnyExceptionType
     ) -> AsyncIter[U]:
         return self.create(async_map_except_await(function, self.iterator, *errors))
 

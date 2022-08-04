@@ -23,7 +23,6 @@ from typing import (
     Reversible,
     Set,
     Tuple,
-    Type,
     TypeVar,
     Union,
     overload,
@@ -34,7 +33,7 @@ from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 from iters.concurrent import CONCURRENT
 from iters.types import Ordering, marker, no_default
 from iters.typing import (
-    AnyException,
+    AnyExceptionType,
     AnyIterable,
     AnyIterator,
     AnySelectors,
@@ -2963,7 +2962,7 @@ async def async_min_max_by_await(
 
 
 async def async_filter_except(
-    validate: Unary[T, Any], iterable: AnyIterable[T], *errors: Type[AnyException]
+    validate: Unary[T, Any], iterable: AnyIterable[T], *errors: AnyExceptionType
 ) -> AsyncIterator[T]:
     async for item in async_iter(iterable):
         try:
@@ -2977,7 +2976,7 @@ async def async_filter_except(
 
 
 async def async_filter_except_await(
-    validate: AsyncUnary[T, Any], iterable: AnyIterable[T], *errors: Type[AnyException]
+    validate: AsyncUnary[T, Any], iterable: AnyIterable[T], *errors: AnyExceptionType
 ) -> AsyncIterator[T]:
     async for item in async_iter(iterable):
         try:
@@ -2991,7 +2990,7 @@ async def async_filter_except_await(
 
 
 async def async_map_except(
-    function: Unary[T, U], iterable: AnyIterable[T], *errors: Type[AnyException]
+    function: Unary[T, U], iterable: AnyIterable[T], *errors: AnyExceptionType
 ) -> AsyncIterator[U]:
     async for item in async_iter(iterable):
         try:
@@ -3002,7 +3001,7 @@ async def async_map_except(
 
 
 async def async_map_except_await(
-    function: AsyncUnary[T, U], iterable: AnyIterable[T], *errors: Type[AnyException]
+    function: AsyncUnary[T, U], iterable: AnyIterable[T], *errors: AnyExceptionType
 ) -> AsyncIterator[U]:
     async for item in async_iter(iterable):
         try:
@@ -3012,7 +3011,7 @@ async def async_map_except_await(
             pass
 
 
-async def async_iter_except(function: Nullary[T], *errors: Type[AnyException]) -> AsyncIterator[T]:
+async def async_iter_except(function: Nullary[T], *errors: AnyExceptionType) -> AsyncIterator[T]:
     try:
         while True:
             yield function()
@@ -3022,7 +3021,7 @@ async def async_iter_except(function: Nullary[T], *errors: Type[AnyException]) -
 
 
 async def async_iter_except_await(
-    function: AsyncNullary[T], *errors: Type[AnyException]
+    function: AsyncNullary[T], *errors: AnyExceptionType
 ) -> AsyncIterator[T]:
     try:
         while True:

@@ -29,7 +29,7 @@ from typing_extensions import Literal, Never, ParamSpec
 
 from iters.types import Ordering
 from iters.typing import (
-    AnyException,
+    AnyExceptionType,
     Binary,
     DynamicTuple,
     EitherLenientOrdered,
@@ -205,6 +205,9 @@ PS = ParamSpec("PS")
 EMPTY_BYTES = bytes()
 EMPTY_STRING = str()
 
+DEFAULT_START = 0
+DEFAULT_STEP = 1
+
 
 class Iter(Iterator[T]):
     _iterator: Iterator[T]
@@ -250,15 +253,15 @@ class Iter(Iterator[T]):
 
     @classmethod
     def count_from(cls, start: int) -> Iter[int]:
-        return cls.count_from_by(start, 1)
+        return cls.count_from_by(start, DEFAULT_STEP)
 
     @classmethod
     def count_by(cls, step: int) -> Iter[int]:
-        return cls.count_from_by(0, step)
+        return cls.count_from_by(DEFAULT_START, step)
 
     @classmethod
     def count(cls) -> Iter[int]:
-        return cls.count_from_by(0, 1)
+        return cls.count_from_by(DEFAULT_START, DEFAULT_STEP)
 
     @classmethod
     def iterate(cls, function: Unary[V, V], value: V) -> Iter[V]:
@@ -269,7 +272,7 @@ class Iter(Iterator[T]):
         return cls.create(iterate(function, value, count))
 
     @classmethod
-    def iter_except(cls, function: Nullary[T], *errors: Type[AnyException]) -> Iter[T]:
+    def iter_except(cls, function: Nullary[T], *errors: AnyExceptionType) -> Iter[T]:
         return cls.create(iter_except(function, *errors))
 
     @classmethod
@@ -1088,7 +1091,7 @@ class Iter(Iterator[T]):
     def filter_false(self, predicate: Predicate[T]) -> Iter[T]:
         return self.create(filter_false(predicate, self.iterator))
 
-    def filter_except(self, validate: Unary[T, Any], *errors: Type[AnyException]) -> Iter[T]:
+    def filter_except(self, validate: Unary[T, Any], *errors: AnyExceptionType) -> Iter[T]:
         return self.create(filter_except(validate, self.iterator, *errors))
 
     def compress(self, selectors: Selectors) -> Iter[T]:
@@ -1231,7 +1234,7 @@ class Iter(Iterator[T]):
     def map(self, function: Unary[T, U]) -> Iter[U]:
         return self.create(map(function, self.iterator))
 
-    def map_except(self, function: Unary[T, U], *errors: Type[AnyException]) -> Iter[U]:
+    def map_except(self, function: Unary[T, U], *errors: AnyExceptionType) -> Iter[U]:
         return self.create(map_except(function, self.iterator, *errors))
 
     def flat_map(self, function: Unary[T, Iterable[U]]) -> Iter[U]:
