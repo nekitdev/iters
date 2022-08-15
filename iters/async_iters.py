@@ -12,6 +12,7 @@ from typing import (
     ContextManager,
     Counter,
     Dict,
+    Generator,
     Hashable,
     Iterator,
     List,
@@ -1092,6 +1093,9 @@ class AsyncIter(AsyncIterator[T]):
 
     async def __anext__(self) -> T:
         return await self.next()
+
+    def __await__(self) -> Generator[None, None, List[T]]:
+        return self.list().__await__()
 
     def unwrap(self) -> AsyncIterator[T]:
         return self.iterator
