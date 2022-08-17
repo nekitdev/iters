@@ -4194,12 +4194,12 @@ if CONCURRENT:
         return async_flat_map(async_wait_concurrent, async_chunks(bound, iterable))
 
     def async_map_concurrent(
-        function: Unary[T, Awaitable[U]], iterable: AnyIterable[T]
+        function: AsyncUnary[T, U], iterable: AnyIterable[T]
     ) -> AsyncIterator[U]:
         return async_wait_concurrent(async_map(function, iterable))
 
     def async_map_concurrent_bound(
-        bound: int, function: Unary[T, Awaitable[U]], iterable: AnyIterable[T]
+        bound: int, function: AsyncUnary[T, U], iterable: AnyIterable[T]
     ) -> AsyncIterator[U]:
         return async_wait_concurrent_bound(bound, async_map(function, iterable))
 
