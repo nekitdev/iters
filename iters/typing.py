@@ -131,13 +131,13 @@ MaybeBool = Union[bool, Any]
 Predicate = Unary[T, MaybeBool]
 Selectors = Iterable[MaybeBool]
 
-AsyncPredicate = Unary[T, Awaitable[MaybeBool]]
+AsyncPredicate = AsyncUnary[T, MaybeBool]
 AsyncSelectors = AsyncIterable[MaybeBool]
 
 AnySelectors = Union[AsyncSelectors, Selectors]
 
 Compare = Binary[T, U, MaybeBool]
-AsyncCompare = Binary[T, U, Awaitable[MaybeBool]]
+AsyncCompare = AsyncBinary[T, U, MaybeBool]
 
 EmptyTuple = Tuple[()]
 
