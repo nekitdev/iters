@@ -100,6 +100,7 @@ from iters.utils import (
     flatten,
     fold,
     for_each,
+    get,
     group,
     group_dict,
     group_list,
@@ -214,6 +215,7 @@ class Iter(Iterator[T]):
 
     @property
     def iterator(self) -> Iterator[T]:
+        """The underlying iterator."""
         return self._iterator
 
     def _replace(self, iterator: Iterator[T]) -> None:
@@ -221,30 +223,117 @@ class Iter(Iterator[T]):
 
     @classmethod
     def empty(cls) -> Iter[T]:
+        """Creates an empty iterator.
+
+        Returns:
+            An empty [`Iter[T]`][iters.iters.Iter].
+        """
         return cls.create(empty())
 
     @classmethod
     def once(cls, value: V) -> Iter[V]:
+        """Creates an iterator that yields a `value` exactly once.
+
+        This is commonly used to adapt a single value into a [`chain`][iters.iters.Iter.chain]
+        of other kinds of iteration. Maybe you have an iterator that covers almost everything,
+        but you need an extra special case. Maybe you have a function which works on iterators,
+        but you only need to process one value.
+
+        Arguments:
+            value: The value to yield.
+
+        Returns:
+            An [`Iter[V]`][iters.iters.Iter] with `value` of type `V`.
+        """
         return cls.create(once(value))
 
     @classmethod
     def once_with(cls, function: Nullary[V]) -> Iter[V]:
+        """Creates an iterator that lazily generates a value exactly once
+        by invoking the `function` provided.
+
+        This is commonly used to adapt a single value into a [`chain`][iters.iters.Iter.chain]
+        of other kinds of iteration. Maybe you have an iterator that covers almost everything,
+        but you need an extra special case. Maybe you have a function which works on iterators,
+        but you only need to process one value.
+
+        Unlike [`once`][iters.iters.Iter.once], this function will
+        lazily generate the value on request.
+
+        Arguments:
+            function: The value-generating function to use.
+
+        Returns:
+            An [`Iter[V]`][iters.iters.Iter] with the generated `value` of type `V`.
+        """
         return cls.create(once_with(function))
 
     @classmethod
     def repeat(cls, value: V) -> Iter[V]:
+        """Creates an iterator that endlessly repeats a single `value`.
+
+        This function repeats a single value over and over again.
+
+        Infinite iterators like [`repeat`][iters.iters.Iter.repeat]
+        are often used with adapters like [`take`][iters.iters.Iter.take],
+        in order to make them finite.
+
+        Arguments:
+            value: The value to repeat.
+
+        Returns:
+            An infinite [`Iter[V]`][iters.iters.Iter] with repeated `value` of type `V`.
+        """
         return cls.create(repeat(value))
 
     @classmethod
     def repeat_exactly(cls, value: V, count: int) -> Iter[V]:
+        """Creates an iterator that repeats a single `value` exactly `count` times.
+
+        This function is a shorthand for [`iter.repeat(value).take(count)`][iters.iters.Iter.take].
+
+        Arguments:
+            value: The value to repeat.
+            count: The number of times to repeat the `value`.
+
+        Returns:
+            An [`Iter[V]`][iters.iters.Iter] with `value` of type `V` repeated `count` times.
+        """
         return cls.create(repeat(value, count))
 
     @classmethod
     def repeat_with(cls, function: Nullary[V]) -> Iter[V]:
+        """Creates an iterator that endlessly generates values of type `V`.
+
+        This function repeats values over and over again.
+
+        Infinite iterators like [`repeat_with`][iters.iters.Iter.repeat_with]
+        are often used with adapters like [`take`][iters.iters.Iter.take],
+        in order to make them finite.
+
+        Arguments:
+            function: The value-generating function to use.
+
+        Returns:
+            An infinite [`Iter[V]`][iters.iters.Iter] with repeated `value` of type `V`.
+        """
         return cls.create(repeat_with(function))
 
     @classmethod
     def repeat_exactly_with(cls, function: Nullary[V], count: int) -> Iter[V]:
+        """Creates an iterator that generates values of type `V` exactly `count` times.
+
+        This function is a shorthand for
+        [`iter.repeat_with(function).take(count)`][iters.iters.Iter.take].
+
+        Arguments:
+            function: The value-generating function to use.
+            count: The number of times to repeat values.
+
+        Returns:
+            An [`Iter[V]`][iters.iters.Iter] with repeated
+                `value` of type `V` exactly `count` times.
+        """
         return cls.create(repeat_with(function, count))
 
     @classmethod
