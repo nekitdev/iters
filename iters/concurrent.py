@@ -82,15 +82,14 @@ def unwrap_result(result: AnyResult[T]) -> T:
 
 
 if CONCURRENT:
+
     @overload
     async def collect_with_errors() -> EmptyTuple:
         ...
 
-
     @overload
     async def collect_with_errors(__awaitable_a: Awaitable[A]) -> Tuple[AnyResult[A]]:
         ...
-
 
     @overload
     async def collect_with_errors(
@@ -98,13 +97,11 @@ if CONCURRENT:
     ) -> Tuple[AnyResult[A], AnyResult[B]]:
         ...
 
-
     @overload
     async def collect_with_errors(
         __awaitable_a: Awaitable[A], __awaitable_b: Awaitable[B], __awaitable_c: Awaitable[C]
     ) -> Tuple[AnyResult[A], AnyResult[B], AnyResult[C]]:
         ...
-
 
     @overload
     async def collect_with_errors(
@@ -114,7 +111,6 @@ if CONCURRENT:
         __awaitable_d: Awaitable[D],
     ) -> Tuple[AnyResult[A], AnyResult[B], AnyResult[C], AnyResult[D]]:
         ...
-
 
     @overload
     async def collect_with_errors(
@@ -126,7 +122,6 @@ if CONCURRENT:
     ) -> Tuple[AnyResult[A], AnyResult[B], AnyResult[C], AnyResult[D], AnyResult[E]]:
         ...
 
-
     @overload
     async def collect_with_errors(
         __awaitable_a: Awaitable[A],
@@ -137,7 +132,6 @@ if CONCURRENT:
         __awaitable_f: Awaitable[F],
     ) -> Tuple[AnyResult[A], AnyResult[B], AnyResult[C], AnyResult[D], AnyResult[E], AnyResult[F]]:
         ...
-
 
     @overload
     async def collect_with_errors(
@@ -158,7 +152,6 @@ if CONCURRENT:
         AnyResult[G],
     ]:
         ...
-
 
     @overload
     async def collect_with_errors(
@@ -182,7 +175,6 @@ if CONCURRENT:
     ]:
         ...
 
-
     @overload
     async def collect_with_errors(
         __awaitable_a: Awaitable[Any],
@@ -197,10 +189,8 @@ if CONCURRENT:
     ) -> DynamicTuple[AnyResult[Any]]:
         ...
 
-
     async def collect_with_errors(*awaitables: Awaitable[Any]) -> DynamicTuple[AnyResult[Any]]:
         return tuple(await collect_iterable_with_errors(awaitables))
-
 
     async def collect_iterable_with_errors(iterable: Iterable[Awaitable[T]]) -> List[AnyResult[T]]:
         result: List[AnyTaggedResult[T]] = []
@@ -213,28 +203,23 @@ if CONCURRENT:
 
         return list(map(_take_result, result))
 
-
     @overload
     async def collect() -> EmptyTuple:
         ...
-
 
     @overload
     async def collect(__awaitable_a: Awaitable[A]) -> Tuple[A]:
         ...
 
-
     @overload
     async def collect(__awaitable_a: Awaitable[A], __awaitable_b: Awaitable[B]) -> Tuple[A, B]:
         ...
-
 
     @overload
     async def collect(
         __awaitable_a: Awaitable[A], __awaitable_b: Awaitable[B], __awaitable_c: Awaitable[C]
     ) -> Tuple[A, B, C]:
         ...
-
 
     @overload
     async def collect(
@@ -244,7 +229,6 @@ if CONCURRENT:
         __awaitable_d: Awaitable[D],
     ) -> Tuple[A, B, C, D]:
         ...
-
 
     @overload
     async def collect(
@@ -256,7 +240,6 @@ if CONCURRENT:
     ) -> Tuple[A, B, C, D, E]:
         ...
 
-
     @overload
     async def collect(
         __awaitable_a: Awaitable[A],
@@ -267,7 +250,6 @@ if CONCURRENT:
         __awaitable_f: Awaitable[F],
     ) -> Tuple[A, B, C, D, E, F]:
         ...
-
 
     @overload
     async def collect(
@@ -281,7 +263,6 @@ if CONCURRENT:
     ) -> Tuple[A, B, C, D, E, F, G]:
         ...
 
-
     @overload
     async def collect(
         __awaitable_a: Awaitable[A],
@@ -294,7 +275,6 @@ if CONCURRENT:
         __awaitable_h: Awaitable[H],
     ) -> Tuple[A, B, C, D, E, F, G, H]:
         ...
-
 
     @overload
     async def collect(
@@ -310,10 +290,8 @@ if CONCURRENT:
     ) -> DynamicTuple[Any]:
         ...
 
-
     async def collect(*awaitables: Awaitable[Any]) -> DynamicTuple[Any]:
         return tuple(await collect_iterable(awaitables))
-
 
     async def collect_iterable(iterable: Iterable[Awaitable[T]]) -> List[T]:
         return list(map(unwrap_result, await collect_iterable_with_errors(iterable)))

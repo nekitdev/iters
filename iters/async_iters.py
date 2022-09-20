@@ -1121,9 +1121,7 @@ class AsyncIter(AsyncIterator[T]):
     async def compare_by(self, other: AnyIterable[T], key: Unary[T, ST]) -> Ordering:
         return await async_compare(self.iterator, other, key)
 
-    async def compare_by_await(
-        self, other: AnyIterable[T], key: AsyncUnary[T, ST]
-    ) -> Ordering:
+    async def compare_by_await(self, other: AnyIterable[T], key: AsyncUnary[T, ST]) -> Ordering:
         return await async_compare_await(self.iterator, other, key)
 
     async def length(self) -> int:
@@ -1437,9 +1435,7 @@ class AsyncIter(AsyncIterator[T]):
     def accumulate_fold(self, initial: V, function: Binary[V, T, V]) -> AsyncIter[V]:
         return self.create(async_accumulate_fold(initial, function, self.iterator))
 
-    def accumulate_fold_await(
-        self, initial: V, function: AsyncBinary[V, T, V]
-    ) -> AsyncIter[V]:
+    def accumulate_fold_await(self, initial: V, function: AsyncBinary[V, T, V]) -> AsyncIter[V]:
         return self.create(async_accumulate_fold_await(initial, function, self.iterator))
 
     def accumulate_sum(self: AsyncIter[S]) -> AsyncIter[S]:
@@ -1547,6 +1543,7 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_map_except_await(function, self.iterator, *errors))
 
     if CONCURRENT:
+
         def map_concurrent(self, function: AsyncUnary[T, U]) -> AsyncIter[U]:
             return self.create(async_map_concurrent(function, self.iterator))
 
@@ -1565,9 +1562,7 @@ class AsyncIter(AsyncIterator[T]):
     def filter_await_map(self, predicate: AsyncPredicate[T], function: Unary[T, U]) -> AsyncIter[U]:
         return self.create(async_filter_await_map(predicate, function, self.iterator))
 
-    def filter_map_await(
-        self, predicate: Predicate[T], function: AsyncUnary[T, U]
-    ) -> AsyncIter[U]:
+    def filter_map_await(self, predicate: Predicate[T], function: AsyncUnary[T, U]) -> AsyncIter[U]:
         return self.create(async_filter_map_await(predicate, function, self.iterator))
 
     def filter_await_map_await(
@@ -2890,6 +2885,7 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_wait(self.iterator))
 
     if CONCURRENT:
+
         def wait_concurrent(self: AsyncIter[Awaitable[U]]) -> AsyncIter[U]:
             return self.create(async_wait_concurrent(self.iterator))
 

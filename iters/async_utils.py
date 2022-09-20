@@ -77,7 +77,6 @@ from iters.typing import (
 )
 from iters.utils import COMPARE, repeat, repeat_with, take, unpack_binary
 
-
 if CONCURRENT:
     from iters.concurrent import collect_iterable
 
@@ -321,6 +320,7 @@ try:
     from builtins import anext as standard_async_next
 
 except ImportError:
+
     def standard_async_iter(async_iterable: AsyncIterable[T]) -> AsyncIterator[T]:  # type: ignore
         if is_async_iterable(async_iterable):
             return async_iterable.__aiter__()
@@ -4171,6 +4171,7 @@ async def async_wait(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:
 
 
 if CONCURRENT:
+
     async def async_wait_concurrent(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:
         awaitables: Iterable[Awaitable[T]]
 

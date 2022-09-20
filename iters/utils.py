@@ -1,9 +1,7 @@
-from builtins import getattr as get_attribute
 from builtins import zip as standard_zip
 from collections import Counter as counter_dict
 from collections import deque
-from functools import partial, reduce as standard_reduce
-# from heapq import merge as standard_merge
+from functools import reduce as standard_reduce
 from itertools import accumulate as standard_accumulate
 from itertools import chain, compress
 from itertools import count as standard_count
