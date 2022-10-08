@@ -1,4 +1,9 @@
-"""Composable external iteration."""
+"""Composable external iteration.
+
+If you have found yourself with a *collection* of some kind, and needed to perform
+an operation on the elements of said collection, you will quickly run into *iterators*.
+Iterators are heavily used in idiomatic Python code, so becoming familiar with them is essential.
+"""
 
 __description__ = "Composable external iteration."
 __url__ = "https://github.com/nekitdev/iters"
@@ -6,7 +11,7 @@ __url__ = "https://github.com/nekitdev/iters"
 __title__ = "iters"
 __author__ = "nekitdev"
 __license__ = "MIT"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 from iters.async_iters import (
     AsyncIter,
