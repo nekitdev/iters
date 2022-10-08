@@ -20,7 +20,6 @@ from typing import (
     Reversible,
     Set,
     Tuple,
-    Type,
     TypeVar,
     Union,
     no_type_check,
@@ -259,14 +258,14 @@ if CONCURRENT:
     )
 
 __all__ = (
-    # async iterator class
+    # the async iterator type
     "AsyncIter",
-    # convenient function to get async iterators
+    # the alias of the previous type
     "async_iter",
     # next functions; checked version works on any iterator, unchecked assumes async iteration
     "async_next",
     "async_next_unchecked",
-    # since we are shadowing standard functions
+    # since we are "shadowing" standard functions
     "standard_async_iter",
     "standard_async_next",
     # wrap results of function calls into async iterators
@@ -2893,10 +2892,7 @@ class AsyncIter(AsyncIterator[T]):
             return self.create(async_wait_concurrent_bound(bound, self.iterator))
 
 
-def async_iter(
-    iterable: AnyIterable[T], async_iter_type: Type[AsyncIter[T]] = AsyncIter
-) -> AsyncIter[T]:
-    return async_iter_type(iterable)
+async_iter = AsyncIter
 
 
 def wrap_async_iter(function: Callable[PS, AnyIterable[T]]) -> Callable[PS, AsyncIter[T]]:

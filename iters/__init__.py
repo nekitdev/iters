@@ -21,22 +21,23 @@ from iters.iters import Iter, iter, reversed, standard_iter, standard_reversed, 
 from iters.types import Ordering
 
 __all__ = (
-    # async iterator class
+    # the async iterator type
     "AsyncIter",
-    # convenient function to get async iterators
+    # the alias of the previous type
     "async_iter",
     # next functions; checked version works on any iterator, unchecked assumes async iteration
     "async_next",
     "async_next_unchecked",
-    # since we are shadowing standard functions
+    # since we are "shadowing" standard functions
     "standard_async_iter",
     "standard_async_next",
     # wrap results of function calls into async iterators
     "wrap_async_iter",
-    # iterator class
+    # the iterator type
     "Iter",
-    # convenient functions to get iterators
+    # the alias of the previous type
     "iter",
+    # the alias of `iter.reversed`
     "reversed",
     # since we are shadowing standard functions
     "standard_iter",

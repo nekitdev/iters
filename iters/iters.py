@@ -18,7 +18,6 @@ from typing import (
     Reversible,
     Set,
     Tuple,
-    Type,
     TypeVar,
     Union,
     no_type_check,
@@ -165,10 +164,11 @@ from iters.utils import (
 )
 
 __all__ = (
-    # iterator class
+    # the iterator type
     "Iter",
-    # convenient functions to get iterators
+    # the alias of the previous type
     "iter",
+    # the alias of `iter.reversed`
     "reversed",
     # since we are shadowing standard functions
     "standard_iter",
@@ -2530,12 +2530,8 @@ class Iter(Iterator[T]):
         return self.create(side_effect(function, self.iterator))
 
 
-def iter(iterable: Iterable[T], iter_type: Type[Iter[T]] = Iter) -> Iter[T]:
-    return iter_type(iterable)
-
-
-def reversed(iterable: Reversible[T], iter_type: Type[Iter[T]] = Iter) -> Iter[T]:
-    return iter_type.reversed(iterable)
+iter = Iter
+reversed = iter.reversed
 
 
 def wrap_iter(function: Callable[PS, Iterable[T]]) -> Callable[PS, Iter[T]]:
