@@ -2,6 +2,20 @@
 
 <!-- changelogging: start -->
 
+## 0.5.0 (2022-10-11)
+
+### Changes
+
+- Functions taking `Predicate[T]` have been updated to accept `Optional[Predicate[T]]`.
+  Passing `None` as an argument is identical to passing `bool`.
+
+  There are three functions which do not accept `None`, though:
+  - `drop_while`
+  - `skip_while`
+  - `take_while`
+
+  This choice is motivated by the fact that it does not make much sense to `do_while(None)`.
+
 ## 0.4.0 (2022-10-08)
 
 ### Changes

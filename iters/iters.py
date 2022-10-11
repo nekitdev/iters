@@ -1164,7 +1164,7 @@ class Iter(Iterator[T]):
     def all_unique_fast_by(self, key: Unary[T, Q]) -> bool:
         return all_unique_fast(self.iterator, key)
 
-    def remove(self, predicate: Predicate[T]) -> Iter[T]:
+    def remove(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
         return self.create(remove(predicate, self.iterator))
 
     def remove_duplicates(self) -> Iter[T]:
@@ -1173,10 +1173,10 @@ class Iter(Iterator[T]):
     def remove_duplicates_by(self, key: Unary[T, U]) -> Iter[T]:
         return self.create(remove_duplicates(self.iterator, key))
 
-    def filter(self, predicate: Predicate[T]) -> Iter[T]:
+    def filter(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
         return self.create(filter(predicate, self.iterator))
 
-    def filter_false(self, predicate: Predicate[T]) -> Iter[T]:
+    def filter_false(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
         return self.create(filter_false(predicate, self.iterator))
 
     def filter_except(self, validate: Unary[T, Any], *errors: AnyExceptionType) -> Iter[T]:
@@ -1185,46 +1185,46 @@ class Iter(Iterator[T]):
     def compress(self, selectors: Selectors) -> Iter[T]:
         return self.create(compress(self.iterator, selectors))
 
-    def position_all(self, predicate: Predicate[T]) -> Iter[int]:
+    def position_all(self, predicate: Optional[Predicate[T]]) -> Iter[int]:
         return self.create(position_all(predicate, self.iterator))
 
-    def position(self, predicate: Predicate[T]) -> int:
+    def position(self, predicate: Optional[Predicate[T]]) -> int:
         return position(predicate, self.iterator)
 
-    def position_or(self, predicate: Predicate[T], default: V) -> Union[int, V]:
+    def position_or(self, predicate: Optional[Predicate[T]], default: V) -> Union[int, V]:
         return position(predicate, self.iterator, default)
 
-    def position_or_none(self, predicate: Predicate[T]) -> Optional[int]:
+    def position_or_none(self, predicate: Optional[Predicate[T]]) -> Optional[int]:
         return self.position_or(predicate, None)
 
-    def find_all(self, predicate: Predicate[T]) -> Iter[T]:
+    def find_all(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
         return self.create(find_all(predicate, self.iterator))
 
-    def find(self, predicate: Predicate[T]) -> T:
+    def find(self, predicate: Optional[Predicate[T]]) -> T:
         return find(predicate, self.iterator)
 
-    def find_or(self, predicate: Predicate[T], default: V) -> Union[T, V]:
+    def find_or(self, predicate: Optional[Predicate[T]], default: V) -> Union[T, V]:
         return find(predicate, self.iterator, default)  # type: ignore  # strange
 
-    def find_or_none(self, predicate: Predicate[T]) -> Optional[T]:
+    def find_or_none(self, predicate: Optional[Predicate[T]]) -> Optional[T]:
         return self.find_or(predicate, None)
 
-    def find_or_first(self, predicate: Predicate[T]) -> T:
+    def find_or_first(self, predicate: Optional[Predicate[T]]) -> T:
         return find_or_first(predicate, self.iterator)
 
-    def find_or_first_or(self, predicate: Predicate[T], default: V) -> Union[T, V]:
+    def find_or_first_or(self, predicate: Optional[Predicate[T]], default: V) -> Union[T, V]:
         return find_or_first(predicate, self.iterator, default)  # type: ignore  # strange
 
-    def find_or_first_or_none(self, predicate: Predicate[T]) -> Optional[T]:
+    def find_or_first_or_none(self, predicate: Optional[Predicate[T]]) -> Optional[T]:
         return self.find_or_first_or(predicate, None)
 
-    def find_or_last(self, predicate: Predicate[T]) -> T:
+    def find_or_last(self, predicate: Optional[Predicate[T]]) -> T:
         return find_or_last(predicate, self.iterator)
 
-    def find_or_last_or(self, predicate: Predicate[T], default: V) -> Union[T, V]:
+    def find_or_last_or(self, predicate: Optional[Predicate[T]], default: V) -> Union[T, V]:
         return find_or_last(predicate, self.iterator, default)  # type: ignore  # strange
 
-    def find_or_last_or_none(self, predicate: Predicate[T]) -> Optional[T]:
+    def find_or_last_or_none(self, predicate: Optional[Predicate[T]]) -> Optional[T]:
         return self.find_or_last_or(predicate, None)
 
     def contains(self, item: V) -> bool:
@@ -1328,10 +1328,10 @@ class Iter(Iterator[T]):
     def flat_map(self, function: Unary[T, Iterable[U]]) -> Iter[U]:
         return self.create(flat_map(function, self.iterator))
 
-    def filter_map(self, predicate: Predicate[T], function: Unary[T, U]) -> Iter[U]:
+    def filter_map(self, predicate: Optional[Predicate[T]], function: Unary[T, U]) -> Iter[U]:
         return self.create(filter_map(predicate, function, self.iterator))
 
-    def filter_false_map(self, predicate: Predicate[T], function: Unary[T, U]) -> Iter[U]:
+    def filter_false_map(self, predicate: Optional[Predicate[T]], function: Unary[T, U]) -> Iter[U]:
         return self.create(filter_false_map(predicate, function, self.iterator))
 
     def flatten(self: Iter[Iterable[U]]) -> Iter[U]:

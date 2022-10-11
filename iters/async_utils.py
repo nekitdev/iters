@@ -2681,13 +2681,13 @@ ASYNC_FIND_OR_FIRST_ON_EMPTY = "async_find_or_first() called on an empty iterabl
 
 
 @overload
-async def async_find_or_first(predicate: Predicate[T], iterable: AnyIterable[T]) -> T:
+async def async_find_or_first(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> T:
     ...  # pragma: overload
 
 
 @overload
 async def async_find_or_first(
-    predicate: Predicate[T], iterable: AnyIterable[T], default: U
+    predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
     ...  # pragma: overload
 
@@ -4649,21 +4649,14 @@ async def async_cycle(iterable: AnyIterable[T]) -> AsyncIterator[T]:
 
 
 async def async_drop_while(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: Predicate[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     iterator = async_iter(iterable)
 
-    if predicate is None:
-        async for item in iterator:
-            if not item:
-                yield item
-                break
-
-    else:
-        async for item in iterator:
-            if not predicate(item):
-                yield item
-                break
+    async for item in iterator:
+        if not predicate(item):
+            yield item
+            break
 
     async for item in iterator:
         yield item
@@ -4690,25 +4683,14 @@ async_skip_while_await = async_drop_while_await
 
 
 async def async_take_while(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: Predicate[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
-    iterator = async_iter(iterable)
+    async for item in async_iter(iterable):
+        if predicate(item):
+            yield item
 
-    if predicate is None:
-        async for item in iterator:
-            if item:
-                yield item
-
-            else:
-                break
-
-    else:
-        async for item in iterator:
-            if predicate(item):
-                yield item
-
-            else:
-                break
+        else:
+            break
 
 
 async def async_take_while_await(

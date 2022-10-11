@@ -947,7 +947,7 @@ def filter_false_map(
 
 
 def partition_unsafe(
-    predicate: Predicate[T], iterable: Iterable[T]
+    predicate: Optional[Predicate[T]], iterable: Iterable[T]
 ) -> Tuple[Iterator[T], Iterator[T]]:
     for_true, for_false = copy_unsafe(iterable)
 
@@ -957,7 +957,7 @@ def partition_unsafe(
 partition_infinite = partition_unsafe
 
 
-def partition(predicate: Predicate[T], iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
+def partition(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
     for_true, for_false = copy(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
@@ -1251,7 +1251,7 @@ def all_equal(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> bool:
     return next(groups, marker) is marker or next(groups, marker) is marker
 
 
-def remove(predicate: Predicate[T], iterable: Iterable[T]) -> Iterator[T]:
+def remove(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
     return filter_false(predicate, iterable)
 
 
@@ -1491,26 +1491,32 @@ def interleave_longest(*iterables: Iterable[T]) -> Iterator[T]:
     return (item for item in iterator if item is not marker)  # type: ignore
 
 
-def position_all(predicate: Predicate[T], iterable: Iterable[T]) -> Iterator[int]:
-    for index, item in enumerate(iterable):
-        if predicate(item):
-            yield index
+def position_all(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[int]:
+    if predicate is None:
+        for index, item in enumerate(iterable):
+            if item:
+                yield index
+
+    else:
+        for index, item in enumerate(iterable):
+            if predicate(item):
+                yield index
 
 
 POSITION_NO_MATCH = "position() has not found any matches"
 
 
 @overload
-def position(predicate: Predicate[T], iterable: Iterable[T]) -> int:
+def position(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> int:
     ...  # pragma: overload
 
 
 @overload
-def position(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[int, U]:
+def position(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[int, U]:
     ...  # pragma: overload
 
 
-def position(predicate: Predicate[T], iterable: Iterable[T], default: Any = no_default) -> Any:
+def position(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: Any = no_default) -> Any:
     index = next(position_all(predicate, iterable), None)
 
     if index is None:
@@ -1522,7 +1528,7 @@ def position(predicate: Predicate[T], iterable: Iterable[T], default: Any = no_d
     return index
 
 
-def find_all(predicate: Predicate[T], iterable: Iterable[T]) -> Iterator[T]:
+def find_all(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
     return filter(predicate, iterable)
 
 
@@ -1531,21 +1537,27 @@ FIND_ON_EMPTY = "find() called on an empty iterable"
 
 
 @overload
-def find(predicate: Predicate[T], iterable: Iterable[T]) -> T:
+def find(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T:
     ...  # pragma: overload
 
 
 @overload
-def find(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
+def find(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[T, U]:
     ...  # pragma: overload
 
 
-def find(predicate: Predicate[Any], iterable: Iterable[Any], default: Any = no_default) -> Any:
+def find(predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default) -> Any:
     item = marker
 
-    for item in iterable:
-        if predicate(item):
-            return item
+    if predicate is None:
+        for item in iterable:
+            if item:
+                return item
+
+    else:
+        for item in iterable:
+            if predicate(item):
+                return item
 
     if default is no_default:
         raise ValueError(FIND_ON_EMPTY if item is marker else FIND_NO_MATCH)
@@ -1557,17 +1569,17 @@ FIND_OR_FIRST_ON_EMPTY = "find_or_first() called on an empty iterable"
 
 
 @overload
-def find_or_first(predicate: Predicate[T], iterable: Iterable[T]) -> T:
+def find_or_first(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T:
     ...  # pragma: overload
 
 
 @overload
-def find_or_first(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
+def find_or_first(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[T, U]:
     ...  # pragma: overload
 
 
 def find_or_first(
-    predicate: Predicate[Any], iterable: Iterable[Any], default: Any = no_default
+    predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default
 ) -> Any:
     iterator = iter(iterable)
 
@@ -1579,9 +1591,17 @@ def find_or_first(
 
         first = default
 
-    for item in prepend(first, iterator):
-        if predicate(item):
-            return item
+    iterator = prepend(first, iterator)
+
+    if predicate is None:
+        for item in iterator:
+            if item:
+                return item
+
+    else:
+        for item in iterator:
+            if predicate(item):
+                return item
 
     return first
 
@@ -1590,23 +1610,29 @@ FIND_OR_LAST_ON_EMPTY = "find_or_last() called on an empty iterable"
 
 
 @overload
-def find_or_last(predicate: Predicate[T], iterable: Iterable[T]) -> T:
+def find_or_last(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T:
     ...  # pragma: overload
 
 
 @overload
-def find_or_last(predicate: Predicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
+def find_or_last(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[T, U]:
     ...  # pragma: overload
 
 
 def find_or_last(
-    predicate: Predicate[Any], iterable: Iterable[Any], default: Any = no_default
+    predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default
 ) -> Any:
     item = marker
 
-    for item in iterable:
-        if predicate(item):
-            return item
+    if predicate is None:
+        for item in iterable:
+            if item:
+                return item
+
+    else:
+        for item in iterable:
+            if predicate(item):
+                return item
 
     if item is marker:
         if default is no_default:
