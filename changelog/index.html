@@ -376,6 +376,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#050-2022-10-11" class="md-nav__link">
+    0.5.0 (2022-10-11)
+  </a>
+  
+    <nav class="md-nav" aria-label="0.5.0 (2022-10-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    Changes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#040-2022-10-08" class="md-nav__link">
     0.4.0 (2022-10-08)
   </a>
@@ -384,7 +404,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changes" class="md-nav__link">
+  <a href="#changes_1" class="md-nav__link">
     Changes
   </a>
   
@@ -404,7 +424,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changes_1" class="md-nav__link">
+  <a href="#changes_2" class="md-nav__link">
     Changes
   </a>
   
@@ -424,7 +444,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changes_2" class="md-nav__link">
+  <a href="#changes_3" class="md-nav__link">
     Changes
   </a>
   
@@ -522,6 +542,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#050-2022-10-11" class="md-nav__link">
+    0.5.0 (2022-10-11)
+  </a>
+  
+    <nav class="md-nav" aria-label="0.5.0 (2022-10-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    Changes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#040-2022-10-08" class="md-nav__link">
     0.4.0 (2022-10-08)
   </a>
@@ -530,7 +570,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changes" class="md-nav__link">
+  <a href="#changes_1" class="md-nav__link">
     Changes
   </a>
   
@@ -550,7 +590,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changes_1" class="md-nav__link">
+  <a href="#changes_2" class="md-nav__link">
     Changes
   </a>
   
@@ -570,7 +610,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changes_2" class="md-nav__link">
+  <a href="#changes_3" class="md-nav__link">
     Changes
   </a>
   
@@ -611,8 +651,19 @@
 <h1 id="changelog">Changelog</h1>
 <!-- changelogging: start -->
 
-<h2 id="040-2022-10-08">0.4.0 (2022-10-08)</h2>
+<h2 id="050-2022-10-11">0.5.0 (2022-10-11)</h2>
 <h3 id="changes">Changes</h3>
+<ul>
+<li>Functions taking <code>Predicate[T]</code> have been updated to accept <code>Optional[Predicate[T]]</code>.
+  Passing <code>None</code> as an argument is identical to passing <code>bool</code>.</li>
+</ul>
+<p>There are three functions which do not accept <code>None</code>, though:
+  - <code>drop_while</code>
+  - <code>skip_while</code>
+  - <code>take_while</code></p>
+<p>This choice is motivated by the fact that it does not make much sense to <code>do_while(None)</code>.</p>
+<h2 id="040-2022-10-08">0.4.0 (2022-10-08)</h2>
+<h3 id="changes_1">Changes</h3>
 <ul>
 <li>The following functions have been changed:</li>
 <li><code>async_iter</code> is now an alias of <code>AsyncIter</code>;</li>
@@ -620,13 +671,13 @@
 <li><code>reversed</code> is now an alias of <code>iter.reversed</code>.</li>
 </ul>
 <h2 id="030-2022-08-17">0.3.0 (2022-08-17)</h2>
-<h3 id="changes_1">Changes</h3>
+<h3 id="changes_2">Changes</h3>
 <ul>
 <li>Change functions of various arity returning <code>Awaitable[T]</code> to async functions returning <code>T</code>.
   (<a href="https://github.com/nekitdev/iters/pull/15">#15</a>)</li>
 </ul>
 <h2 id="020-2022-08-15">0.2.0 (2022-08-15)</h2>
-<h3 id="changes_2">Changes</h3>
+<h3 id="changes_3">Changes</h3>
 <ul>
 <li>Add <code>await async_iter</code>, equivalent to <code>await async_iter.list()</code>.</li>
 </ul>
