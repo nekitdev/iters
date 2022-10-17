@@ -337,46 +337,209 @@ class Iter(Iterator[T]):
 
     @classmethod
     def count_from_by(cls, start: int, step: int) -> Iter[int]:
+        """Creates an iterator of evenly spaced (by `step`) values starting from `start`.
+
+        Arguments:
+            start: The value to start from.
+            step: The value to step by.
+
+        Returns:
+            An [`Iter[int]`][iters.iters.Iter] over evenly spaced values.
+        """
         return cls.create(count(start, step))
 
     @classmethod
     def count_from(cls, start: int) -> Iter[int]:
+        """Creates an iterator of evenly spaced (by `1`) values starting from `start`.
+
+        This is a shorthand for:
+
+        ```python
+        iter.count_from_by(start, 1)
+        ```
+
+        Arguments:
+            start: The value to start from.
+
+        Returns:
+            An [`Iter[int]`][iters.iters.Iter] over evenly spaced values.
+        """
         return cls.count_from_by(start, DEFAULT_STEP)
 
     @classmethod
     def count_by(cls, step: int) -> Iter[int]:
+        """Creates an iterator of evenly spaced (by `step`) values starting from `0`.
+
+        This is a shorthand for:
+
+        ```python
+        iter.count_from_by(0, step)
+        ```
+
+        Arguments:
+            step: The value to step by.
+
+        Returns:
+            An [`Iter[int]`][iters.iters.Iter] over evenly spaced values.
+        """
         return cls.count_from_by(DEFAULT_START, step)
 
     @classmethod
     def count(cls) -> Iter[int]:
+        """Creates an iterator of evenly spaced (by `1`) values starting from `0`.
+
+        This is a shorthand for:
+
+        ```python
+        iter.count_from_by(0, 1)
+        ```
+
+        Returns:
+            An [`Iter[int]`][iters.iters.Iter] over evenly spaced values.
+        """
         return cls.count_from_by(DEFAULT_START, DEFAULT_STEP)
 
     @classmethod
     def iterate(cls, function: Unary[V, V], value: V) -> Iter[V]:
+        """Creates an iterator that iterates function calls endlessly, i.e. `function(value)`,
+        `function(function(value))`, ...
+
+        Arguments:
+            function: The function to iterate.
+            value: The value to begin iteration with.
+
+        Returns:
+            An [`Iter[V]`][iters.iters.Iter] over iteration results.
+        """
         return cls.create(iterate(function, value))
 
     @classmethod
     def iterate_exactly(cls, function: Unary[V, V], value: V, count: int) -> Iter[V]:
+        """Creates an iterator that iterates function calls exactly `count` times.
+
+        Arguments:
+            function: The function to iterate.
+            value: The value to begin iteration with.
+            count: The amount of function iterations.
+
+        Returns:
+            An [`Iter[V]`][iters.iters.Iter] over iteration results.
+        """
         return cls.create(iterate(function, value, count))
 
     @classmethod
     def iter_except(cls, function: Nullary[T], *errors: AnyExceptionType) -> Iter[T]:
+        r"""Creates an iterator that repeatedly calls `function` until
+        any of the `errors` is encountered.
+
+        Arguments:
+            function: The function to iterate.
+            \*errors: The errors to `except`, stopping iteration.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over function results.
+        """
         return cls.create(iter_except(function, *errors))
 
     @classmethod
     def iter_with(cls, context_manager: ContextManager[Iterable[T]]) -> Iter[T]:
+        """Creates an iterator over the iterable returned by `context_manager`.
+
+        This is essentially equivalent to:
+
+        ```python
+        def iter_with(context_manager: ContextManager[Iterable[T]]) -> Iterator[T]:
+            with context_manager as iterable:
+                for item in iterable:
+                    yield item
+
+        iterator = iter(iter_with(context_manager))
+        ```
+
+        This function can be used to open and close files, for example;
+        let us consider parsing some file containing integers on every line.
+
+        Example:
+            ```python
+            array = iter.iter_with(open("file.in")).map(int).list()
+            ```
+
+        Arguments:
+            context_manager: The context manager returning an iterable.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over items in an iterable.
+        """
         return cls.create(iter_with(context_manager))
 
     @classmethod
     def create_chain(cls, *iterables: Iterable[T]) -> Iter[T]:
+        r"""Creates an iterator chaining `iterables` together.
+
+        For example, it can be used to chain arrays.
+
+        Example:
+            ```python
+            a = [1, 2, 3]
+            b = [4, 5, 6]
+            c = [7, 8, 9]
+
+            assert iter.create_chain(a, b, c).list() == a + b + c
+            ```
+
+        Arguments:
+            \*iterables: Iterables to chain together.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over chained iterables.
+        """
         return cls.create(chain(*iterables))
 
     @classmethod
     def create_chain_from_iterable(cls, iterable: Iterable[Iterable[T]]) -> Iter[T]:
+        """Creates an iterator chaining iterables in the `iterable` together.
+
+        This function essentially flattens the `iterable` provided.
+
+        Example:
+            ```python
+            matrix = [
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ]
+
+            result = 45
+
+            assert iter.create_chain_from_iterable(matrix).sum() == result
+
+        Arguments:
+            iterable: The iterable of iterables to chain.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over chained iterables.
+        """
         return cls.create(chain_from_iterable(iterable))
 
     @classmethod
     def create_combine(cls, *iterables: Iterable[T]) -> Iter[T]:
+        r"""Creates an iterator combining `iterables`.
+
+        Example:
+            ```python
+            a = [1, 2, 3]
+            b = [4, 5, 6]
+            c = [1, 4, 2, 5, 3, 6]
+
+            assert iter.create_combine(a, b).list() == c
+            ```
+
+        Arguments:
+            \*iterables: Iterables to combine.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over combined iterables.
+        """
         return cls.create(combine(*iterables))
 
     @classmethod
@@ -390,24 +553,24 @@ class Iter(Iterator[T]):
     @overload
     @classmethod
     def create_zip(cls) -> Iter[T]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip(cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iter[Tuple[A, B]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[A, B, C]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -418,7 +581,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[A, B, C, D]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -430,7 +593,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[A, B, C, D, E]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -443,7 +606,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
     ) -> Iter[Tuple[A, B, C, D, E, F]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -457,7 +620,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
     ) -> Iter[Tuple[A, B, C, D, E, F, G]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -472,7 +635,7 @@ class Iter(Iterator[T]):
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
     ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -489,7 +652,7 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Any]]:
-        ...  # pragma: overload
+        ...
 
     @no_type_check
     @classmethod
@@ -499,26 +662,26 @@ class Iter(Iterator[T]):
     @overload
     @classmethod
     def create_zip_equal(cls) -> Iter[T]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_equal(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_equal(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
     ) -> Iter[Tuple[A, B]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_equal(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[A, B, C]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -529,7 +692,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[A, B, C, D]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -541,7 +704,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[A, B, C, D, E]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -554,7 +717,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
     ) -> Iter[Tuple[A, B, C, D, E, F]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -568,7 +731,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
     ) -> Iter[Tuple[A, B, C, D, E, F, G]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -583,7 +746,7 @@ class Iter(Iterator[T]):
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
     ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -600,7 +763,7 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Any]]:
-        ...  # pragma: overload
+        ...
 
     @no_type_check
     @classmethod
@@ -610,26 +773,26 @@ class Iter(Iterator[T]):
     @overload
     @classmethod
     def create_zip_longest(cls) -> Iter[T]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_longest(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_longest(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
     ) -> Iter[Tuple[Optional[A], Optional[B]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_longest(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[Optional[A], Optional[B], Optional[C]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -640,7 +803,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -652,7 +815,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -665,7 +828,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
     ) -> Iter[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -689,7 +852,7 @@ class Iter(Iterator[T]):
             Optional[G],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -715,7 +878,7 @@ class Iter(Iterator[T]):
             Optional[H],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -732,7 +895,7 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Optional[Any]]]:
-        ...  # pragma: overload
+        ...
 
     @no_type_check
     @classmethod
@@ -742,19 +905,19 @@ class Iter(Iterator[T]):
     @overload
     @classmethod
     def create_zip_longest_with(cls, *, fill: V) -> Iter[T]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_longest_with(cls, __iterable_a: Iterable[A], *, fill: V) -> Iter[Tuple[A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_zip_longest_with(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], *, fill: V
     ) -> Iter[Tuple[Union[A, V], Union[B, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -766,7 +929,7 @@ class Iter(Iterator[T]):
         *,
         fill: V,
     ) -> Iter[Tuple[Union[A, V], Union[B, V], Union[C, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -779,7 +942,7 @@ class Iter(Iterator[T]):
         *,
         fill: V,
     ) -> Iter[Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -793,7 +956,7 @@ class Iter(Iterator[T]):
         *,
         fill: V,
     ) -> Iter[Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -808,7 +971,7 @@ class Iter(Iterator[T]):
         *,
         fill: V,
     ) -> Iter[Tuple[Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V], Union[F, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -834,7 +997,7 @@ class Iter(Iterator[T]):
             Union[G, V],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -862,7 +1025,7 @@ class Iter(Iterator[T]):
             Union[H, V],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -880,7 +1043,7 @@ class Iter(Iterator[T]):
         *iterables: Iterable[Any],
         fill: V,
     ) -> Iter[DynamicTuple[Union[Any, V]]]:
-        ...  # pragma: overload
+        ...
 
     @no_type_check
     @classmethod
@@ -892,26 +1055,26 @@ class Iter(Iterator[T]):
     @overload
     @classmethod
     def create_cartesian_product(cls) -> Iter[EmptyTuple]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_cartesian_product(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_cartesian_product(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
     ) -> Iter[Tuple[A, B]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
     def create_cartesian_product(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[A, B, C]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -922,7 +1085,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[A, B, C, D]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -934,7 +1097,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[A, B, C, D, E]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -947,7 +1110,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
     ) -> Iter[Tuple[A, B, C, D, E, F]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -961,7 +1124,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
     ) -> Iter[Tuple[A, B, C, D, E, F, G]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -976,7 +1139,7 @@ class Iter(Iterator[T]):
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
     ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     @classmethod
@@ -993,7 +1156,7 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Any]]:
-        ...  # pragma: overload
+        ...
 
     @no_type_check
     @classmethod
@@ -1378,13 +1541,13 @@ class Iter(Iterator[T]):
 
     @overload
     def slice(self, __stop: Optional[int]) -> Iter[T]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def slice(
         self, __start: Optional[int], __stop: Optional[int], __step: Optional[int] = ...
     ) -> Iter[T]:
-        ...  # pragma: overload
+        ...
 
     def slice(self, *slice_args: Optional[int]) -> Iter[T]:
         return self.create(iter_slice(self.iterator, *slice_args))
@@ -1437,43 +1600,43 @@ class Iter(Iterator[T]):
 
     @overload
     def distribute_unsafe(self, count: Literal[0]) -> EmptyTuple:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[1]) -> Tuple1[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[2]) -> Tuple2[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[3]) -> Tuple3[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[4]) -> Tuple4[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[5]) -> Tuple5[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[6]) -> Tuple6[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[7]) -> Tuple7[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: Literal[8]) -> Tuple8[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute_unsafe(self, count: int) -> DynamicTuple[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     def distribute_unsafe(self, count: int) -> DynamicTuple[Iter[T]]:
         return self.create_tuple(distribute_unsafe(count, self.iterator))
@@ -1482,43 +1645,43 @@ class Iter(Iterator[T]):
 
     @overload
     def distribute(self, count: Literal[0]) -> EmptyTuple:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[1]) -> Tuple1[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[2]) -> Tuple2[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[3]) -> Tuple3[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[4]) -> Tuple4[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[5]) -> Tuple5[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[6]) -> Tuple6[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[7]) -> Tuple7[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: Literal[8]) -> Tuple8[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def distribute(self, count: int) -> DynamicTuple[Iter[T]]:
-        ...  # pragma: overload
+        ...
 
     def distribute(self, count: int) -> DynamicTuple[Iter[T]]:
         return self.create_tuple(distribute(count, self.iterator))
@@ -1566,129 +1729,129 @@ class Iter(Iterator[T]):
 
     @overload
     def groups(self, size: Literal[0]) -> Iter[Never]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[1]) -> Iter[Tuple1[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[2]) -> Iter[Tuple2[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[3]) -> Iter[Tuple3[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[4]) -> Iter[Tuple4[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[5]) -> Iter[Tuple5[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[6]) -> Iter[Tuple6[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[7]) -> Iter[Tuple7[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: Literal[8]) -> Iter[Tuple8[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups(self, size: int) -> Iter[DynamicTuple[T]]:
-        ...  # pragma: overload
+        ...
 
     def groups(self, size: int) -> Iter[DynamicTuple[T]]:
         return self.create(groups(size, self.iterator))
 
     @overload
     def groups_longest(self, size: Literal[0]) -> Iter[Never]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[1]) -> Iter[Tuple1[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[2]) -> Iter[Tuple2[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[3]) -> Iter[Tuple3[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[4]) -> Iter[Tuple4[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[5]) -> Iter[Tuple5[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[6]) -> Iter[Tuple6[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[7]) -> Iter[Tuple7[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: Literal[8]) -> Iter[Tuple8[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest(self, size: int) -> Iter[DynamicTuple[Optional[T]]]:
-        ...  # pragma: overload
+        ...
 
     def groups_longest(self, size: int) -> Iter[DynamicTuple[Optional[T]]]:
         return self.create(groups_longest(size, self.iterator))
 
     @overload
     def groups_longest_with(self, size: Literal[0], fill: V) -> Iter[Never]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[1], fill: V) -> Iter[Tuple1[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[2], fill: V) -> Iter[Tuple2[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[3], fill: V) -> Iter[Tuple3[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[4], fill: V) -> Iter[Tuple4[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[5], fill: V) -> Iter[Tuple5[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[6], fill: V) -> Iter[Tuple6[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[7], fill: V) -> Iter[Tuple7[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: Literal[8], fill: V) -> Iter[Tuple8[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def groups_longest_with(self, size: int, fill: V) -> Iter[DynamicTuple[Union[T, V]]]:
-        ...  # pragma: overload
+        ...
 
     def groups_longest_with(self, size: int, fill: V) -> Iter[DynamicTuple[Union[T, V]]]:
         return self.create(groups_longest(size, self.iterator, fill))
@@ -1713,64 +1876,64 @@ class Iter(Iterator[T]):
 
     @overload
     def tuple_windows(self, size: Literal[0]) -> Iter[EmptyTuple]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[1]) -> Iter[Tuple1[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[2]) -> Iter[Tuple2[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[3]) -> Iter[Tuple3[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[4]) -> Iter[Tuple4[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[5]) -> Iter[Tuple5[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[6]) -> Iter[Tuple6[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[7]) -> Iter[Tuple7[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: Literal[8]) -> Iter[Tuple8[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def tuple_windows(self, size: int) -> Iter[DynamicTuple[T]]:
-        ...  # pragma: overload
+        ...
 
     def tuple_windows(self, size: int) -> Iter[DynamicTuple[T]]:
         return self.create(tuple_windows(size, self.iterator))
 
     @overload
     def zip(self) -> Iter[Tuple[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iter[Tuple[T, A, B]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[T, A, B, C]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(
@@ -1780,7 +1943,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[T, A, B, C, D]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(
@@ -1791,7 +1954,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[T, A, B, C, D, E]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(
@@ -1803,7 +1966,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
     ) -> Iter[Tuple[T, A, B, C, D, E, F]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(
@@ -1816,7 +1979,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
     ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(
@@ -1830,7 +1993,7 @@ class Iter(Iterator[T]):
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
     ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip(
@@ -1846,30 +2009,30 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Any]]:
-        ...  # pragma: overload
+        ...
 
     def zip(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
         return self.create(zip(self.iterator, *iterables))
 
     @overload
     def zip_equal(self) -> Iter[Tuple[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
     ) -> Iter[Tuple[T, A, B]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[T, A, B, C]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
@@ -1879,7 +2042,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[T, A, B, C, D]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
@@ -1890,7 +2053,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[T, A, B, C, D, E]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
@@ -1902,7 +2065,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
     ) -> Iter[Tuple[T, A, B, C, D, E, F]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
@@ -1915,7 +2078,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
     ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
@@ -1929,7 +2092,7 @@ class Iter(Iterator[T]):
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
     ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_equal(
@@ -1945,30 +2108,30 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Any]]:
-        ...  # pragma: overload
+        ...
 
     def zip_equal(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
         return self.create(zip_equal(self.iterator, *iterables))
 
     @overload
     def zip_longest(self) -> Iter[Tuple[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(self, __iterable_a: Iterable[A]) -> Iter[Tuple[Optional[T], Optional[A]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
     ) -> Iter[Tuple[Optional[T], Optional[A], Optional[B]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[Optional[T], Optional[A], Optional[B], Optional[C]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
@@ -1978,7 +2141,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[Optional[T], Optional[A], Optional[B], Optional[C], Optional[D]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
@@ -1989,7 +2152,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[Optional[T], Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
@@ -2011,7 +2174,7 @@ class Iter(Iterator[T]):
             Optional[F],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
@@ -2035,7 +2198,7 @@ class Iter(Iterator[T]):
             Optional[G],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
@@ -2061,7 +2224,7 @@ class Iter(Iterator[T]):
             Optional[H],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest(
@@ -2077,26 +2240,26 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Optional[Any]]]:
-        ...  # pragma: overload
+        ...
 
     def zip_longest(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Optional[Any]]]:
         return self.create(zip_longest(self.iterator, *iterables))
 
     @overload
     def zip_longest_with(self, *, fill: V) -> Iter[Tuple[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
         self, __iterable_a: Iterable[A], *, fill: V
     ) -> Iter[Tuple[Union[T, V], Union[A, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], *, fill: V
     ) -> Iter[Tuple[Union[T, V], Union[A, V], Union[B, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
@@ -2107,7 +2270,7 @@ class Iter(Iterator[T]):
         *,
         fill: V,
     ) -> Iter[Tuple[Union[T, V], Union[A, V], Union[B, V], Union[C, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
@@ -2119,7 +2282,7 @@ class Iter(Iterator[T]):
         *,
         fill: V,
     ) -> Iter[Tuple[Union[T, V], Union[A, V], Union[B, V], Union[C, V], Union[D, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
@@ -2132,7 +2295,7 @@ class Iter(Iterator[T]):
         *,
         fill: V,
     ) -> Iter[Tuple[Union[T, V], Union[A, V], Union[B, V], Union[C, V], Union[D, V], Union[E, V]]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
@@ -2156,7 +2319,7 @@ class Iter(Iterator[T]):
             Union[F, V],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
@@ -2182,7 +2345,7 @@ class Iter(Iterator[T]):
             Union[G, V],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
@@ -2210,7 +2373,7 @@ class Iter(Iterator[T]):
             Union[H, V],
         ]
     ]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def zip_longest_with(
@@ -2227,7 +2390,7 @@ class Iter(Iterator[T]):
         *iterables: Iterable[Any],
         fill: V,
     ) -> Iter[DynamicTuple[Union[Any, V]]]:
-        ...  # pragma: overload
+        ...
 
     @no_type_check  # strange
     def zip_longest_with(
@@ -2237,23 +2400,23 @@ class Iter(Iterator[T]):
 
     @overload
     def cartesian_product(self) -> Iter[Tuple[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
     ) -> Iter[Tuple[T, A, B]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
     ) -> Iter[Tuple[T, A, B, C]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
@@ -2263,7 +2426,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
     ) -> Iter[Tuple[T, A, B, C, D]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
@@ -2274,7 +2437,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
     ) -> Iter[Tuple[T, A, B, C, D, E]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
@@ -2286,7 +2449,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
     ) -> Iter[Tuple[T, A, B, C, D, E, F]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
@@ -2299,7 +2462,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
     ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
@@ -2313,7 +2476,7 @@ class Iter(Iterator[T]):
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
     ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_product(
@@ -2329,46 +2492,46 @@ class Iter(Iterator[T]):
         __iterable_next: Iterable[Any],
         *iterables: Iterable[Any],
     ) -> Iter[DynamicTuple[Any]]:
-        ...  # pragma: overload
+        ...
 
     def cartesian_product(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
         return self.create(cartesian_product(self.iterator, *iterables))
 
     @overload
     def cartesian_power(self, power: Literal[0]) -> Iter[EmptyTuple]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[1]) -> Iter[Tuple1[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[2]) -> Iter[Tuple2[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[3]) -> Iter[Tuple3[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[4]) -> Iter[Tuple4[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[5]) -> Iter[Tuple5[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[6]) -> Iter[Tuple6[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[7]) -> Iter[Tuple7[T]]:
-        ...  # pragma: overload
+        ...
 
     @overload
     def cartesian_power(self, power: Literal[8]) -> Iter[Tuple8[T]]:
-        ...  # pragma: overload
+        ...
 
     def cartesian_power(self, power: int) -> Iter[DynamicTuple[T]]:
         return self.create(cartesian_power(power, self.iterator))

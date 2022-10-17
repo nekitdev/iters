@@ -69,7 +69,6 @@ from iters.typing import (
     get_name,
     is_async_iterable,
     is_async_iterator,
-    is_awaitable,
     is_bytes,
     is_iterable,
     is_iterator,
@@ -276,7 +275,6 @@ __all__ = (
     "async_zip",
     "async_zip_equal",
     "async_zip_longest",
-    "ensure_await",
     "iter_to_async_iter",
     "standard_async_iter",
     "standard_async_map",
@@ -355,14 +353,14 @@ except ImportError:
 async def async_compare(
     left_iterable: AnyIterable[ST], right_iterable: AnyIterable[ST], key: None = ...
 ) -> Ordering:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_compare(
     left_iterable: AnyIterable[T], right_iterable: AnyIterable[T], key: Unary[T, ST]
 ) -> Ordering:
-    ...  # pragma: overload
+    ...
 
 
 async def async_compare(
@@ -464,20 +462,6 @@ def wrap_await(function: Callable[PS, T]) -> Callable[PS, Awaitable[T]]:
     return wrapped
 
 
-def ensure_await(
-    function: Union[Callable[PS, T], Callable[PS, Awaitable[T]]]
-) -> Callable[PS, Awaitable[T]]:
-    async def wrapped(*args: PS.args, **kwargs: PS.kwargs) -> T:
-        result = function(*args, **kwargs)
-
-        if is_awaitable(result):
-            return await result  # type: ignore
-
-        return result  # type: ignore
-
-    return wrapped
-
-
 async def async_repeat(value: T, count: Optional[int] = None) -> AsyncIterator[T]:
     if count is None:
         while True:
@@ -523,14 +507,14 @@ def async_repeat_each(iterable: AnyIterable[T], count: int = 2) -> AsyncIterator
 
 @overload
 def async_repeat_last(iterable: AnyIterable[T]) -> AsyncIterator[T]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_repeat_last(
     iterable: AnyIterable[T], default: U
 ) -> Union[AsyncIterator[T], AsyncIterator[U]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_repeat_last(
@@ -608,14 +592,14 @@ async def async_counter_dict(iterable: AnyIterable[Q]) -> Counter[Q]:
 async def async_sorted(
     iterable: AnyIterable[ST], *, key: None = ..., reverse: bool = ...
 ) -> List[ST]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_sorted(
     iterable: AnyIterable[T], *, key: Unary[T, ST], reverse: bool = ...
 ) -> List[T]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_sorted(
@@ -661,12 +645,12 @@ def async_iter(iterable: AnyIterable[T]) -> AsyncIterator[T]:
 
 @overload
 async def async_next(iterator: AnyIterator[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_next(iterator: AnyIterator[T], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_next(iterator: AnyIterator[Any], default: Any = no_default) -> Any:
@@ -687,12 +671,12 @@ async def async_next(iterator: AnyIterator[Any], default: Any = no_default) -> A
 
 @overload
 async def async_next_unchecked(iterator: AsyncIterator[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_next_unchecked(iterator: AsyncIterator[T], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_next_unchecked(iterator: AsyncIterator[Any], default: Any = no_default) -> Any:
@@ -717,12 +701,12 @@ ASYNC_FIRST_ON_EMPTY = "async_first() called on an empty iterable"
 
 @overload
 async def async_first(iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_first(iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_first(iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -744,12 +728,12 @@ ASYNC_LAST_ON_EMPTY = "async_last() called on an empty iterable"
 
 @overload
 async def async_last(iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_last(iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_last(iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -879,12 +863,12 @@ async def async_accumulate_reduce_await(
 
 @overload
 def async_accumulate_sum(iterable: AnyIterable[S]) -> AsyncIterator[S]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_accumulate_sum(iterable: AnyIterable[S], initial: S) -> AsyncIterator[S]:
-    ...  # pragma: overload
+    ...
 
 
 def async_accumulate_sum(
@@ -898,12 +882,12 @@ def async_accumulate_sum(
 
 @overload
 def async_accumulate_product(iterable: AnyIterable[P]) -> AsyncIterator[P]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_accumulate_product(iterable: AnyIterable[P], initial: P) -> AsyncIterator[P]:
-    ...  # pragma: overload
+    ...
 
 
 def async_accumulate_product(
@@ -920,12 +904,12 @@ ASYNC_AT_ON_EMPTY = "async_at() called on an empty iterable"
 
 @overload
 async def async_at(index: int, iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_at(index: int, iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_at(index: int, iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -947,12 +931,12 @@ ASYNC_AT_OR_LAST_ON_EMPTY = "async_at_or_last() called on an empty iterable"
 
 @overload
 async def async_at_or_last(index: int, iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_at_or_last(index: int, iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_at_or_last(
@@ -973,57 +957,57 @@ async def async_at_or_last(
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T]) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[0]) -> EmptyTuple:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[1]) -> Tuple1[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[2]) -> Tuple2[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[3]) -> Tuple3[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[4]) -> Tuple4[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[5]) -> Tuple5[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[6]) -> Tuple6[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[7]) -> Tuple7[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[8]) -> Tuple8[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy_unsafe(iterable: AnyIterable[T], copies: int) -> DynamicTuple[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_copy_unsafe(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple[AsyncIterator[T]]:
@@ -1052,57 +1036,57 @@ async_copy_infinite = async_copy_unsafe
 
 @overload
 def async_copy(iterable: AnyIterable[T]) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[0]) -> EmptyTuple:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[1]) -> Tuple1[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[2]) -> Tuple2[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[3]) -> Tuple3[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[4]) -> Tuple4[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[5]) -> Tuple5[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[6]) -> Tuple6[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[7]) -> Tuple7[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: Literal[8]) -> Tuple8[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_copy(iterable: AnyIterable[T], copies: int) -> DynamicTuple[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_copy(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple[AsyncIterator[T]]:
@@ -1122,7 +1106,7 @@ def async_copy(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple[AsyncI
 
 @overload
 def async_iter_slice(iterable: AnyIterable[T], __stop: Optional[int]) -> AsyncIterator[T]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -1132,7 +1116,7 @@ def async_iter_slice(
     __stop: Optional[int],
     __step: Optional[int] = ...,
 ) -> AsyncIterator[T]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_iter_slice(
@@ -1280,52 +1264,52 @@ async def async_step_by_unchecked(step: int, iterable: AnyIterable[T]) -> AsyncI
 
 @overload
 def async_groups(size: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_groups(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
@@ -1334,138 +1318,138 @@ def async_groups(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTu
 
 @overload
 def async_groups_longest(size: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[2], iterable: AnyIterable[T]
 ) -> AsyncIterator[Tuple2[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[3], iterable: AnyIterable[T]
 ) -> AsyncIterator[Tuple3[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[4], iterable: AnyIterable[T]
 ) -> AsyncIterator[Tuple4[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[5], iterable: AnyIterable[T]
 ) -> AsyncIterator[Tuple5[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[6], iterable: AnyIterable[T]
 ) -> AsyncIterator[Tuple6[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[7], iterable: AnyIterable[T]
 ) -> AsyncIterator[Tuple7[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[8], iterable: AnyIterable[T]
 ) -> AsyncIterator[Tuple8[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: int, iterable: AnyIterable[T]
 ) -> AsyncIterator[DynamicTuple[Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[0], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[EmptyTuple]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[1], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple1[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[2], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple2[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[3], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple3[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[4], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple4[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[5], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple5[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[6], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple6[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[7], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple7[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[8], iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple8[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_groups_longest(
     size: int, iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[DynamicTuple[Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_groups_longest(
@@ -1476,14 +1460,14 @@ def async_groups_longest(
 
 @overload
 def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Tuple[Optional[T], Optional[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_pairs_longest(
     iterable: AnyIterable[T], fill: U
 ) -> AsyncIterator[Tuple[Union[T, U], Union[T, U]]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_pairs_longest(
@@ -1837,14 +1821,14 @@ async def async_group_by_await(
 def async_group(
     iterable: AnyIterable[T], key: None = ...
 ) -> AsyncIterator[Tuple[T, AsyncIterator[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_group(
     iterable: AnyIterable[T], key: Unary[T, U]
 ) -> AsyncIterator[Tuple[U, AsyncIterator[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_group(
@@ -1861,14 +1845,14 @@ def async_group_await(
 
 @overload
 def async_group_list(iterable: AnyIterable[T], key: None = ...) -> AsyncIterator[Tuple[T, List[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_group_list(
     iterable: AnyIterable[T], key: Unary[T, U]
 ) -> AsyncIterator[Tuple[U, List[T]]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_group_list(
@@ -1887,12 +1871,12 @@ async def async_group_list_await(
 
 @overload
 async def async_group_dict(iterable: AnyIterable[Q], key: None = ...) -> Dict[Q, List[Q]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_group_dict(iterable: AnyIterable[T], key: Unary[T, Q]) -> Dict[Q, List[T]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_group_dict(
@@ -1919,12 +1903,12 @@ async def async_group_dict_await(
 
 @overload
 async def async_count_dict(iterable: AnyIterable[Q], key: None = ...) -> Counter[Q]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_count_dict(iterable: AnyIterable[T], key: Unary[T, Q]) -> Counter[Q]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_count_dict(
@@ -1997,12 +1981,12 @@ async def async_iter_length(iterable: AnyIterable[T]) -> int:
 
 @overload
 async def async_sum(iterable: AnyIterable[S]) -> S:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_sum(iterable: AnyIterable[S], initial: S) -> S:
-    ...  # pragma: overload
+    ...
 
 
 async def async_sum(iterable: AnyIterable[Any], initial: Any = no_default) -> Any:
@@ -2014,12 +1998,12 @@ async def async_sum(iterable: AnyIterable[Any], initial: Any = no_default) -> An
 
 @overload
 async def async_product(iterable: AnyIterable[P]) -> P:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_product(iterable: AnyIterable[P], initial: P) -> P:
-    ...  # pragma: overload
+    ...
 
 
 async def async_product(iterable: AnyIterable[Any], initial: Any = no_default) -> Any:
@@ -2180,12 +2164,12 @@ async def async_contains_identity(value: T, iterable: AnyIterable[T]) -> bool:
 
 @overload
 async def async_all_unique_fast(iterable: AnyIterable[Q], key: None = ...) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_all_unique_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 async def async_all_unique_fast(
@@ -2270,12 +2254,12 @@ ASYNC_PEEK_ON_EMPTY = "async_peek() called on an empty iterable"
 
 @overload
 async def async_peek(iterable: AnyIterable[T]) -> Tuple[T, AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_peek(iterable: AnyIterable[T], default: U) -> Tuple[Union[T, U], AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_peek(
@@ -2341,68 +2325,68 @@ async def async_combine(*iterables: AnyIterable[T]) -> AsyncIterator[T]:
 
 @overload
 def async_distribute_unsafe(count: Literal[0], iterable: AnyIterable[T]) -> EmptyTuple:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[1], iterable: AnyIterable[T]
 ) -> Tuple1[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[2], iterable: AnyIterable[T]
 ) -> Tuple2[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[3], iterable: AnyIterable[T]
 ) -> Tuple3[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[4], iterable: AnyIterable[T]
 ) -> Tuple4[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[5], iterable: AnyIterable[T]
 ) -> Tuple5[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[6], iterable: AnyIterable[T]
 ) -> Tuple6[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[7], iterable: AnyIterable[T]
 ) -> Tuple7[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[8], iterable: AnyIterable[T]
 ) -> Tuple8[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute_unsafe(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_distribute_unsafe(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
@@ -2419,52 +2403,52 @@ async_distribute_infinite = async_distribute_unsafe
 
 @overload
 def async_distribute(count: Literal[0], iterable: AnyIterable[T]) -> EmptyTuple:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[1], iterable: AnyIterable[T]) -> Tuple1[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[2], iterable: AnyIterable[T]) -> Tuple2[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[3], iterable: AnyIterable[T]) -> Tuple3[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[4], iterable: AnyIterable[T]) -> Tuple4[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[5], iterable: AnyIterable[T]) -> Tuple5[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[6], iterable: AnyIterable[T]) -> Tuple6[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[7], iterable: AnyIterable[T]) -> Tuple7[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: Literal[8], iterable: AnyIterable[T]) -> Tuple8[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_distribute(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_distribute(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
@@ -2547,14 +2531,14 @@ ASYNC_POSITION_NO_MATCH = "async_position() has not found any matches"
 
 @overload
 async def async_position(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> int:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_position(
     predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
 ) -> Union[int, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_position(
@@ -2573,14 +2557,14 @@ async def async_position(
 
 @overload
 async def async_position_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> int:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_position_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[int, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_position_await(
@@ -2613,14 +2597,14 @@ ASYNC_FIND_ON_EMPTY = "async_find() called on an empty iterable"
 
 @overload
 async def async_find(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_find(
     predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_find(
@@ -2652,14 +2636,14 @@ ASYNC_FIND_AWAIT_ON_EMPTY = "async_find_await() called on an empty iterable"
 
 @overload
 async def async_find_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_find_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_find_await(
@@ -2682,14 +2666,14 @@ ASYNC_FIND_OR_FIRST_ON_EMPTY = "async_find_or_first() called on an empty iterabl
 
 @overload
 async def async_find_or_first(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_find_or_first(
     predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_find_or_first(
@@ -2725,14 +2709,14 @@ ASYNC_FIND_OR_FIRST_AWAIT_ON_EMPTY = "async_find_or_first_await() called on an e
 
 @overload
 async def async_find_or_first_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_find_or_first_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_find_or_first_await(
@@ -2760,14 +2744,14 @@ ASYNC_FIND_OR_LAST_ON_EMPTY = "async_find_or_last() called on an empty iterable"
 
 @overload
 async def async_find_or_last(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_find_or_last(
     predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_find_or_last(
@@ -2801,14 +2785,14 @@ ASYNC_FIND_OR_LAST_AWAIT_ON_EMPTY = "async_find_or_last_await() called on an emp
 
 @overload
 async def async_find_or_last_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_find_or_last_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_find_or_last_await(
@@ -2834,26 +2818,26 @@ ASYNC_MIN_MAX_ON_EMPTY = "async_min_max() called on an empty iterable"
 
 @overload
 async def async_min_max(iterable: AnyIterable[ST], *, key: None = ...) -> Tuple[ST, ST]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> Tuple[T, T]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min_max(
     iterable: AnyIterable[ST], *, key: None = ..., default: Tuple[U, V]
 ) -> Union[Tuple[ST, ST], Tuple[U, V]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min_max(
     iterable: AnyIterable[T], *, key: Unary[T, ST], default: Tuple[U, V]
 ) -> Union[Tuple[T, T], Tuple[U, V]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_min_max(
@@ -2913,14 +2897,14 @@ ASYNC_MIN_MAX_AWAIT_ON_EMPTY = "async_min_max_await() called on an empty iterabl
 
 @overload
 async def async_min_max_await(iterable: AnyIterable[T], *, key: AsyncUnary[T, ST]) -> Tuple[T, T]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min_max_await(
     iterable: AnyIterable[T], *, key: AsyncUnary[T, ST], default: Tuple[U, V]
 ) -> Union[Tuple[T, T], Tuple[U, V]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_min_max_await(
@@ -3036,12 +3020,12 @@ ASYNC_LAST_WITH_TAIL_ON_EMPTY = "async_last_with_tail() called on an empty itera
 
 @overload
 async def async_last_with_tail(iterable: AnyIterable[T]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_last_with_tail(iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_last_with_tail(iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -3078,7 +3062,7 @@ async def async_is_sorted(
     strict: Literal[False] = ...,
     reverse: bool = ...,
 ) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3089,7 +3073,7 @@ async def async_is_sorted(
     strict: Literal[True],
     reverse: bool = ...,
 ) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3100,7 +3084,7 @@ async def async_is_sorted(
     strict: Literal[False] = ...,
     reverse: bool = ...,
 ) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3111,7 +3095,7 @@ async def async_is_sorted(
     strict: Literal[True],
     reverse: bool = ...,
 ) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 async def async_is_sorted(
@@ -3135,7 +3119,7 @@ async def async_is_sorted_await(
     strict: Literal[False] = ...,
     reverse: bool = ...,
 ) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3146,7 +3130,7 @@ async def async_is_sorted_await(
     strict: Literal[True],
     reverse: bool = ...,
 ) -> bool:
-    ...  # pragma: overload
+    ...
 
 
 async def async_is_sorted_await(
@@ -3192,14 +3176,14 @@ async def async_is_sorted_by_await(
 def async_sort(
     iterable: AnyIterable[ST], *, key: None = ..., reverse: bool = ...
 ) -> AsyncIterator[ST]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_sort(
     iterable: AnyIterable[T], *, key: Unary[T, ST], reverse: bool = ...
 ) -> AsyncIterator[T]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_sort(
@@ -3231,52 +3215,52 @@ async def async_list_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterat
 
 @overload
 def async_tuple_windows(size: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_tuple_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_tuple_windows(
@@ -3355,12 +3339,12 @@ async def async_duplicates_fast_by_await(
 
 @overload
 def async_duplicates_fast(iterable: AnyIterable[Q], key: None = ...) -> AsyncIterator[Q]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_duplicates_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> AsyncIterator[T]:
-    ...  # pragma: overload
+    ...
 
 
 def async_duplicates_fast(
@@ -3502,12 +3486,12 @@ async def async_unique_fast_by_await(
 
 @overload
 def async_unique_fast(iterable: AnyIterable[Q], key: None = ...) -> AsyncIterator[Q]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_unique_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> AsyncIterator[T]:
-    ...  # pragma: overload
+    ...
 
 
 def async_unique_fast(
@@ -3611,26 +3595,26 @@ async def async_next_or_stop_async_zip(iterator: AsyncIterator[T]) -> T:
 
 @overload
 def async_zip() -> AsyncIterator[Never]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
 ) -> AsyncIterator[Tuple[A, B]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
 ) -> AsyncIterator[Tuple[A, B, C]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3640,7 +3624,7 @@ def async_zip(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
 ) -> AsyncIterator[Tuple[A, B, C, D]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3651,7 +3635,7 @@ def async_zip(
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
 ) -> AsyncIterator[Tuple[A, B, C, D, E]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3663,7 +3647,7 @@ def async_zip(
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3676,7 +3660,7 @@ def async_zip(
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3690,7 +3674,7 @@ def async_zip(
     __iterable_g: AnyIterable[G],
     __iterable_h: AnyIterable[H],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3706,7 +3690,7 @@ def async_zip(
     __iterable_next: AnyIterable[Any],
     *iterables: Iterable[Any],
 ) -> AsyncIterator[DynamicTuple[Any]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_zip(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[Any]]:
@@ -3748,26 +3732,26 @@ def format_longer(index: int) -> str:
 
 @overload
 def async_zip_equal() -> AsyncIterator[Never]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_equal(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_equal(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
 ) -> AsyncIterator[Tuple[A, B]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_equal(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
 ) -> AsyncIterator[Tuple[A, B, C]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3777,7 +3761,7 @@ def async_zip_equal(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
 ) -> AsyncIterator[Tuple[A, B, C, D]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3788,7 +3772,7 @@ def async_zip_equal(
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
 ) -> AsyncIterator[Tuple[A, B, C, D, E]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3800,7 +3784,7 @@ def async_zip_equal(
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3813,7 +3797,7 @@ def async_zip_equal(
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3827,7 +3811,7 @@ def async_zip_equal(
     __iterable_g: AnyIterable[G],
     __iterable_h: AnyIterable[H],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3843,7 +3827,7 @@ def async_zip_equal(
     __iterable_next: AnyIterable[Any],
     *iterables: AnyIterable[Any],
 ) -> AsyncIterator[DynamicTuple[Any]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_zip_equal(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[Any]]:
@@ -3872,26 +3856,26 @@ class StopAsyncZipLongest(Exception):
 
 @overload
 def async_zip_longest() -> AsyncIterator[Never]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_longest(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_longest(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
 ) -> AsyncIterator[Tuple[Optional[A], Optional[B]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_longest(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
 ) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3901,7 +3885,7 @@ def async_zip_longest(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
 ) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3912,7 +3896,7 @@ def async_zip_longest(
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
 ) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3926,7 +3910,7 @@ def async_zip_longest(
 ) -> AsyncIterator[
     Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]
 ]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3941,7 +3925,7 @@ def async_zip_longest(
 ) -> AsyncIterator[
     Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F], Optional[G]]
 ]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3966,7 +3950,7 @@ def async_zip_longest(
         Optional[H],
     ]
 ]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -3982,24 +3966,24 @@ def async_zip_longest(
     __iterable_next: AnyIterable[Any],
     *iterables: AnyIterable[Any],
 ) -> AsyncIterator[DynamicTuple[Optional[Any]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_longest(*, fill: T) -> AsyncIterator[Never]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_longest(__iterable_a: AnyIterable[A], *, fill: T) -> AsyncIterator[Tuple[A]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_zip_longest(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], *, fill: T
 ) -> AsyncIterator[Tuple[Union[A, T], Union[B, T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4010,7 +3994,7 @@ def async_zip_longest(
     *,
     fill: T,
 ) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4022,7 +4006,7 @@ def async_zip_longest(
     *,
     fill: T,
 ) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4035,7 +4019,7 @@ def async_zip_longest(
     *,
     fill: T,
 ) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T]]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4051,7 +4035,7 @@ def async_zip_longest(
 ) -> AsyncIterator[
     Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T], Union[F, T]]
 ]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4068,7 +4052,7 @@ def async_zip_longest(
 ) -> AsyncIterator[
     Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T], Union[F, T], Union[G, T]]
 ]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4095,7 +4079,7 @@ def async_zip_longest(
         Union[H, T],
     ]
 ]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4112,7 +4096,7 @@ def async_zip_longest(
     *iterables: AnyIterable[Any],
     fill: T,
 ) -> AsyncIterator[DynamicTuple[Union[Any, T]]]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_zip_longest(
@@ -4292,22 +4276,22 @@ ASYNC_MAX_ON_EMPTY = "async_max() called on an empty iterable"
 
 @overload
 async def async_max(iterable: AnyIterable[ST], *, key: None = ...) -> ST:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_max(iterable: AnyIterable[ST], *, key: None = ..., default: U) -> Union[ST, U]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_max(iterable: AnyIterable[T], *, key: Unary[T, ST], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_max(
@@ -4358,14 +4342,14 @@ ASYNC_MAX_AWAIT_ON_EMPTY = "async_max_await() called on an empty iterable"
 
 @overload
 async def async_max_await(iterable: AnyIterable[T], key: AsyncUnary[T, ST]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_max_await(
     iterable: AnyIterable[T], key: AsyncUnary[T, ST], default: U
 ) -> Unary[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_max_await(
@@ -4402,22 +4386,22 @@ ASYNC_MIN_ON_EMPTY = "async_min() called on an empty iterable"
 
 @overload
 async def async_min(iterable: AnyIterable[ST], *, key: None = ...) -> ST:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min(iterable: AnyIterable[ST], *, key: None = ..., default: U) -> Union[ST, U]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min(iterable: AnyIterable[T], *, key: Unary[T, ST], default: U) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_min(
@@ -4468,14 +4452,14 @@ ASYNC_MIN_AWAIT_ON_EMPTY = "async_min_await() called on an empty iterable"
 
 @overload
 async def async_min_await(iterable: AnyIterable[T], key: AsyncUnary[T, ST]) -> T:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 async def async_min_await(
     iterable: AnyIterable[T], key: AsyncUnary[T, ST], default: U
 ) -> Union[T, U]:
-    ...  # pragma: overload
+    ...
 
 
 async def async_min_await(
@@ -4509,14 +4493,14 @@ async def async_min_by_await(iterable: AnyIterable[T], value: T, key: AsyncUnary
 
 @overload
 def standard_async_map(function: Unary[T, R], __iterable_t: AnyIterable[T]) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def standard_async_map(
     function: Binary[T, U, R], __iterable_t: AnyIterable[T], __iterable_u: AnyIterable[U]
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4526,7 +4510,7 @@ def standard_async_map(
     __iterable_u: AnyIterable[U],
     __iterable_v: AnyIterable[V],
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4537,7 +4521,7 @@ def standard_async_map(
     __iterable_v: AnyIterable[V],
     __iterable_w: AnyIterable[W],
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4550,7 +4534,7 @@ def standard_async_map(
     __iterable_next: AnyIterable[Any],
     *iterables: AnyIterable[Any],
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 async def standard_async_map(
@@ -4564,7 +4548,7 @@ async def standard_async_map(
 def standard_async_map_await(
     function: AsyncUnary[T, R], __iterable_t: AnyIterable[T]
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4573,7 +4557,7 @@ def standard_async_map_await(
     __iterable_t: AnyIterable[T],
     __iterable_u: AnyIterable[U],
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4583,7 +4567,7 @@ def standard_async_map_await(
     __iterable_u: AnyIterable[U],
     __iterable_v: AnyIterable[V],
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4594,7 +4578,7 @@ def standard_async_map_await(
     __iterable_v: AnyIterable[V],
     __iterable_w: AnyIterable[W],
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4607,7 +4591,7 @@ def standard_async_map_await(
     __iterable_next: AnyIterable[Any],
     *iterables: AnyIterable[Any],
 ) -> AsyncIterator[R]:
-    ...  # pragma: overload
+    ...
 
 
 async def standard_async_map_await(
@@ -4725,26 +4709,26 @@ async def async_reverse_with_list(iterable: AnyIterable[T]) -> AsyncIterator[T]:
 
 @overload
 def async_cartesian_product() -> AsyncIterator[EmptyTuple]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_product(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_product(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
 ) -> AsyncIterator[Tuple[A, B]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_product(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
 ) -> AsyncIterator[Tuple[A, B, C]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4754,7 +4738,7 @@ def async_cartesian_product(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
 ) -> AsyncIterator[Tuple[A, B, C, D]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4765,7 +4749,7 @@ def async_cartesian_product(
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
 ) -> AsyncIterator[Tuple[A, B, C, D, E]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4777,7 +4761,7 @@ def async_cartesian_product(
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4790,7 +4774,7 @@ def async_cartesian_product(
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4804,7 +4788,7 @@ def async_cartesian_product(
     __iterable_g: AnyIterable[G],
     __iterable_h: AnyIterable[H],
 ) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
@@ -4820,7 +4804,7 @@ def async_cartesian_product(
     __iterable_next: AnyIterable[Any],
     *iterables: AnyIterable[Any],
 ) -> AsyncIterator[DynamicTuple[Any]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_cartesian_product(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[Any]]:
@@ -4847,52 +4831,52 @@ async def async_cartesian_product_step(
 
 @overload
 def async_cartesian_power(power: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...  # pragma: overload
+    ...
 
 
 @overload
 def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...  # pragma: overload
+    ...
 
 
 def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:

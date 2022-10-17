@@ -286,6 +286,7 @@ if CONCURRENT:
         __awaitable_f: Awaitable[Any],
         __awaitable_g: Awaitable[Any],
         __awaitable_h: Awaitable[Any],
+        __awaitable_next: Awaitable[Any],
         *awaitables: Awaitable[Any],
     ) -> DynamicTuple[Any]:
         ...

@@ -1,6 +1,5 @@
 from abc import abstractmethod
 from builtins import isinstance as is_instance
-from inspect import isawaitable as standard_is_awaitable
 from typing import (
     Any,
     AsyncIterable,
@@ -80,15 +79,11 @@ __all__ = (
     # unions
     "AnyIterable",
     "AnyIterator",
-    # "MaybeAnyIterable",
-    # "MaybeAnyIterator",
-    "MaybeAwaitable",
     # named
     "Named",
     "get_name",
     "is_named",
     # checks
-    "is_awaitable",
     "is_async_iterable",
     "is_async_iterator",
     "is_bytes",
@@ -155,10 +150,6 @@ DynamicTuple = Tuple[T, ...]
 AnyIterable = Union[AsyncIterable[T], Iterable[T]]
 AnyIterator = Union[AsyncIterator[T], Iterator[T]]
 
-# MaybeAnyIterable = Union[AnyIterable[T], T]
-# MaybeAnyIterator = Union[AnyIterator[T], T]
-MaybeAwaitable = Union[Awaitable[T], T]
-
 
 def is_async_iterable(iterable: AnyIterable[T]) -> TypeGuard[AsyncIterable[T]]:
     return is_instance(iterable, AsyncIterable)
@@ -174,10 +165,6 @@ def is_async_iterator(iterator: AnyIterator[T]) -> TypeGuard[AsyncIterator[T]]:
 
 def is_iterator(iterator: AnyIterator[T]) -> TypeGuard[Iterator[T]]:
     return is_instance(iterator, Iterator)
-
-
-def is_awaitable(maybe_awaitable: MaybeAwaitable[T]) -> TypeGuard[Awaitable[T]]:
-    return standard_is_awaitable(maybe_awaitable)
 
 
 def is_string(item: Any) -> TypeGuard[str]:
