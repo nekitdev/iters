@@ -3295,7 +3295,8 @@
 <span class="normal">2690</span>
 <span class="normal">2691</span>
 <span class="normal">2692</span>
-<span class="normal">2693</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">2693</span>
+<span class="normal">2694</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -3515,12 +3516,12 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">iter_except</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">errors</span><span class="p">:</span> <span class="n">AnyExceptionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
+        <span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
 <span class="sd">        any of the `errors` is encountered.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            function: The function to iterate.</span>
-<span class="sd">            \*errors: The errors to `except`, stopping iteration.</span>
+<span class="sd">            *errors: The errors to `except`, stopping iteration.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An [`Iter[T]`][iters.iters.Iter] over function results.</span>
@@ -3560,7 +3561,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_chain</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
+        <span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
 
 <span class="sd">        For example, it can be used to chain arrays.</span>
 
@@ -3574,7 +3575,7 @@
 <span class="sd">            ```</span>
 
 <span class="sd">        Arguments:</span>
-<span class="sd">            \*iterables: Iterables to chain together.</span>
+<span class="sd">            *iterables: Iterables to chain together.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An [`Iter[T]`][iters.iters.Iter] over chained iterables.</span>
@@ -3598,6 +3599,7 @@
 <span class="sd">            result = 45</span>
 
 <span class="sd">            assert iter.create_chain_from_iterable(matrix).sum() == result</span>
+<span class="sd">            ```</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            iterable: The iterable of iterables to chain.</span>
@@ -3609,7 +3611,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_combine</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
+        <span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -3621,7 +3623,7 @@
 <span class="sd">            ```</span>
 
 <span class="sd">        Arguments:</span>
-<span class="sd">            \*iterables: Iterables to combine.</span>
+<span class="sd">            *iterables: Iterables to combine.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An [`Iter[T]`][iters.iters.Iter] over combined iterables.</span>
@@ -7170,12 +7172,13 @@ any of the <code>errors</code> is encountered.</p>
           </td>
         </tr>
         <tr>
-          <td><code>\*errors</code></td>
+          <td><code>*errors</code></td>
           <td>
+                <code><span title="iters.typing.AnyExceptionType">AnyExceptionType</span></code>
           </td>
           <td><p>The errors to <code>except</code>, stopping iteration.</p></td>
           <td>
-              <em>required</em>
+                <code>()</code>
           </td>
         </tr>
     </tbody>
@@ -7215,12 +7218,12 @@ any of the <code>errors</code> is encountered.</p>
 <span class="normal">441</span>
 <span class="normal">442</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iter_except</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">errors</span><span class="p">:</span> <span class="n">AnyExceptionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
+    <span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
 <span class="sd">    any of the `errors` is encountered.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        function: The function to iterate.</span>
-<span class="sd">        \*errors: The errors to `except`, stopping iteration.</span>
+<span class="sd">        *errors: The errors to `except`, stopping iteration.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        An [`Iter[T]`][iters.iters.Iter] over function results.</span>
@@ -7414,12 +7417,13 @@ let us consider parsing some file containing integers on every line.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>\*iterables</code></td>
+          <td><code>*iterables</code></td>
           <td>
+                <code><a class="autorefs autorefs-external" title="typing.Iterable" href="https://docs.python.org/3/library/typing.html#typing.Iterable">Iterable</a>[<span title="iters.iters.T">T</span>]</code>
           </td>
           <td><p>Iterables to chain together.</p></td>
           <td>
-              <em>required</em>
+                <code>()</code>
           </td>
         </tr>
     </tbody>
@@ -7468,7 +7472,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">495</span>
 <span class="normal">496</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_chain</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
+    <span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
 
 <span class="sd">    For example, it can be used to chain arrays.</span>
 
@@ -7482,7 +7486,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="sd">        ```</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        \*iterables: Iterables to chain together.</span>
+<span class="sd">        *iterables: Iterables to chain together.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        An [`Iter[T]`][iters.iters.Iter] over chained iterables.</span>
@@ -7515,14 +7519,16 @@ let us consider parsing some file containing integers on every line.</p>
 
 <details class="example">
   <summary>Example</summary>
-  <p>```python
-matrix = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
-]</p>
-<p>result = 45</p>
-<p>assert iter.create_chain_from_iterable(matrix).sum() == result</p>
+  <div class="highlight"><pre><span></span><code><span class="n">matrix</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+<span class="p">]</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="mi">45</span>
+
+<span class="k">assert</span> <span class="nb">iter</span><span class="o">.</span><span class="n">create_chain_from_iterable</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">result</span>
+</code></pre></div>
 </details>
   <p><strong>Parameters:</strong></p>
   <table>
@@ -7592,7 +7598,8 @@ matrix = [
 <span class="normal">519</span>
 <span class="normal">520</span>
 <span class="normal">521</span>
-<span class="normal">522</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">522</span>
+<span class="normal">523</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_chain_from_iterable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator chaining iterables in the `iterable` together.</span>
 
@@ -7609,6 +7616,7 @@ matrix = [
 <span class="sd">        result = 45</span>
 
 <span class="sd">        assert iter.create_chain_from_iterable(matrix).sum() == result</span>
+<span class="sd">        ```</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        iterable: The iterable of iterables to chain.</span>
@@ -7662,12 +7670,13 @@ matrix = [
     </thead>
     <tbody>
         <tr>
-          <td><code>\*iterables</code></td>
+          <td><code>*iterables</code></td>
           <td>
+                <code><a class="autorefs autorefs-external" title="typing.Iterable" href="https://docs.python.org/3/library/typing.html#typing.Iterable">Iterable</a>[<span title="iters.iters.T">T</span>]</code>
           </td>
           <td><p>Iterables to combine.</p></td>
           <td>
-              <em>required</em>
+                <code>()</code>
           </td>
         </tr>
     </tbody>
@@ -7693,8 +7702,7 @@ matrix = [
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">524</span>
-<span class="normal">525</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">525</span>
 <span class="normal">526</span>
 <span class="normal">527</span>
 <span class="normal">528</span>
@@ -7712,9 +7720,10 @@ matrix = [
 <span class="normal">540</span>
 <span class="normal">541</span>
 <span class="normal">542</span>
-<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">543</span>
+<span class="normal">544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_combine</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
+    <span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -7726,7 +7735,7 @@ matrix = [
 <span class="sd">        ```</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        \*iterables: Iterables to combine.</span>
+<span class="sd">        *iterables: Iterables to combine.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        An [`Iter[T]`][iters.iters.Iter] over combined iterables.</span>
