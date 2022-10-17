@@ -4,8 +4,8 @@ from typing import Any, Awaitable, Callable, Iterable, List, Tuple, TypeVar, Uni
 from typing_extensions import ParamSpec
 
 try:
-    from anyio import create_task_group  # type: ignore
-    from anyio.to_thread import run_sync as standard_run_blocking  # type: ignore
+    from anyio import create_task_group
+    from anyio.to_thread import run_sync as standard_run_blocking
 
 except ImportError:
     CONCURRENT = False
@@ -298,4 +298,4 @@ if CONCURRENT:
         return list(map(unwrap_result, await collect_iterable_with_errors(iterable)))
 
     async def run_blocking(function: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
-        return await standard_run_blocking(partial(function, *args, **kwargs))  # type: ignore
+        return await standard_run_blocking(partial(function, *args, **kwargs))

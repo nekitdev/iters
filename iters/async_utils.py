@@ -314,8 +314,8 @@ ST = TypeVar("ST", bound=EitherStrictOrdered)
 
 
 try:
-    from builtins import aiter as standard_async_iter
-    from builtins import anext as standard_async_next
+    from builtins import aiter as standard_async_iter  # type: ignore
+    from builtins import anext as standard_async_next  # type: ignore
 
 except ImportError:
 
@@ -635,7 +635,7 @@ async def iter_to_async_iter(iterable: Iterable[T]) -> AsyncIterator[T]:
 
 def async_iter(iterable: AnyIterable[T]) -> AsyncIterator[T]:
     if is_async_iterable(iterable):
-        return standard_async_iter(iterable)
+        return standard_async_iter(iterable)  # type: ignore
 
     if is_iterable(iterable):
         return iter_to_async_iter(iterable)
