@@ -1561,7 +1561,9 @@ class AsyncIter(AsyncIterator[T]):
     def filter_await_map(self, predicate: AsyncPredicate[T], function: Unary[T, U]) -> AsyncIter[U]:
         return self.create(async_filter_await_map(predicate, function, self.iterator))
 
-    def filter_map_await(self, predicate: Optional[Predicate[T]], function: AsyncUnary[T, U]) -> AsyncIter[U]:
+    def filter_map_await(
+        self, predicate: Optional[Predicate[T]], function: AsyncUnary[T, U]
+    ) -> AsyncIter[U]:
         return self.create(async_filter_map_await(predicate, function, self.iterator))
 
     def filter_await_map_await(
@@ -1569,7 +1571,9 @@ class AsyncIter(AsyncIterator[T]):
     ) -> AsyncIter[U]:
         return self.create(async_filter_await_map_await(predicate, function, self.iterator))
 
-    def filter_false_map(self, predicate: Optional[Predicate[T]], function: Unary[T, U]) -> AsyncIter[U]:
+    def filter_false_map(
+        self, predicate: Optional[Predicate[T]], function: Unary[T, U]
+    ) -> AsyncIter[U]:
         return self.create(async_filter_false_map(predicate, function, self.iterator))
 
     def filter_false_await_map(
@@ -2794,7 +2798,9 @@ class AsyncIter(AsyncIterator[T]):
 
         return (self.create(true), self.create(false))
 
-    def partition_unsafe(self, predicate: Optional[Predicate[T]]) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+    def partition_unsafe(
+        self, predicate: Optional[Predicate[T]]
+    ) -> Tuple[AsyncIter[T], AsyncIter[T]]:
         true, false = async_partition_unsafe(predicate, self.iterator)
 
         return (self.create(true), self.create(false))

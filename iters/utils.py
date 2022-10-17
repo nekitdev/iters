@@ -961,7 +961,9 @@ def partition_unsafe(
 partition_infinite = partition_unsafe
 
 
-def partition(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
+def partition(
+    predicate: Optional[Predicate[T]], iterable: Iterable[T]
+) -> Tuple[Iterator[T], Iterator[T]]:
     for_true, for_false = copy(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
@@ -1520,7 +1522,9 @@ def position(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: 
     ...
 
 
-def position(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: Any = no_default) -> Any:
+def position(
+    predicate: Optional[Predicate[T]], iterable: Iterable[T], default: Any = no_default
+) -> Any:
     index = next(position_all(predicate, iterable), None)
 
     if index is None:
@@ -1550,7 +1554,9 @@ def find(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -
     ...
 
 
-def find(predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default) -> Any:
+def find(
+    predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default
+) -> Any:
     item = marker
 
     if predicate is None:
@@ -1578,7 +1584,9 @@ def find_or_first(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T
 
 
 @overload
-def find_or_first(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[T, U]:
+def find_or_first(
+    predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U
+) -> Union[T, U]:
     ...
 
 
@@ -1619,7 +1627,9 @@ def find_or_last(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T:
 
 
 @overload
-def find_or_last(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[T, U]:
+def find_or_last(
+    predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U
+) -> Union[T, U]:
     ...
 
 

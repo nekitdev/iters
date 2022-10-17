@@ -4632,9 +4632,7 @@ async def async_cycle(iterable: AnyIterable[T]) -> AsyncIterator[T]:
             yield item
 
 
-async def async_drop_while(
-    predicate: Predicate[T], iterable: AnyIterable[T]
-) -> AsyncIterator[T]:
+async def async_drop_while(predicate: Predicate[T], iterable: AnyIterable[T]) -> AsyncIterator[T]:
     iterator = async_iter(iterable)
 
     async for item in iterator:
@@ -4666,9 +4664,7 @@ async def async_drop_while_await(
 async_skip_while_await = async_drop_while_await
 
 
-async def async_take_while(
-    predicate: Predicate[T], iterable: AnyIterable[T]
-) -> AsyncIterator[T]:
+async def async_take_while(predicate: Predicate[T], iterable: AnyIterable[T]) -> AsyncIterator[T]:
     async for item in async_iter(iterable):
         if predicate(item):
             yield item
