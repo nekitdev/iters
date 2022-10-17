@@ -429,12 +429,12 @@ class Iter(Iterator[T]):
 
     @classmethod
     def iter_except(cls, function: Nullary[T], *errors: AnyExceptionType) -> Iter[T]:
-        r"""Creates an iterator that repeatedly calls `function` until
+        """Creates an iterator that repeatedly calls `function` until
         any of the `errors` is encountered.
 
         Arguments:
             function: The function to iterate.
-            \*errors: The errors to `except`, stopping iteration.
+            *errors: The errors to `except`, stopping iteration.
 
         Returns:
             An [`Iter[T]`][iters.iters.Iter] over function results.
@@ -474,7 +474,7 @@ class Iter(Iterator[T]):
 
     @classmethod
     def create_chain(cls, *iterables: Iterable[T]) -> Iter[T]:
-        r"""Creates an iterator chaining `iterables` together.
+        """Creates an iterator chaining `iterables` together.
 
         For example, it can be used to chain arrays.
 
@@ -488,7 +488,7 @@ class Iter(Iterator[T]):
             ```
 
         Arguments:
-            \*iterables: Iterables to chain together.
+            *iterables: Iterables to chain together.
 
         Returns:
             An [`Iter[T]`][iters.iters.Iter] over chained iterables.
@@ -512,6 +512,7 @@ class Iter(Iterator[T]):
             result = 45
 
             assert iter.create_chain_from_iterable(matrix).sum() == result
+            ```
 
         Arguments:
             iterable: The iterable of iterables to chain.
@@ -523,7 +524,7 @@ class Iter(Iterator[T]):
 
     @classmethod
     def create_combine(cls, *iterables: Iterable[T]) -> Iter[T]:
-        r"""Creates an iterator combining `iterables`.
+        """Creates an iterator combining `iterables`.
 
         Example:
             ```python
@@ -535,7 +536,7 @@ class Iter(Iterator[T]):
             ```
 
         Arguments:
-            \*iterables: Iterables to combine.
+            *iterables: Iterables to combine.
 
         Returns:
             An [`Iter[T]`][iters.iters.Iter] over combined iterables.
