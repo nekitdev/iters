@@ -224,6 +224,13 @@ class Iter(Iterator[T]):
     def empty(cls) -> Iter[T]:
         """Creates an empty iterator.
 
+        Example:
+            ```python
+            iterator = iter.empty()
+
+            assert iterator.next_or_none() is None
+            ```
+
         Returns:
             An empty [`Iter[T]`][iters.iters.Iter].
         """
@@ -237,6 +244,16 @@ class Iter(Iterator[T]):
         of other kinds of iteration. Maybe you have an iterator that covers almost everything,
         but you need an extra special case. Maybe you have a function which works on iterators,
         but you only need to process one value.
+
+        Example:
+            ```python
+            value = 42
+
+            iterator = iter.once(value)
+
+            assert iterator.next() is value
+            assert iterator.next_or_none() is None
+            ```
 
         Arguments:
             value: The value to yield.
@@ -259,6 +276,15 @@ class Iter(Iterator[T]):
         Unlike [`once`][iters.iters.Iter.once], this function will
         lazily generate the value on request.
 
+        Example:
+            ```python
+            iterator = iter.once_with(list)
+
+            assert iterator.next() == []
+
+            assert iterator.next_or_none() is None
+            ```
+
         Arguments:
             function: The value-generating function to use.
 
@@ -277,6 +303,15 @@ class Iter(Iterator[T]):
         are often used with adapters like [`take`][iters.iters.Iter.take],
         in order to make them finite.
 
+        Example:
+            ```python
+            fours = iter.repeat(4)
+
+            assert fours.next() == 4  # four forever
+            assert fours.next() == 4  # still four
+            assert fours.next() == 4  # yep, forever
+            ```
+
         Arguments:
             value: The value to repeat.
 
@@ -290,6 +325,14 @@ class Iter(Iterator[T]):
         """Creates an iterator that repeats a single `value` exactly `count` times.
 
         This function is a shorthand for [`iter.repeat(value).take(count)`][iters.iters.Iter.take].
+
+        Example:
+            ```python
+            # let's only have four fours
+            iterator = iter.repeat_exactly(4, 4)
+
+            assert iterator.list() == [4, 4, 4, 4]
+            ```
 
         Arguments:
             value: The value to repeat.
@@ -310,6 +353,17 @@ class Iter(Iterator[T]):
         are often used with adapters like [`take`][iters.iters.Iter.take],
         in order to make them finite.
 
+        Example:
+            ```python
+            iterator = iter.repeat_with(tuple)
+
+            assert iterator.next() == ()
+            assert iterator.next() == ()
+            assert iterator.next() == ()
+
+            # ... ad infinitum
+            ```
+
         Arguments:
             function: The value-generating function to use.
 
@@ -325,6 +379,11 @@ class Iter(Iterator[T]):
         This function is a shorthand for
         [`iter.repeat_with(function).take(count)`][iters.iters.Iter.take].
 
+        Example:
+            ```python
+            assert iter.repeat_exactly_with(tuple, 3).tuple() == ((), (), ())  # tuple triple!
+            ```
+
         Arguments:
             function: The value-generating function to use.
             count: The number of times to repeat values.
@@ -338,6 +397,17 @@ class Iter(Iterator[T]):
     @classmethod
     def count_from_by(cls, start: int, step: int) -> Iter[int]:
         """Creates an iterator of evenly spaced (by `step`) values starting from `start`.
+
+        Example:
+            ```python
+            iterator = iter.count_from_by(1, 2)
+
+            assert iterator.next() == 1
+            assert iterator.next() == 3
+            assert iterator.next() == 5
+            assert iterator.next() == 7
+            assert iterator.next() == 9
+            ```
 
         Arguments:
             start: The value to start from.
@@ -401,8 +471,18 @@ class Iter(Iterator[T]):
 
     @classmethod
     def iterate(cls, function: Unary[V, V], value: V) -> Iter[V]:
-        """Creates an iterator that iterates function calls endlessly, i.e. `function(value)`,
-        `function(function(value))`, ...
+        """Creates an iterator that iterates function calls endlessly, i.e. `value`,
+        `function(value)`, `function(function(value))`, ...
+
+        Example:
+            ```python
+            zero = 0
+
+            def successor(number: int) -> int:
+                return number + 1
+
+            naturals = iter.iterate(successor, zero)
+            ```
 
         Arguments:
             function: The function to iterate.
@@ -416,6 +496,17 @@ class Iter(Iterator[T]):
     @classmethod
     def iterate_exactly(cls, function: Unary[V, V], value: V, count: int) -> Iter[V]:
         """Creates an iterator that iterates function calls exactly `count` times.
+
+        This is a shorthand for
+        [`iter.iterate(function, value).taken(count)`][iters.iters.Iter.take].
+
+        Example:
+            ```python
+            def wrap(item: T) -> List[T]:
+                return [item]
+
+            iter.iterate_exactly(wrap, 13, 5).list() == [13, [13], [[13]], [[[13]]], [[[[13]]]]]
+            ```
 
         Arguments:
             function: The function to iterate.
@@ -431,6 +522,15 @@ class Iter(Iterator[T]):
     def iter_except(cls, function: Nullary[T], *errors: AnyExceptionType) -> Iter[T]:
         """Creates an iterator that repeatedly calls `function` until
         any of the `errors` is encountered.
+
+        Example:
+            An interesting way to reverse things:
+
+            ```python
+            array = [1, 2, 3]
+
+            iter.iter_except(array.pop, IndexError).list() == [3, 2, 1]
+            ```
 
         Arguments:
             function: The function to iterate.
@@ -526,6 +626,9 @@ class Iter(Iterator[T]):
     def create_combine(cls, *iterables: Iterable[T]) -> Iter[T]:
         """Creates an iterator combining `iterables`.
 
+        This method is a slightly different version of
+        [`create_interleave_longest`][iters.iters.Iter.create_interleave_longest].
+
         Example:
             ```python
             a = [1, 2, 3]
@@ -545,10 +648,50 @@ class Iter(Iterator[T]):
 
     @classmethod
     def create_interleave(cls, *iterables: Iterable[T]) -> Iter[T]:
+        """Creates an iterator interleaving `iterables`.
+
+        Note:
+            This method stops when the shortest iterable is exhausted.
+
+        Example:
+            ```python
+            a = [1, 2, 3]
+            b = [4, 5, 6, 7, 8, 9]
+            c = [1, 4, 2, 5, 3, 6]
+
+            assert iter.create_interleave(a, b).list() == c
+            ```
+
+        Arguments:
+            *iterables: Iterables to interleave.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over interleft iterables.
+        """
         return cls.create(interleave(*iterables))
 
     @classmethod
     def create_interleave_longest(cls, *iterables: Iterable[T]) -> Iter[T]:
+        """Creates an iterator interleaving `iterables`.
+
+        This method is a slightly different version of
+        [`create_combine`][iters.iters.Iter.create_combine].
+
+        Example:
+            ```python
+            a = [1, 2, 3]
+            b = [4, 5, 6, 7, 8, 9]
+            c = [1, 4, 2, 5, 3, 6, 7, 8, 9]
+
+            assert iter.create_interleave_longest(a, b).list() == c
+            ```
+
+        Arguments:
+            *iterables: Iterables to interleave.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over interleft iterables.
+        """
         return cls.create(interleave_longest(*iterables))
 
     @overload
@@ -658,6 +801,27 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_zip(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
+        """Zips `iterables` into an iterator of tuples, where
+        the *i*-th tuple contains the *i*-th item from each of the iterables.
+
+        Note:
+            This method stops when the shortest iterable is exhausted.
+
+        Example:
+            ```python
+            x = (1, 2, 3, 4, 5)
+
+            y = "nekit"
+
+            iter.create_zip(x, y).list() == [(1, "n"), (2, "e"), (3, "k"), (4, "i"), (5, "t")]
+            ```
+
+        Arguments:
+            *iterables: Iterables to zip.
+
+        Returns:
+            An [`Iter[Tuple[...]]`][iters.iters.Iter] over zipped tuples.
+        """
         return cls.create(zip(*iterables))
 
     @overload
@@ -769,6 +933,29 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_zip_equal(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
+        """Zips `iterables` into an iterator of tuples, where
+        the *i*-th tuple contains the *i*-th item from each of the iterables.
+
+        This is a strict version of [`create_zip`][iters.iters.Iter.create_zip].
+
+        Example:
+            ```python
+            x = (1, 2, 3)
+
+            y = "dev"
+
+            iter.create_zip_equal(x, y).list() == [(1, "d"), (2, "e"), (3, "v")]
+            ```
+
+        Arguments:
+            *iterables: Iterables to zip.
+
+        Raises:
+            ValueError: Iterables have different lengths.
+
+        Returns:
+            An [`Iter[Tuple[...]]`][iters.iters.Iter] over zipped tuples.
+        """
         return cls.create(zip_equal(*iterables))
 
     @overload
@@ -901,6 +1088,27 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_zip_longest(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Optional[Any]]]:
+        """Zips `iterables` into an iterator of tuples, where
+        the *i*-th tuple contains the *i*-th item from each of the iterables.
+
+        This is a version of [`create_zip`][iters.iters.Iter.create_zip] that places [`None`][None]
+        in place of a *j*-th item of an *i*-th tuple when a *j*-th iterable is exhausted.
+
+        Example:
+            ```python
+            x = (1, 2, 3, 4)
+
+            y = "dev"
+
+            iter.create_zip_longest(x, y).list() == [(1, "d"), (2, "e"), (3, "v"), (4, None)]
+            ```
+
+        Arguments:
+            *iterables: Iterables to zip.
+
+        Returns:
+            An [`Iter[Tuple[...]]`][iters.iters.Iter] over zipped tuples.
+        """
         return cls.create(zip_longest(*iterables))
 
     @overload
@@ -1051,6 +1259,27 @@ class Iter(Iterator[T]):
     def create_zip_longest_with(
         cls, *iterables: Iterable[Any], fill: V
     ) -> Iter[DynamicTuple[Union[Any, V]]]:
+        """Zips `iterables` into an iterator of tuples, where
+        the *i*-th tuple contains the *i*-th item from each of the iterables.
+
+        This is a version of [`create_zip`][iters.iters.Iter.create_zip] that places the `fill` of
+        type `V` in place of a *j*-th item of an *i*-th tuple when a *j*-th iterable is exhausted.
+
+        Example:
+            ```python
+            x = (0, 1)
+
+            y = "dev"
+
+            iter.create_zip_longest_with(x, y, 0).list() == [(0, "d"), (1, "e"), (0, "v")]
+            ```
+
+        Arguments:
+            *iterables: Iterables to zip.
+
+        Returns:
+            An [`Iter[Tuple[...]]`][iters.iters.Iter] over zipped tuples.
+        """
         return cls.create(zip_longest(*iterables, fill=fill))
 
     @overload
@@ -1166,6 +1395,19 @@ class Iter(Iterator[T]):
 
     @classmethod
     def reversed(cls, reversible: Reversible[T]) -> Iter[T]:
+        """Creates an iterator over the reversed `reversible`.
+
+        Example:
+            ```python
+            assert iter.reversed([1, 2, 3]).list() == [3, 2, 1]
+            ```
+
+        Arguments:
+            reversible: The reversible to reverse.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over the reversed reversible.
+        """
         return cls.create(standard_reversed(reversible))
 
     @classmethod
