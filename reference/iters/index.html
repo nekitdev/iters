@@ -17,7 +17,7 @@
     
     
       
-        <title>Iters - iters</title>
+        <title>Iterators - iters</title>
       
     
     
@@ -105,7 +105,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Iters
+              Iterators
             
           </span>
         </div>
@@ -288,12 +288,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Iters
+          Iterators
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Iters
+        Iterators
       </a>
       
         
@@ -520,6 +520,41 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.unwrap" class="md-nav__link">
+    unwrap()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.iter" class="md-nav__link">
+    iter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.next" class="md-nav__link">
+    next()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.next_or" class="md-nav__link">
+    next_or()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.next_or_none" class="md-nav__link">
+    next_or_none()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -541,7 +576,7 @@
   
     <li class="md-nav__item">
       <a href="../async_iters/" class="md-nav__link">
-        Async Iters
+        Async Iterators
       </a>
     </li>
   
@@ -555,7 +590,7 @@
   
     <li class="md-nav__item">
       <a href="../utils/" class="md-nav__link">
-        Utils
+        Utilities
       </a>
     </li>
   
@@ -569,7 +604,21 @@
   
     <li class="md-nav__item">
       <a href="../async_utils/" class="md-nav__link">
-        Async Utils
+        Async Utilities
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../types/" class="md-nav__link">
+        Types
       </a>
     </li>
   
@@ -877,6 +926,41 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.unwrap" class="md-nav__link">
+    unwrap()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.iter" class="md-nav__link">
+    iter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.next" class="md-nav__link">
+    next()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.next_or" class="md-nav__link">
+    next_or()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.next_or_none" class="md-nav__link">
+    next_or_none()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -902,7 +986,7 @@
   </a>
 
 
-  <h1>Iters</h1>
+  <h1>Iterators</h1>
 
 <div class="doc doc-object doc-module">
 
@@ -3718,7 +3802,41 @@
 <span class="normal">2987</span>
 <span class="normal">2988</span>
 <span class="normal">2989</span>
-<span class="normal">2990</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">2990</span>
+<span class="normal">2991</span>
+<span class="normal">2992</span>
+<span class="normal">2993</span>
+<span class="normal">2994</span>
+<span class="normal">2995</span>
+<span class="normal">2996</span>
+<span class="normal">2997</span>
+<span class="normal">2998</span>
+<span class="normal">2999</span>
+<span class="normal">3000</span>
+<span class="normal">3001</span>
+<span class="normal">3002</span>
+<span class="normal">3003</span>
+<span class="normal">3004</span>
+<span class="normal">3005</span>
+<span class="normal">3006</span>
+<span class="normal">3007</span>
+<span class="normal">3008</span>
+<span class="normal">3009</span>
+<span class="normal">3010</span>
+<span class="normal">3011</span>
+<span class="normal">3012</span>
+<span class="normal">3013</span>
+<span class="normal">3014</span>
+<span class="normal">3015</span>
+<span class="normal">3016</span>
+<span class="normal">3017</span>
+<span class="normal">3018</span>
+<span class="normal">3019</span>
+<span class="normal">3020</span>
+<span class="normal">3021</span>
+<span class="normal">3022</span>
+<span class="normal">3023</span>
+<span class="normal">3024</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -4999,18 +5117,52 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The underlying iterator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span>
 
     <span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `self`, the current iterator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            StopIteration: There are no more items left.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The next item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The next item or the `default`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
+
+<span class="sd">        This is equivalent to:</span>
+
+<span class="sd">        ```python</span>
+<span class="sd">        iterator.next_or(None)</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The next item or [`None`][None].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_or</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">ST</span><span class="p">],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
@@ -9971,6 +10123,310 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
 </div>
 
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.unwrap" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">unwrap</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Unwraps the underlying iterator.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-external" title="typing.Iterator" href="https://docs.python.org/3/library/typing.html#typing.Iterator">Iterator</a>[<span title="iters.iters.T">T</span>]</code>
+          </td>
+          <td><p>The underlying iterator.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1492</span>
+<span class="normal">1493</span>
+<span class="normal">1494</span>
+<span class="normal">1495</span>
+<span class="normal">1496</span>
+<span class="normal">1497</span>
+<span class="normal">1498</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The underlying iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.iter" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">iter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Simply returns <code>self</code>.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="iters.iters.Iter" href="#iters.iters.Iter">Iter</a>[<span title="iters.iters.T">T</span>]</code>
+          </td>
+          <td><p><code>self</code>, the current iterator.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1500</span>
+<span class="normal">1501</span>
+<span class="normal">1502</span>
+<span class="normal">1503</span>
+<span class="normal">1504</span>
+<span class="normal">1505</span>
+<span class="normal">1506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `self`, the current iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.next" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">next</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">T</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the next item in the iterator.</p>
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#StopIteration">StopIteration</a></code>
+          </td>
+          <td><p>There are no more items left.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="iters.iters.T">T</span></code>
+          </td>
+          <td><p>The next item.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1508</span>
+<span class="normal">1509</span>
+<span class="normal">1510</span>
+<span class="normal">1511</span>
+<span class="normal">1512</span>
+<span class="normal">1513</span>
+<span class="normal">1514</span>
+<span class="normal">1515</span>
+<span class="normal">1516</span>
+<span class="normal">1517</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        StopIteration: There are no more items left.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The next item.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.next_or" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">next_or</span><span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the next item or the provided <code>default</code>.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-external" title="typing.Union" href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<span title="iters.iters.T">T</span>, <span title="iters.iters.V">V</span>]</code>
+          </td>
+          <td><p>The next item or the <code>default</code>.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1519</span>
+<span class="normal">1520</span>
+<span class="normal">1521</span>
+<span class="normal">1522</span>
+<span class="normal">1523</span>
+<span class="normal">1524</span>
+<span class="normal">1525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The next item or the `default`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.next_or_none" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">next_or_none</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the next item or <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/constants.html#None"><code>None</code></a>.</p>
+<p>This is equivalent to:</p>
+<div class="highlight"><pre><span></span><code><span class="n">iterator</span><span class="o">.</span><span class="n">next_or</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<span title="iters.iters.T">T</span>]</code>
+          </td>
+          <td><p>The next item or <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/constants.html#None"><code>None</code></a>.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1527</span>
+<span class="normal">1528</span>
+<span class="normal">1529</span>
+<span class="normal">1530</span>
+<span class="normal">1531</span>
+<span class="normal">1532</span>
+<span class="normal">1533</span>
+<span class="normal">1534</span>
+<span class="normal">1535</span>
+<span class="normal">1536</span>
+<span class="normal">1537</span>
+<span class="normal">1538</span>
+<span class="normal">1539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
+
+<span class="sd">    This is equivalent to:</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    iterator.next_or(None)</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The next item or [`None`][None].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_or</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
 
 
   </div>
@@ -10023,13 +10479,13 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
       
       
         
-        <a href="../async_iters/" class="md-footer__link md-footer__link--next" aria-label="Next: Async Iters" rel="next">
+        <a href="../async_iters/" class="md-footer__link md-footer__link--next" aria-label="Next: Async Iterators" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Async Iters
+              Async Iterators
             </div>
           </div>
           <div class="md-footer__button md-icon">
