@@ -6143,7 +6143,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[T]`][set].</span>
+        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The items of the iterator have to be hashable for this method to work.</span>
@@ -6155,12 +6155,12 @@
 <span class="sd">        ```</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The [`Set[T]`][set] over the iterator.</span>
+<span class="sd">            The [`Set[Q]`][set] over the iterator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`tuple`][tuple].</span>
+        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
 
 <span class="sd">        This is equivalent to:</span>
 
@@ -6174,7 +6174,7 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`dict`][dict].</span>
+        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The first item in each couple has to be hashable for this method to work.</span>
@@ -12955,7 +12955,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
   <div class="doc doc-contents ">
   
-      <p>Collects the iterator into the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set"><code>Set[T]</code></a>.</p>
+      <p>Collects the iterator into the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set"><code>Set[Q]</code></a>.</p>
 
 <details class="warning">
   <summary>Warning</summary>
@@ -12977,7 +12977,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
           <td>
                 <code><a class="autorefs autorefs-external" title="typing.Set" href="https://docs.python.org/3/library/typing.html#typing.Set">Set</a>[<span title="iters.iters.Q">Q</span>]</code>
           </td>
-          <td><p>The <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set"><code>Set[T]</code></a> over the iterator.</p></td>
+          <td><p>The <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set"><code>Set[Q]</code></a> over the iterator.</p></td>
         </tr>
     </tbody>
   </table>
@@ -13000,7 +13000,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1883</span>
 <span class="normal">1884</span>
 <span class="normal">1885</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[T]`][set].</span>
+    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The items of the iterator have to be hashable for this method to work.</span>
@@ -13012,7 +13012,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">    ```</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The [`Set[T]`][set] over the iterator.</span>
+<span class="sd">        The [`Set[Q]`][set] over the iterator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -13033,7 +13033,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
   <div class="doc doc-contents ">
   
-      <p>Collects the iterator into the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a>.</p>
+      <p>Collects the iterator into the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>Tuple[T, ...]</code></a>.</p>
 <p>This is equivalent to:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">tuple</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">unwrap</span><span class="p">())</span>
 </code></pre></div>
@@ -13071,7 +13071,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1897</span>
 <span class="normal">1898</span>
 <span class="normal">1899</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`tuple`][tuple].</span>
+    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
 
 <span class="sd">    This is equivalent to:</span>
 
@@ -13101,7 +13101,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
   <div class="doc doc-contents ">
   
-      <p>Collects the iterator into the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>.</p>
+      <p>Collects the iterator into the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>Dict[Q, V]</code></a>.</p>
 
 <details class="warning">
   <summary>Warning</summary>
@@ -13146,7 +13146,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1914</span>
 <span class="normal">1915</span>
 <span class="normal">1916</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`dict`][dict].</span>
+    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The first item in each couple has to be hashable for this method to work.</span>
