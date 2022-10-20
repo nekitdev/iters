@@ -1267,11 +1267,11 @@ class Iter(Iterator[T]):
 
         Example:
             ```python
-            x = (0, 1)
+            x = (1, 3)
 
             y = "dev"
 
-            iter.create_zip_longest_with(x, y, 0).list() == [(0, "d"), (1, "e"), (0, "v")]
+            iter.create_zip_longest_with(x, y, 0).list() == [(1, "d"), (3, "e"), (0, "v")]
             ```
 
         Arguments:
@@ -1391,6 +1391,33 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_cartesian_product(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
+        """Creates an iterator over the [*Cartesian product*][Cartesian product] of `iterables`.
+
+        Warning:
+            It only makes sense to compute the product of finite iterables.
+
+        Example:
+            ```python
+            a = (1, 2, 3)
+            b = "xyz"
+
+            c = [
+                (1, "x"), (1, "y"), (1, "z"),
+                (2, "x"), (2, "y"), (2, "z"),
+                (3, "x"), (3, "y"), (3, "z"),
+            ]
+
+            assert iter.create_cartesian_product(a, b).list() == c
+            ```
+
+        Arguments:
+            *iterables: Iterables to compute the Cartesian product of.
+
+        Returns:
+            An [`Iter[Tuple[...]]`][iters.iters.Iter] over the Cartesian product of iterables.
+
+        [Cartesian product]: https://en.wikipedia.org/wiki/Cartesian_product
+        """
         return cls.create(cartesian_product(*iterables))
 
     @classmethod
@@ -1412,6 +1439,33 @@ class Iter(Iterator[T]):
 
     @classmethod
     def function(cls, function: Nullary[T], sentinel: V) -> Iter[T]:
+        """Creates an iterator over `function` call results until it returns the `sentinel`.
+
+        Example:
+            ```python
+            EMPTY_BYTES = bytes()
+
+            READ_BINARY = "rb"
+
+            CHUNK_SIZE = 65536
+
+            def read_chunk(file: BinaryIO) -> Nullary[bytes]:
+                def reader(size: int = CHUNK_SIZE) -> bytes:
+                    return file.read(size)
+
+                return reader
+
+            with path.open(READ_BINARY) as file:
+                iter.function(read_chunk(file), EMPTY_BYTES).for_each(process_chunk)
+            ```
+
+        Arguments:
+            function: The function to iterate.
+            sentinel: The sentinel to stop at.
+
+        Returns:
+            An [`Iter[T]`][iters.iters.Iter] over function calls until the `sentinel` is met.
+        """
         return cls.create(iter_function(function, sentinel))
 
     @classmethod
