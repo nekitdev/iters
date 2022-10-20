@@ -1391,7 +1391,8 @@ class Iter(Iterator[T]):
     @no_type_check
     @classmethod
     def create_cartesian_product(cls, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
-        """Creates an iterator over the [*Cartesian product*][Cartesian product] of `iterables`.
+        """Creates an iterator over the
+        [*Cartesian product*](https://en.wikipedia.org/wiki/Cartesian_product) of `iterables`.
 
         Warning:
             It only makes sense to compute the product of finite iterables.
@@ -1415,8 +1416,6 @@ class Iter(Iterator[T]):
 
         Returns:
             An [`Iter[Tuple[...]]`][iters.iters.Iter] over the Cartesian product of iterables.
-
-        [Cartesian product]: https://en.wikipedia.org/wiki/Cartesian_product
         """
         return cls.create(cartesian_product(*iterables))
 
