@@ -1656,7 +1656,7 @@ class Iter(Iterator[T]):
 
             iterator = iter.once(value)
 
-            assert iterator.next_or(0) is value
+            assert iterator.first_or(0) is value
 
             assert not iterator.first_or(0)
             ```
@@ -1672,7 +1672,7 @@ class Iter(Iterator[T]):
         This is equivalent to:
 
         ```python
-        iterator.next_or(None)
+        iterator.first_or(None)
         ```
 
         Example:
@@ -1692,21 +1692,140 @@ class Iter(Iterator[T]):
         return self.first_or(None)
 
     def last(self) -> T:
+        """Returns the last item in the iterator.
+
+        Example:
+            ```python
+            value = 69
+
+            iterator = iter.once(value)
+
+            assert iterator.last() is value
+            ```
+
+        Raises:
+            ValueError: The iterator is empty.
+
+        Returns:
+            The last item.
+        """
         return last(self.iterator)
 
     def last_or(self, default: V) -> Union[T, V]:
+        """Returns the last item in the iterator or the `default`.
+
+        Example:
+            ```python
+            value = 13
+
+            iterator = iter.once(value)
+
+            assert iterator.last_or(0) is value
+
+            assert not iterator.last_or(0)
+            ```
+
+        Returns:
+            The last item or the `default`.
+        """
         return last(self.iterator, default)
 
     def last_or_none(self) -> Optional[T]:
+        """Returns the last item or [`None`][None].
+
+        This is equivalent to:
+
+        ```python
+        iterator.last_or(None)
+        ```
+
+        Example:
+            ```python
+            value = 42
+
+            iterator = iter.once(value)
+
+            assert iterator.last_or_none() is value
+
+            assert iterator.last_or_none() is None
+            ```
+
+        Returns:
+            The last item or [`None`][None].
+        """
         return self.last_or(None)
 
     def last_with_tail(self) -> T:
+        """Returns the last item in the iterator.
+
+        Note:
+            This method uses the [`tail`][iters.utils.tail] function.
+
+        Example:
+            ```python
+            value = 69
+
+            iterator = iter.once(value)
+
+            assert iterator.last_with_tail() is value
+            ```
+
+        Raises:
+            ValueError: The iterator is empty.
+
+        Returns:
+            The last item.
+        """
         return last_with_tail(self.iterator)
 
     def last_with_tail_or(self, default: V) -> Union[T, V]:
+        """Returns the last item in the iterator or the `default`.
+
+        Note:
+            This method uses the [`tail`][iters.utils.tail] function.
+
+        Example:
+            ```python
+            value = 13
+
+            iterator = iter.once(value)
+
+            assert iterator.last_with_tail_or(0) is value
+
+            assert not iterator.last_with_tail_or(0)
+            ```
+
+        Returns:
+            The last item or the `default`.
+        """
         return last_with_tail(self.iterator, default)
 
     def last_with_tail_or_none(self) -> Optional[T]:
+        """Returns the last item or [`None`][None].
+
+        Note:
+            This method uses the [`tail`][iters.utils.tail] function.
+
+        This is equivalent to:
+
+        ```python
+        iterator.next_or(None)
+        ```
+
+        Example:
+            ```python
+            value = 42
+
+            iterator = iter.once(value)
+
+            assert iterator.last_with_tail_or_none() is value
+
+            assert iterator.last_with_tail_or_none() is None
+            ```
+
+        Returns:
+            The last item or [`None`][None].
+        """
         return self.last_with_tail_or(None)
 
     def collect(self, function: Unary[Iterable[T], U]) -> U:
@@ -1736,24 +1855,116 @@ class Iter(Iterator[T]):
         return function(self.iterator)
 
     def list(self) -> List[T]:
+        """Collects the iterator into the [`List[T]`][list].
+
+        This is equivalent to:
+
+        ```python
+        list(iterator.unwrap())
+        ```
+
+        Returns:
+            The [`List[T]`][list] over the iterator.
+        """
         return list(self.iterator)
 
     def set(self: Iter[Q]) -> Set[Q]:
+        """Collects the iterator into the [`Set[T]`][set].
+
+        Warning:
+            The items of the iterator have to be hashable for this method to work.
+
+        This is equivalent to:
+
+        ```python
+        set(iterator.unwrap())
+        ```
+
+        Returns:
+            The [`Set[T]`][set] over the iterator.
+        """
         return set(self.iterator)
 
     def tuple(self) -> DynamicTuple[T]:
+        """Collects the iterator into the [`tuple`][tuple].
+
+        This is equivalent to:
+
+        ```python
+        tuple(iterator.unwrap())
+        ```
+
+        Returns:
+            The [`Tuple[T, ...]`][tuple] over the iterator.
+        """
         return tuple(self.iterator)
 
     def dict(self: Iter[Tuple[Q, V]]) -> Dict[Q, V]:
+        """Collects the iterator into the [`dict`][dict].
+
+        Warning:
+            The first item in each couple has to be hashable for this method to work.
+
+        This is equivalent to:
+
+        ```python
+        dict(iterator.unwrap())
+        ```
+
+        Returns:
+            The [`Dict[Q, V]`][dict] over the iterator.
+        """
         return dict(self.iterator)
 
     def join(self: Iter[AnyStr], string: AnyStr) -> AnyStr:
+        """Joins the iterator using the `string`.
+
+        Warning:
+            The iterator must contain only string items for this method to work.
+
+        This is equivalent to:
+
+        ```python
+        string.join(iterator.unwrap())
+        ```
+
+        Returns:
+            The joined [`str`][str] or [`bytes`][bytes] depending on the `string` type.
+        """
         return string.join(self.iterator)
 
     def string(self: Iter[str]) -> str:
+        """Joins the iterator into the [`str`][str] string.
+
+        Warning:
+            The iterator must contain only items of type [`str`][str] for this method to work.
+
+        This is equivalent to:
+
+        ```python
+        iterator.join(EMPTY_STRING)
+        ```
+
+        Returns:
+            The joined [`str`][str] string.
+        """
         return self.join(EMPTY_STRING)
 
     def bytes(self: Iter[bytes]) -> bytes:
+        """Joins the iterator into the [`bytes`][bytes] string.
+
+        Warning:
+            The iterator must contain only items of type [`bytes`][bytes] for this method to work.
+
+        This is equivalent to:
+
+        ```python
+        iterator.join(EMPTY_BYTES)
+        ```
+
+        Returns:
+            The joined [`bytes`][bytes] string.
+        """
         return self.join(EMPTY_BYTES)
 
     def count_dict(self: Iter[Q]) -> Counter[Q]:
