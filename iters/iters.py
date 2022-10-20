@@ -1508,8 +1508,17 @@ class Iter(Iterator[T]):
     def next(self) -> T:
         """Returns the next item in the iterator.
 
+        Example:
+            ```python
+            value = 42
+
+            iterator = iter.once(value)
+
+            assert iterator.next() is value
+            ```
+
         Raises:
-            StopIteration: There are no more items left.
+            StopIteration: The iterator is empty.
 
         Returns:
             The next item.
@@ -1518,6 +1527,17 @@ class Iter(Iterator[T]):
 
     def next_or(self, default: V) -> Union[T, V]:
         """Returns the next item or the provided `default`.
+
+        Example:
+            ```python
+            value = 13
+
+            iterator = iter.once(value)
+
+            assert iterator.next_or(0) is value
+
+            assert not iterator.next_or(0)
+            ```
 
         Returns:
             The next item or the `default`.
@@ -1533,6 +1553,17 @@ class Iter(Iterator[T]):
         iterator.next_or(None)
         ```
 
+        Example:
+            ```python
+            value = 34
+
+            iterator = iter.once(value)
+
+            assert iterator.next_or_none() is value
+
+            assert iterator.next_or_none() is None
+            ```
+
         Returns:
             The next item or [`None`][None].
         """
@@ -1540,6 +1571,15 @@ class Iter(Iterator[T]):
 
     def compare(self: Iter[ST], other: Iterable[ST]) -> Ordering:
         """Compares `self` with the `other` iterable.
+
+        Example:
+            ```python
+            array = [1, 2, 3]
+
+            iterator = iter(array)
+
+            assert iterator.compare(array).is_equal()
+            ```
 
         Arguments:
             other: The other iterable.
@@ -1551,6 +1591,16 @@ class Iter(Iterator[T]):
 
     def compare_by(self, other: Iterable[T], key: Unary[T, ST]) -> Ordering:
         """Compares `self` with the `other` iterable using the `key` function.
+
+        Example:
+            ```python
+            array = [13, 34, 42]
+            negative = [-x for x in array]
+
+            iterator = iter(array)
+
+            assert iterator.compare_by(negative, abs).is_equal()
+            ```
 
         Arguments:
             other: The other iterable.
@@ -1564,6 +1614,11 @@ class Iter(Iterator[T]):
     def length(self) -> int:
         """Computes the length of the iterator.
 
+        Example:
+            ```python
+            assert iter.repeat_exactly(7, 7).length() == 7
+            ```
+
         Warning:
             This function exhausts the underlying iterator!
 
@@ -1573,12 +1628,67 @@ class Iter(Iterator[T]):
         return iter_length(self.iterator)
 
     def first(self) -> T:
+        """Returns the first item in the iterator.
+
+        Example:
+            ```python
+            value = 69
+
+            iterator = iter.once(value)
+
+            assert iterator.first() is value
+            ```
+
+        Raises:
+            ValueError: The iterator is empty.
+
+        Returns:
+            The first item.
+        """
         return first(self.iterator)
 
     def first_or(self, default: V) -> Union[T, V]:
+        """Returns the first item in the iterator or the `default`.
+
+        Example:
+            ```python
+            value = 13
+
+            iterator = iter.once(value)
+
+            assert iterator.next_or(0) is value
+
+            assert not iterator.first_or(0)
+            ```
+
+        Returns:
+            The first item or the `default`.
+        """
         return first(self.iterator, default)
 
     def first_or_none(self) -> Optional[T]:
+        """Returns the first item or [`None`][None].
+
+        This is equivalent to:
+
+        ```python
+        iterator.next_or(None)
+        ```
+
+        Example:
+            ```python
+            value = 42
+
+            iterator = iter.once(value)
+
+            assert iterator.first_or_none() is value
+
+            assert iterator.first_or_none() is None
+            ```
+
+        Returns:
+            The first item or [`None`][None].
+        """
         return self.first_or(None)
 
     def last(self) -> T:
@@ -1600,6 +1710,29 @@ class Iter(Iterator[T]):
         return self.last_with_tail_or(None)
 
     def collect(self, function: Unary[Iterable[T], U]) -> U:
+        """Collects the iterator with the `function`.
+
+        This is equivalent to:
+
+        ```python
+        function(iterator.unwrap())
+        ```
+
+        Example:
+            ```python
+            array = [1, 2, 3]
+
+            iterator = iter(array)
+
+            assert iterator.collect(list) == array
+            ```
+
+        Arguments:
+            function: The function to use.
+
+        Returns:
+            The result of the `function` call.
+        """
         return function(self.iterator)
 
     def list(self) -> List[T]:

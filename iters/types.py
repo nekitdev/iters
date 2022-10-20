@@ -69,6 +69,17 @@ class Ordering(Enum):
         return self.is_less() or self.is_equal()
 
     def is_not_equal(self) -> bool:
+        """Checks if the ordering is not [`EQUAL`][iters.types.Ordering.EQUAL].
+
+        This is equivalent to:
+
+        ```python
+        not ordering.is_equal()
+        ```
+
+        Returns:
+            Whether the ordering is not [`EQUAL`][iters.types.Ordering.EQUAL].
+        """
         return not self.is_equal()
 
     def is_greater_or_equal(self) -> bool:
