@@ -1868,7 +1868,7 @@ class Iter(Iterator[T]):
         return list(self.iterator)
 
     def set(self: Iter[Q]) -> Set[Q]:
-        """Collects the iterator into the [`Set[T]`][set].
+        """Collects the iterator into the [`Set[Q]`][set].
 
         Warning:
             The items of the iterator have to be hashable for this method to work.
@@ -1880,12 +1880,12 @@ class Iter(Iterator[T]):
         ```
 
         Returns:
-            The [`Set[T]`][set] over the iterator.
+            The [`Set[Q]`][set] over the iterator.
         """
         return set(self.iterator)
 
     def tuple(self) -> DynamicTuple[T]:
-        """Collects the iterator into the [`tuple`][tuple].
+        """Collects the iterator into the [`Tuple[T, ...]`][tuple].
 
         This is equivalent to:
 
@@ -1899,7 +1899,7 @@ class Iter(Iterator[T]):
         return tuple(self.iterator)
 
     def dict(self: Iter[Tuple[Q, V]]) -> Dict[Q, V]:
-        """Collects the iterator into the [`dict`][dict].
+        """Collects the iterator into the [`Dict[Q, V]`][dict].
 
         Warning:
             The first item in each couple has to be hashable for this method to work.
