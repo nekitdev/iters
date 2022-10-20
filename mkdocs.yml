@@ -10,10 +10,11 @@ remote_branch: github-pages
 nav:
   - Index: "index.md"
   - Reference:
-    - Iters: "reference/iters.md"
-    - Async Iters: "reference/async_iters.md"
-    - Utils: "reference/utils.md"
-    - Async Utils: "reference/async_utils.md"
+    - Iterators: "reference/iters.md"
+    - Async Iterators: "reference/async_iters.md"
+    - Utilities: "reference/utils.md"
+    - Async Utilities: "reference/async_utils.md"
+    - Types: "reference/types.md"
   - Changelog: "changelog.md"
   - Security: "security.md"
   - Code of Conduct: "code_of_conduct.md"

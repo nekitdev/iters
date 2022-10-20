@@ -1490,18 +1490,52 @@ class Iter(Iterator[T]):
         return self.next()
 
     def unwrap(self) -> Iterator[T]:
+        """Unwraps the underlying iterator.
+
+        Returns:
+            The underlying iterator.
+        """
         return self.iterator
 
     def iter(self) -> Iter[T]:
+        """Simply returns `self`.
+
+        Returns:
+            `self`, the current iterator.
+        """
         return self
 
     def next(self) -> T:
+        """Returns the next item in the iterator.
+
+        Raises:
+            StopIteration: There are no more items left.
+
+        Returns:
+            The next item.
+        """
         return next(self.iterator)
 
     def next_or(self, default: V) -> Union[T, V]:
+        """Returns the next item or the provided `default`.
+
+        Returns:
+            The next item or the `default`.
+        """
         return next(self.iterator, default)
 
     def next_or_none(self) -> Optional[T]:
+        """Returns the next item or [`None`][None].
+
+        This is equivalent to:
+
+        ```python
+        iterator.next_or(None)
+        ```
+
+        Returns:
+            The next item or [`None`][None].
+        """
         return self.next_or(None)
 
     def compare(self: Iter[ST], other: Iterable[ST]) -> Ordering:
