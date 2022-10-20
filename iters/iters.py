@@ -1539,12 +1539,37 @@ class Iter(Iterator[T]):
         return self.next_or(None)
 
     def compare(self: Iter[ST], other: Iterable[ST]) -> Ordering:
+        """Compares `self` with the `other` iterable.
+
+        Arguments:
+            other: The other iterable.
+
+        Returns:
+            The [`Ordering`][iters.types.Ordering] representing the result.
+        """
         return compare(self.iterator, other)
 
     def compare_by(self, other: Iterable[T], key: Unary[T, ST]) -> Ordering:
+        """Compares `self` with the `other` iterable using the `key` function.
+
+        Arguments:
+            other: The other iterable.
+            key: The key function.
+
+        Returns:
+            The [`Ordering`][iters.types.Ordering] representing the result.
+        """
         return compare(self.iterator, other, key)
 
     def length(self) -> int:
+        """Computes the length of the iterator.
+
+        Warning:
+            This function exhausts the underlying iterator!
+
+        Returns:
+            The length of the iterator.
+        """
         return iter_length(self.iterator)
 
     def first(self) -> T:
