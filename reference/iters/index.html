@@ -500,8 +500,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#iters.iters.Iter.create_cartesian_product" class="md-nav__link">
+    create_cartesian_product()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#iters.iters.Iter.reversed" class="md-nav__link">
     reversed()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.function" class="md-nav__link">
+    function()
   </a>
   
 </li>
@@ -843,8 +857,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#iters.iters.Iter.create_cartesian_product" class="md-nav__link">
+    create_cartesian_product()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#iters.iters.Iter.reversed" class="md-nav__link">
     reversed()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.function" class="md-nav__link">
+    function()
   </a>
   
 </li>
@@ -3636,7 +3664,61 @@
 <span class="normal">2933</span>
 <span class="normal">2934</span>
 <span class="normal">2935</span>
-<span class="normal">2936</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">2936</span>
+<span class="normal">2937</span>
+<span class="normal">2938</span>
+<span class="normal">2939</span>
+<span class="normal">2940</span>
+<span class="normal">2941</span>
+<span class="normal">2942</span>
+<span class="normal">2943</span>
+<span class="normal">2944</span>
+<span class="normal">2945</span>
+<span class="normal">2946</span>
+<span class="normal">2947</span>
+<span class="normal">2948</span>
+<span class="normal">2949</span>
+<span class="normal">2950</span>
+<span class="normal">2951</span>
+<span class="normal">2952</span>
+<span class="normal">2953</span>
+<span class="normal">2954</span>
+<span class="normal">2955</span>
+<span class="normal">2956</span>
+<span class="normal">2957</span>
+<span class="normal">2958</span>
+<span class="normal">2959</span>
+<span class="normal">2960</span>
+<span class="normal">2961</span>
+<span class="normal">2962</span>
+<span class="normal">2963</span>
+<span class="normal">2964</span>
+<span class="normal">2965</span>
+<span class="normal">2966</span>
+<span class="normal">2967</span>
+<span class="normal">2968</span>
+<span class="normal">2969</span>
+<span class="normal">2970</span>
+<span class="normal">2971</span>
+<span class="normal">2972</span>
+<span class="normal">2973</span>
+<span class="normal">2974</span>
+<span class="normal">2975</span>
+<span class="normal">2976</span>
+<span class="normal">2977</span>
+<span class="normal">2978</span>
+<span class="normal">2979</span>
+<span class="normal">2980</span>
+<span class="normal">2981</span>
+<span class="normal">2982</span>
+<span class="normal">2983</span>
+<span class="normal">2984</span>
+<span class="normal">2985</span>
+<span class="normal">2986</span>
+<span class="normal">2987</span>
+<span class="normal">2988</span>
+<span class="normal">2989</span>
+<span class="normal">2990</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -4694,11 +4776,11 @@
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
-<span class="sd">            x = (0, 1)</span>
+<span class="sd">            x = (1, 3)</span>
 
 <span class="sd">            y = &quot;dev&quot;</span>
 
-<span class="sd">            iter.create_zip_longest_with(x, y, 0).list() == [(0, &quot;d&quot;), (1, &quot;e&quot;), (0, &quot;v&quot;)]</span>
+<span class="sd">            iter.create_zip_longest_with(x, y, 0).list() == [(1, &quot;d&quot;), (3, &quot;e&quot;), (0, &quot;v&quot;)]</span>
 <span class="sd">            ```</span>
 
 <span class="sd">        Arguments:</span>
@@ -4818,6 +4900,33 @@
     <span class="nd">@no_type_check</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Creates an iterator over the [*Cartesian product*][Cartesian product] of `iterables`.</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            It only makes sense to compute the product of finite iterables.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            a = (1, 2, 3)</span>
+<span class="sd">            b = &quot;xyz&quot;</span>
+
+<span class="sd">            c = [</span>
+<span class="sd">                (1, &quot;x&quot;), (1, &quot;y&quot;), (1, &quot;z&quot;),</span>
+<span class="sd">                (2, &quot;x&quot;), (2, &quot;y&quot;), (2, &quot;z&quot;),</span>
+<span class="sd">                (3, &quot;x&quot;), (3, &quot;y&quot;), (3, &quot;z&quot;),</span>
+<span class="sd">            ]</span>
+
+<span class="sd">            assert iter.create_cartesian_product(a, b).list() == c</span>
+<span class="sd">            ```</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            *iterables: Iterables to compute the Cartesian product of.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An [`Iter[Tuple[...]]`][iters.iters.Iter] over the Cartesian product of iterables.</span>
+
+<span class="sd">        [Cartesian product]: https://en.wikipedia.org/wiki/Cartesian_product</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cartesian_product</span><span class="p">(</span><span class="o">*</span><span class="n">iterables</span><span class="p">))</span>
 
     <span class="nd">@classmethod</span>
@@ -4839,6 +4948,33 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">sentinel</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            EMPTY_BYTES = bytes()</span>
+
+<span class="sd">            READ_BINARY = &quot;rb&quot;</span>
+
+<span class="sd">            CHUNK_SIZE = 65536</span>
+
+<span class="sd">            def read_chunk(file: BinaryIO) -&gt; Nullary[bytes]:</span>
+<span class="sd">                def reader(size: int = CHUNK_SIZE) -&gt; bytes:</span>
+<span class="sd">                    return file.read(size)</span>
+
+<span class="sd">                return reader</span>
+
+<span class="sd">            with path.open(READ_BINARY) as file:</span>
+<span class="sd">                iter.function(read_chunk(file), EMPTY_BYTES).for_each(process_chunk)</span>
+<span class="sd">            ```</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            function: The function to iterate.</span>
+<span class="sd">            sentinel: The sentinel to stop at.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An [`Iter[T]`][iters.iters.Iter] over function calls until the `sentinel` is met.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">iter_function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">sentinel</span><span class="p">))</span>
 
     <span class="nd">@classmethod</span>
@@ -9318,11 +9454,11 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
 <details class="example">
   <summary>Example</summary>
-  <div class="highlight"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <div class="highlight"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="s2">&quot;dev&quot;</span>
 
-<span class="nb">iter</span><span class="o">.</span><span class="n">create_zip_longest_with</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)]</span>
+<span class="nb">iter</span><span class="o">.</span><span class="n">create_zip_longest_with</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)]</span>
 </code></pre></div>
 </details>
   <p><strong>Parameters:</strong></p>
@@ -9408,11 +9544,11 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
-<span class="sd">        x = (0, 1)</span>
+<span class="sd">        x = (1, 3)</span>
 
 <span class="sd">        y = &quot;dev&quot;</span>
 
-<span class="sd">        iter.create_zip_longest_with(x, y, 0).list() == [(0, &quot;d&quot;), (1, &quot;e&quot;), (0, &quot;v&quot;)]</span>
+<span class="sd">        iter.create_zip_longest_with(x, y, 0).list() == [(1, &quot;d&quot;), (3, &quot;e&quot;), (0, &quot;v&quot;)]</span>
 <span class="sd">        ```</span>
 
 <span class="sd">    Arguments:</span>
@@ -9422,6 +9558,154 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">        An [`Iter[Tuple[...]]`][iters.iters.Iter] over zipped tuples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">zip_longest</span><span class="p">(</span><span class="o">*</span><span class="n">iterables</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.create_cartesian_product" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_cartesian_product</span><span class="p">(</span><span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Creates an iterator over the [<em>Cartesian product</em>][Cartesian product] of <code>iterables</code>.</p>
+
+<details class="warning">
+  <summary>Warning</summary>
+  <p>It only makes sense to compute the product of finite iterables.</p>
+</details>
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="s2">&quot;xyz&quot;</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="k">assert</span> <span class="nb">iter</span><span class="o">.</span><span class="n">create_cartesian_product</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="n">c</span>
+</code></pre></div>
+</details>
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>*iterables</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" title="typing.Iterable" href="https://docs.python.org/3/library/typing.html#typing.Iterable">Iterable</a>[<a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</code>
+          </td>
+          <td><p>Iterables to compute the Cartesian product of.</p></td>
+          <td>
+                <code>()</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="iters.iters.Iter" href="#iters.iters.Iter">Iter</a>[<span title="iters.typing.DynamicTuple">DynamicTuple</span>[<a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]]</code>
+          </td>
+          <td><p>An <a class="autorefs autorefs-internal" href="#iters.iters.Iter"><code>Iter[Tuple[...]]</code></a> over the Cartesian product of iterables.</p></td>
+        </tr>
+    </tbody>
+  </table>
+      
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1391</span>
+<span class="normal">1392</span>
+<span class="normal">1393</span>
+<span class="normal">1394</span>
+<span class="normal">1395</span>
+<span class="normal">1396</span>
+<span class="normal">1397</span>
+<span class="normal">1398</span>
+<span class="normal">1399</span>
+<span class="normal">1400</span>
+<span class="normal">1401</span>
+<span class="normal">1402</span>
+<span class="normal">1403</span>
+<span class="normal">1404</span>
+<span class="normal">1405</span>
+<span class="normal">1406</span>
+<span class="normal">1407</span>
+<span class="normal">1408</span>
+<span class="normal">1409</span>
+<span class="normal">1410</span>
+<span class="normal">1411</span>
+<span class="normal">1412</span>
+<span class="normal">1413</span>
+<span class="normal">1414</span>
+<span class="normal">1415</span>
+<span class="normal">1416</span>
+<span class="normal">1417</span>
+<span class="normal">1418</span>
+<span class="normal">1419</span>
+<span class="normal">1420</span>
+<span class="normal">1421</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
+<span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Creates an iterator over the [*Cartesian product*][Cartesian product] of `iterables`.</span>
+
+<span class="sd">    Warning:</span>
+<span class="sd">        It only makes sense to compute the product of finite iterables.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        a = (1, 2, 3)</span>
+<span class="sd">        b = &quot;xyz&quot;</span>
+
+<span class="sd">        c = [</span>
+<span class="sd">            (1, &quot;x&quot;), (1, &quot;y&quot;), (1, &quot;z&quot;),</span>
+<span class="sd">            (2, &quot;x&quot;), (2, &quot;y&quot;), (2, &quot;z&quot;),</span>
+<span class="sd">            (3, &quot;x&quot;), (3, &quot;y&quot;), (3, &quot;z&quot;),</span>
+<span class="sd">        ]</span>
+
+<span class="sd">        assert iter.create_cartesian_product(a, b).list() == c</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        *iterables: Iterables to compute the Cartesian product of.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An [`Iter[Tuple[...]]`][iters.iters.Iter] over the Cartesian product of iterables.</span>
+
+<span class="sd">    [Cartesian product]: https://en.wikipedia.org/wiki/Cartesian_product</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cartesian_product</span><span class="p">(</span><span class="o">*</span><span class="n">iterables</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -9495,22 +9779,22 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1396</span>
-<span class="normal">1397</span>
-<span class="normal">1398</span>
-<span class="normal">1399</span>
-<span class="normal">1400</span>
-<span class="normal">1401</span>
-<span class="normal">1402</span>
-<span class="normal">1403</span>
-<span class="normal">1404</span>
-<span class="normal">1405</span>
-<span class="normal">1406</span>
-<span class="normal">1407</span>
-<span class="normal">1408</span>
-<span class="normal">1409</span>
-<span class="normal">1410</span>
-<span class="normal">1411</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1423</span>
+<span class="normal">1424</span>
+<span class="normal">1425</span>
+<span class="normal">1426</span>
+<span class="normal">1427</span>
+<span class="normal">1428</span>
+<span class="normal">1429</span>
+<span class="normal">1430</span>
+<span class="normal">1431</span>
+<span class="normal">1432</span>
+<span class="normal">1433</span>
+<span class="normal">1434</span>
+<span class="normal">1435</span>
+<span class="normal">1436</span>
+<span class="normal">1437</span>
+<span class="normal">1438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">reversed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">reversible</span><span class="p">:</span> <span class="n">Reversible</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over the reversed `reversible`.</span>
 
@@ -9526,6 +9810,161 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">        An [`Iter[T]`][iters.iters.Iter] over the reversed reversible.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">standard_reversed</span><span class="p">(</span><span class="n">reversible</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.function" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">function</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">sentinel</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Creates an iterator over <code>function</code> call results until it returns the <code>sentinel</code>.</p>
+
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">EMPTY_BYTES</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">()</span>
+
+<span class="n">READ_BINARY</span> <span class="o">=</span> <span class="s2">&quot;rb&quot;</span>
+
+<span class="n">CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">65536</span>
+
+<span class="k">def</span> <span class="nf">read_chunk</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Nullary</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">reader</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CHUNK_SIZE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">reader</span>
+
+<span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">READ_BINARY</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="nb">iter</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">read_chunk</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="n">EMPTY_BYTES</span><span class="p">)</span><span class="o">.</span><span class="n">for_each</span><span class="p">(</span><span class="n">process_chunk</span><span class="p">)</span>
+</code></pre></div>
+</details>
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>function</code></td>
+          <td>
+                <code><span title="iters.typing.Nullary">Nullary</span>[<span title="iters.iters.T">T</span>]</code>
+          </td>
+          <td><p>The function to iterate.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sentinel</code></td>
+          <td>
+                <code><span title="iters.iters.V">V</span></code>
+          </td>
+          <td><p>The sentinel to stop at.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="iters.iters.Iter" href="#iters.iters.Iter">Iter</a>[<span title="iters.iters.T">T</span>]</code>
+          </td>
+          <td><p>An <a class="autorefs autorefs-internal" href="#iters.iters.Iter"><code>Iter[T]</code></a> over function calls until the <code>sentinel</code> is met.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1440</span>
+<span class="normal">1441</span>
+<span class="normal">1442</span>
+<span class="normal">1443</span>
+<span class="normal">1444</span>
+<span class="normal">1445</span>
+<span class="normal">1446</span>
+<span class="normal">1447</span>
+<span class="normal">1448</span>
+<span class="normal">1449</span>
+<span class="normal">1450</span>
+<span class="normal">1451</span>
+<span class="normal">1452</span>
+<span class="normal">1453</span>
+<span class="normal">1454</span>
+<span class="normal">1455</span>
+<span class="normal">1456</span>
+<span class="normal">1457</span>
+<span class="normal">1458</span>
+<span class="normal">1459</span>
+<span class="normal">1460</span>
+<span class="normal">1461</span>
+<span class="normal">1462</span>
+<span class="normal">1463</span>
+<span class="normal">1464</span>
+<span class="normal">1465</span>
+<span class="normal">1466</span>
+<span class="normal">1467</span>
+<span class="normal">1468</span>
+<span class="normal">1469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">sentinel</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        EMPTY_BYTES = bytes()</span>
+
+<span class="sd">        READ_BINARY = &quot;rb&quot;</span>
+
+<span class="sd">        CHUNK_SIZE = 65536</span>
+
+<span class="sd">        def read_chunk(file: BinaryIO) -&gt; Nullary[bytes]:</span>
+<span class="sd">            def reader(size: int = CHUNK_SIZE) -&gt; bytes:</span>
+<span class="sd">                return file.read(size)</span>
+
+<span class="sd">            return reader</span>
+
+<span class="sd">        with path.open(READ_BINARY) as file:</span>
+<span class="sd">            iter.function(read_chunk(file), EMPTY_BYTES).for_each(process_chunk)</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        function: The function to iterate.</span>
+<span class="sd">        sentinel: The sentinel to stop at.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An [`Iter[T]`][iters.iters.Iter] over function calls until the `sentinel` is met.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">iter_function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">sentinel</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
