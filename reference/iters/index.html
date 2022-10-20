@@ -4484,8 +4484,7 @@
 <span class="normal">3389</span>
 <span class="normal">3390</span>
 <span class="normal">3391</span>
-<span class="normal">3392</span>
-<span class="normal">3393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">3392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -5667,7 +5666,8 @@
     <span class="nd">@no_type_check</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator over the [*Cartesian product*][Cartesian product] of `iterables`.</span>
+        <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="sd">        [*Cartesian product*](https://en.wikipedia.org/wiki/Cartesian_product) of `iterables`.</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            It only makes sense to compute the product of finite iterables.</span>
@@ -5691,8 +5691,6 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An [`Iter[Tuple[...]]`][iters.iters.Iter] over the Cartesian product of iterables.</span>
-
-<span class="sd">        [Cartesian product]: https://en.wikipedia.org/wiki/Cartesian_product</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cartesian_product</span><span class="p">(</span><span class="o">*</span><span class="n">iterables</span><span class="p">))</span>
 
@@ -10750,7 +10748,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
   <div class="doc doc-contents ">
   
-      <p>Creates an iterator over the [<em>Cartesian product</em>][Cartesian product] of <code>iterables</code>.</p>
+      <p>Creates an iterator over the
+<a href="https://en.wikipedia.org/wiki/Cartesian_product"><em>Cartesian product</em></a> of <code>iterables</code>.</p>
 
 <details class="warning">
   <summary>Warning</summary>
@@ -10811,7 +10810,6 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
         </tr>
     </tbody>
   </table>
-      
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
@@ -10844,11 +10842,11 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1417</span>
 <span class="normal">1418</span>
 <span class="normal">1419</span>
-<span class="normal">1420</span>
-<span class="normal">1421</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
+<span class="normal">1420</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator over the [*Cartesian product*][Cartesian product] of `iterables`.</span>
+    <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="sd">    [*Cartesian product*](https://en.wikipedia.org/wiki/Cartesian_product) of `iterables`.</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        It only makes sense to compute the product of finite iterables.</span>
@@ -10872,8 +10870,6 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
 <span class="sd">    Returns:</span>
 <span class="sd">        An [`Iter[Tuple[...]]`][iters.iters.Iter] over the Cartesian product of iterables.</span>
-
-<span class="sd">    [Cartesian product]: https://en.wikipedia.org/wiki/Cartesian_product</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cartesian_product</span><span class="p">(</span><span class="o">*</span><span class="n">iterables</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
@@ -10949,7 +10945,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1423</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1422</span>
+<span class="normal">1423</span>
 <span class="normal">1424</span>
 <span class="normal">1425</span>
 <span class="normal">1426</span>
@@ -10963,8 +10960,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1434</span>
 <span class="normal">1435</span>
 <span class="normal">1436</span>
-<span class="normal">1437</span>
-<span class="normal">1438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">1437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">reversed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">reversible</span><span class="p">:</span> <span class="n">Reversible</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over the reversed `reversible`.</span>
 
@@ -11076,7 +11072,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1440</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1439</span>
+<span class="normal">1440</span>
 <span class="normal">1441</span>
 <span class="normal">1442</span>
 <span class="normal">1443</span>
@@ -11104,8 +11101,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1465</span>
 <span class="normal">1466</span>
 <span class="normal">1467</span>
-<span class="normal">1468</span>
-<span class="normal">1469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">1468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">sentinel</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
 
@@ -11175,13 +11171,13 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1492</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1491</span>
+<span class="normal">1492</span>
 <span class="normal">1493</span>
 <span class="normal">1494</span>
 <span class="normal">1495</span>
 <span class="normal">1496</span>
-<span class="normal">1497</span>
-<span class="normal">1498</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1497</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
 
 <span class="sd">    Returns:</span>
@@ -11228,13 +11224,13 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1500</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1499</span>
+<span class="normal">1500</span>
 <span class="normal">1501</span>
 <span class="normal">1502</span>
 <span class="normal">1503</span>
 <span class="normal">1504</span>
-<span class="normal">1505</span>
-<span class="normal">1506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1505</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
 
 <span class="sd">    Returns:</span>
@@ -11308,7 +11304,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1508</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1507</span>
+<span class="normal">1508</span>
 <span class="normal">1509</span>
 <span class="normal">1510</span>
 <span class="normal">1511</span>
@@ -11325,8 +11322,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1522</span>
 <span class="normal">1523</span>
 <span class="normal">1524</span>
-<span class="normal">1525</span>
-<span class="normal">1526</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -11396,7 +11392,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1528</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1527</span>
+<span class="normal">1528</span>
 <span class="normal">1529</span>
 <span class="normal">1530</span>
 <span class="normal">1531</span>
@@ -11412,8 +11409,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1541</span>
 <span class="normal">1542</span>
 <span class="normal">1543</span>
-<span class="normal">1544</span>
-<span class="normal">1545</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
 
 <span class="sd">    Example:</span>
@@ -11485,7 +11481,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1547</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1546</span>
+<span class="normal">1547</span>
 <span class="normal">1548</span>
 <span class="normal">1549</span>
 <span class="normal">1550</span>
@@ -11507,8 +11504,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1566</span>
 <span class="normal">1567</span>
 <span class="normal">1568</span>
-<span class="normal">1569</span>
-<span class="normal">1570</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -11605,7 +11601,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1572</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1571</span>
+<span class="normal">1572</span>
 <span class="normal">1573</span>
 <span class="normal">1574</span>
 <span class="normal">1575</span>
@@ -11622,8 +11619,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1586</span>
 <span class="normal">1587</span>
 <span class="normal">1588</span>
-<span class="normal">1589</span>
-<span class="normal">1590</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">ST</span><span class="p">],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
+<span class="normal">1589</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">ST</span><span class="p">],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable.</span>
 
 <span class="sd">    Example:</span>
@@ -11726,7 +11722,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1592</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1591</span>
+<span class="normal">1592</span>
 <span class="normal">1593</span>
 <span class="normal">1594</span>
 <span class="normal">1595</span>
@@ -11745,8 +11742,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1608</span>
 <span class="normal">1609</span>
 <span class="normal">1610</span>
-<span class="normal">1611</span>
-<span class="normal">1612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
+<span class="normal">1611</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable using the `key` function.</span>
 
 <span class="sd">    Example:</span>
@@ -11816,7 +11812,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1614</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1613</span>
+<span class="normal">1614</span>
 <span class="normal">1615</span>
 <span class="normal">1616</span>
 <span class="normal">1617</span>
@@ -11829,8 +11826,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1624</span>
 <span class="normal">1625</span>
 <span class="normal">1626</span>
-<span class="normal">1627</span>
-<span class="normal">1628</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">1627</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Computes the length of the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -11912,7 +11908,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1630</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1629</span>
+<span class="normal">1630</span>
 <span class="normal">1631</span>
 <span class="normal">1632</span>
 <span class="normal">1633</span>
@@ -11929,8 +11926,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1644</span>
 <span class="normal">1645</span>
 <span class="normal">1646</span>
-<span class="normal">1647</span>
-<span class="normal">1648</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1647</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -12000,7 +11996,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1650</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1649</span>
+<span class="normal">1650</span>
 <span class="normal">1651</span>
 <span class="normal">1652</span>
 <span class="normal">1653</span>
@@ -12016,8 +12013,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1663</span>
 <span class="normal">1664</span>
 <span class="normal">1665</span>
-<span class="normal">1666</span>
-<span class="normal">1667</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1666</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator or the `default`.</span>
 
 <span class="sd">    Example:</span>
@@ -12089,7 +12085,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1669</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1668</span>
+<span class="normal">1669</span>
 <span class="normal">1670</span>
 <span class="normal">1671</span>
 <span class="normal">1672</span>
@@ -12111,8 +12108,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1688</span>
 <span class="normal">1689</span>
 <span class="normal">1690</span>
-<span class="normal">1691</span>
-<span class="normal">1692</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1691</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the first item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -12203,7 +12199,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1694</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1693</span>
+<span class="normal">1694</span>
 <span class="normal">1695</span>
 <span class="normal">1696</span>
 <span class="normal">1697</span>
@@ -12220,8 +12217,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1708</span>
 <span class="normal">1709</span>
 <span class="normal">1710</span>
-<span class="normal">1711</span>
-<span class="normal">1712</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1711</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -12291,7 +12287,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1714</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1713</span>
+<span class="normal">1714</span>
 <span class="normal">1715</span>
 <span class="normal">1716</span>
 <span class="normal">1717</span>
@@ -12307,8 +12304,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1727</span>
 <span class="normal">1728</span>
 <span class="normal">1729</span>
-<span class="normal">1730</span>
-<span class="normal">1731</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">    Example:</span>
@@ -12380,7 +12376,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1733</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1732</span>
+<span class="normal">1733</span>
 <span class="normal">1734</span>
 <span class="normal">1735</span>
 <span class="normal">1736</span>
@@ -12402,8 +12399,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1752</span>
 <span class="normal">1753</span>
 <span class="normal">1754</span>
-<span class="normal">1755</span>
-<span class="normal">1756</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1755</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -12498,7 +12494,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1758</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1757</span>
+<span class="normal">1758</span>
 <span class="normal">1759</span>
 <span class="normal">1760</span>
 <span class="normal">1761</span>
@@ -12518,8 +12515,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1775</span>
 <span class="normal">1776</span>
 <span class="normal">1777</span>
-<span class="normal">1778</span>
-<span class="normal">1779</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1778</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">    Note:</span>
@@ -12596,7 +12592,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1781</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1780</span>
+<span class="normal">1781</span>
 <span class="normal">1782</span>
 <span class="normal">1783</span>
 <span class="normal">1784</span>
@@ -12615,8 +12612,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1797</span>
 <span class="normal">1798</span>
 <span class="normal">1799</span>
-<span class="normal">1800</span>
-<span class="normal">1801</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1800</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">    Note:</span>
@@ -12695,7 +12691,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1803</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1802</span>
+<span class="normal">1803</span>
 <span class="normal">1804</span>
 <span class="normal">1805</span>
 <span class="normal">1806</span>
@@ -12720,8 +12717,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1825</span>
 <span class="normal">1826</span>
 <span class="normal">1827</span>
-<span class="normal">1828</span>
-<span class="normal">1829</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1828</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">    Note:</span>
@@ -12824,7 +12820,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1831</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1830</span>
+<span class="normal">1831</span>
 <span class="normal">1832</span>
 <span class="normal">1833</span>
 <span class="normal">1834</span>
@@ -12847,8 +12844,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1851</span>
 <span class="normal">1852</span>
 <span class="normal">1853</span>
-<span class="normal">1854</span>
-<span class="normal">1855</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">:</span>
+<span class="normal">1854</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator with the `function`.</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -12916,7 +12912,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1857</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1856</span>
+<span class="normal">1857</span>
 <span class="normal">1858</span>
 <span class="normal">1859</span>
 <span class="normal">1860</span>
@@ -12927,8 +12924,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1865</span>
 <span class="normal">1866</span>
 <span class="normal">1867</span>
-<span class="normal">1868</span>
-<span class="normal">1869</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1868</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`List[T]`][list].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -12988,7 +12984,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1871</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1870</span>
+<span class="normal">1871</span>
 <span class="normal">1872</span>
 <span class="normal">1873</span>
 <span class="normal">1874</span>
@@ -13002,8 +12999,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1882</span>
 <span class="normal">1883</span>
 <span class="normal">1884</span>
-<span class="normal">1885</span>
-<span class="normal">1886</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
+<span class="normal">1885</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[T]`][set].</span>
 
 <span class="sd">    Warning:</span>
@@ -13062,7 +13058,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1888</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1887</span>
+<span class="normal">1888</span>
 <span class="normal">1889</span>
 <span class="normal">1890</span>
 <span class="normal">1891</span>
@@ -13073,8 +13070,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1896</span>
 <span class="normal">1897</span>
 <span class="normal">1898</span>
-<span class="normal">1899</span>
-<span class="normal">1900</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1899</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`tuple`][tuple].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -13134,7 +13130,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1902</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1901</span>
+<span class="normal">1902</span>
 <span class="normal">1903</span>
 <span class="normal">1904</span>
 <span class="normal">1905</span>
@@ -13148,8 +13145,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1913</span>
 <span class="normal">1914</span>
 <span class="normal">1915</span>
-<span class="normal">1916</span>
-<span class="normal">1917</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1916</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`dict`][dict].</span>
 
 <span class="sd">    Warning:</span>
@@ -13212,7 +13208,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1919</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1918</span>
+<span class="normal">1919</span>
 <span class="normal">1920</span>
 <span class="normal">1921</span>
 <span class="normal">1922</span>
@@ -13226,8 +13223,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1930</span>
 <span class="normal">1931</span>
 <span class="normal">1932</span>
-<span class="normal">1933</span>
-<span class="normal">1934</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
+<span class="normal">1933</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator using the `string`.</span>
 
 <span class="sd">    Warning:</span>
@@ -13290,7 +13286,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1936</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1935</span>
+<span class="normal">1936</span>
 <span class="normal">1937</span>
 <span class="normal">1938</span>
 <span class="normal">1939</span>
@@ -13304,8 +13301,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1947</span>
 <span class="normal">1948</span>
 <span class="normal">1949</span>
-<span class="normal">1950</span>
-<span class="normal">1951</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">1950</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`str`][str] string.</span>
 
 <span class="sd">    Warning:</span>
@@ -13368,7 +13364,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1953</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1952</span>
+<span class="normal">1953</span>
 <span class="normal">1954</span>
 <span class="normal">1955</span>
 <span class="normal">1956</span>
@@ -13382,8 +13379,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1964</span>
 <span class="normal">1965</span>
 <span class="normal">1966</span>
-<span class="normal">1967</span>
-<span class="normal">1968</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="normal">1967</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`bytes`][bytes] string.</span>
 
 <span class="sd">    Warning:</span>
