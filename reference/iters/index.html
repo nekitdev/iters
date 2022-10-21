@@ -317,6 +317,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#iters.iters.iter" class="md-nav__link">
+    iter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iters.iters.reversed" class="md-nav__link">
+    reversed
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#iters.iters.Iter" class="md-nav__link">
     Iter
   </a>
@@ -691,6 +705,13 @@
           <li class="md-nav__item">
   <a href="#iters.iters.Iter.bytes" class="md-nav__link">
     bytes()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.cartesian_power" class="md-nav__link">
+    cartesian_power()
   </a>
   
 </li>
@@ -863,6 +884,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#iters.iters.iter" class="md-nav__link">
+    iter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iters.iters.reversed" class="md-nav__link">
+    reversed
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#iters.iters.Iter" class="md-nav__link">
     Iter
   </a>
@@ -1241,6 +1276,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.cartesian_power" class="md-nav__link">
+    cartesian_power()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1283,6 +1325,48 @@
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="iters.iters.iter" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">iter</span> <span class="o">=</span> <span class="n">Iter</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>An alias of <a class="autorefs autorefs-internal" href="#iters.iters.Iter"><code>Iter</code></a>.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="iters.iters.reversed" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">reversed</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">reversed</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>An alias of <a class="autorefs autorefs-internal" href="#iters.iters.Iter.reversed"><code>iter.reversed</code></a>.</p>
+  </div>
+
+</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4541,7 +4625,29 @@
 <span class="normal">3446</span>
 <span class="normal">3447</span>
 <span class="normal">3448</span>
-<span class="normal">3449</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">3449</span>
+<span class="normal">3450</span>
+<span class="normal">3451</span>
+<span class="normal">3452</span>
+<span class="normal">3453</span>
+<span class="normal">3454</span>
+<span class="normal">3455</span>
+<span class="normal">3456</span>
+<span class="normal">3457</span>
+<span class="normal">3458</span>
+<span class="normal">3459</span>
+<span class="normal">3460</span>
+<span class="normal">3461</span>
+<span class="normal">3462</span>
+<span class="normal">3463</span>
+<span class="normal">3464</span>
+<span class="normal">3465</span>
+<span class="normal">3466</span>
+<span class="normal">3467</span>
+<span class="normal">3468</span>
+<span class="normal">3469</span>
+<span class="normal">3470</span>
+<span class="normal">3471</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -7622,6 +7728,28 @@
         <span class="o">...</span>
 
     <span class="k">def</span> <span class="nf">cartesian_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="sd">        [*Cartesian power*](https://en.wikipedia.org/wiki/Cartesian_product) of the iterator.</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            It only makes sense to compute the Cartesian power of finite iterators.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            bits = (0, 1)</span>
+<span class="sd">            result = ((0, 0), (0, 1), (1, 0), (1, 1))</span>
+
+<span class="sd">            iterator = iter(bits)</span>
+
+<span class="sd">            assert iterator.cartesian_power(2).tuple() == result</span>
+<span class="sd">            ```</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            power: The power to &quot;raise&quot; the iterator to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An [`Iter[Tuple[...]]`] over the Cartesian power of the iterator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cartesian_power</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
@@ -13680,6 +13808,132 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">        The joined [`bytes`][bytes] string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EMPTY_BYTES</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.cartesian_power" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cartesian_power</span><span class="p">(</span><span class="n">power</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Creates an iterator over the
+<a href="https://en.wikipedia.org/wiki/Cartesian_product"><em>Cartesian power</em></a> of the iterator.</p>
+
+<details class="warning">
+  <summary>Warning</summary>
+  <p>It only makes sense to compute the Cartesian power of finite iterators.</p>
+</details>
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">bits</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">cartesian_power</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">tuple</span><span class="p">()</span> <span class="o">==</span> <span class="n">result</span>
+</code></pre></div>
+</details>
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>power</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td><p>The power to "raise" the iterator to.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="iters.iters.Iter" href="#iters.iters.Iter">Iter</a>[<span title="iters.typing.DynamicTuple">DynamicTuple</span>[<span title="iters.iters.T">T</span>]]</code>
+          </td>
+          <td><p>An [<code>Iter[Tuple[...]]</code>] over the Cartesian power of the iterator.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3292</span>
+<span class="normal">3293</span>
+<span class="normal">3294</span>
+<span class="normal">3295</span>
+<span class="normal">3296</span>
+<span class="normal">3297</span>
+<span class="normal">3298</span>
+<span class="normal">3299</span>
+<span class="normal">3300</span>
+<span class="normal">3301</span>
+<span class="normal">3302</span>
+<span class="normal">3303</span>
+<span class="normal">3304</span>
+<span class="normal">3305</span>
+<span class="normal">3306</span>
+<span class="normal">3307</span>
+<span class="normal">3308</span>
+<span class="normal">3309</span>
+<span class="normal">3310</span>
+<span class="normal">3311</span>
+<span class="normal">3312</span>
+<span class="normal">3313</span>
+<span class="normal">3314</span>
+<span class="normal">3315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cartesian_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="sd">    [*Cartesian power*](https://en.wikipedia.org/wiki/Cartesian_product) of the iterator.</span>
+
+<span class="sd">    Warning:</span>
+<span class="sd">        It only makes sense to compute the Cartesian power of finite iterators.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        bits = (0, 1)</span>
+<span class="sd">        result = ((0, 0), (0, 1), (1, 0), (1, 1))</span>
+
+<span class="sd">        iterator = iter(bits)</span>
+
+<span class="sd">        assert iterator.cartesian_power(2).tuple() == result</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        power: The power to &quot;raise&quot; the iterator to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An [`Iter[Tuple[...]]`] over the Cartesian power of the iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cartesian_power</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
