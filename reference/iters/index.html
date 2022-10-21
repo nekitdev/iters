@@ -4484,7 +4484,64 @@
 <span class="normal">3389</span>
 <span class="normal">3390</span>
 <span class="normal">3391</span>
-<span class="normal">3392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">3392</span>
+<span class="normal">3393</span>
+<span class="normal">3394</span>
+<span class="normal">3395</span>
+<span class="normal">3396</span>
+<span class="normal">3397</span>
+<span class="normal">3398</span>
+<span class="normal">3399</span>
+<span class="normal">3400</span>
+<span class="normal">3401</span>
+<span class="normal">3402</span>
+<span class="normal">3403</span>
+<span class="normal">3404</span>
+<span class="normal">3405</span>
+<span class="normal">3406</span>
+<span class="normal">3407</span>
+<span class="normal">3408</span>
+<span class="normal">3409</span>
+<span class="normal">3410</span>
+<span class="normal">3411</span>
+<span class="normal">3412</span>
+<span class="normal">3413</span>
+<span class="normal">3414</span>
+<span class="normal">3415</span>
+<span class="normal">3416</span>
+<span class="normal">3417</span>
+<span class="normal">3418</span>
+<span class="normal">3419</span>
+<span class="normal">3420</span>
+<span class="normal">3421</span>
+<span class="normal">3422</span>
+<span class="normal">3423</span>
+<span class="normal">3424</span>
+<span class="normal">3425</span>
+<span class="normal">3426</span>
+<span class="normal">3427</span>
+<span class="normal">3428</span>
+<span class="normal">3429</span>
+<span class="normal">3430</span>
+<span class="normal">3431</span>
+<span class="normal">3432</span>
+<span class="normal">3433</span>
+<span class="normal">3434</span>
+<span class="normal">3435</span>
+<span class="normal">3436</span>
+<span class="normal">3437</span>
+<span class="normal">3438</span>
+<span class="normal">3439</span>
+<span class="normal">3440</span>
+<span class="normal">3441</span>
+<span class="normal">3442</span>
+<span class="normal">3443</span>
+<span class="normal">3444</span>
+<span class="normal">3445</span>
+<span class="normal">3446</span>
+<span class="normal">3447</span>
+<span class="normal">3448</span>
+<span class="normal">3449</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -6137,6 +6194,15 @@
 <span class="sd">        list(iterator.unwrap())</span>
 <span class="sd">        ```</span>
 
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            array = [1, 2, 3]</span>
+
+<span class="sd">            iterator = iter(array)</span>
+
+<span class="sd">            assert iterator.list() == array</span>
+<span class="sd">            ```</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            The [`List[T]`][list] over the iterator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6154,6 +6220,15 @@
 <span class="sd">        set(iterator.unwrap())</span>
 <span class="sd">        ```</span>
 
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            set = {13, 42, 69}</span>
+
+<span class="sd">            iterator = iter(set)</span>
+
+<span class="sd">            assert iterator.set() == set</span>
+<span class="sd">            ```</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            The [`Set[Q]`][set] over the iterator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6167,6 +6242,15 @@
 <span class="sd">        ```python</span>
 <span class="sd">        tuple(iterator.unwrap())</span>
 <span class="sd">        ```</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            tuple = (-1, 0, 1)</span>
+
+<span class="sd">            iterator = iter(tuple)</span>
+
+<span class="sd">            assert iterator.tuple() == tuple</span>
+<span class="sd">            ```</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The [`Tuple[T, ...]`][tuple] over the iterator.</span>
@@ -6185,6 +6269,15 @@
 <span class="sd">        dict(iterator.unwrap())</span>
 <span class="sd">        ```</span>
 
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            mapping = {13: &quot;nekit&quot;, 42: &quot;dev&quot;}</span>
+
+<span class="sd">            iterator = iter(mapping.items())</span>
+
+<span class="sd">            assert iterator.dict() == mapping</span>
+<span class="sd">            ```</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            The [`Dict[Q, V]`][dict] over the iterator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6202,6 +6295,17 @@
 <span class="sd">        string.join(iterator.unwrap())</span>
 <span class="sd">        ```</span>
 
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            result = &quot;melody, nekit&quot;</span>
+
+<span class="sd">            string = &quot;, &quot;</span>
+
+<span class="sd">            iterator = iter(result.split(string))</span>
+
+<span class="sd">            assert iterator.join(string) == result</span>
+<span class="sd">            ```</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            The joined [`str`][str] or [`bytes`][bytes] depending on the `string` type.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6218,6 +6322,16 @@
 <span class="sd">        ```python</span>
 <span class="sd">        iterator.join(EMPTY_STRING)</span>
 <span class="sd">        ```</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            strings = (&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)</span>
+<span class="sd">            string = &quot;xyz&quot;</span>
+
+<span class="sd">            iterator = iter(strings)</span>
+
+<span class="sd">            assert iterator.string() == string</span>
+<span class="sd">            ```</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The joined [`str`][str] string.</span>
@@ -12892,6 +13006,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <div class="highlight"><pre><span></span><code><span class="nb">list</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">unwrap</span><span class="p">())</span>
 </code></pre></div>
 
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="n">array</span>
+</code></pre></div>
+</details>
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -12924,7 +13047,16 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1865</span>
 <span class="normal">1866</span>
 <span class="normal">1867</span>
-<span class="normal">1868</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1868</span>
+<span class="normal">1869</span>
+<span class="normal">1870</span>
+<span class="normal">1871</span>
+<span class="normal">1872</span>
+<span class="normal">1873</span>
+<span class="normal">1874</span>
+<span class="normal">1875</span>
+<span class="normal">1876</span>
+<span class="normal">1877</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`List[T]`][list].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -12932,6 +13064,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">    ```python</span>
 <span class="sd">    list(iterator.unwrap())</span>
 <span class="sd">    ```</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        array = [1, 2, 3]</span>
+
+<span class="sd">        iterator = iter(array)</span>
+
+<span class="sd">        assert iterator.list() == array</span>
+<span class="sd">        ```</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The [`List[T]`][list] over the iterator.</span>
@@ -12964,6 +13105,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <div class="highlight"><pre><span></span><code><span class="nb">set</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">unwrap</span><span class="p">())</span>
 </code></pre></div>
 
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="nb">set</span> <span class="o">=</span> <span class="p">{</span><span class="mi">13</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">69</span><span class="p">}</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="o">==</span> <span class="nb">set</span>
+</code></pre></div>
+</details>
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -12984,22 +13134,31 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1870</span>
-<span class="normal">1871</span>
-<span class="normal">1872</span>
-<span class="normal">1873</span>
-<span class="normal">1874</span>
-<span class="normal">1875</span>
-<span class="normal">1876</span>
-<span class="normal">1877</span>
-<span class="normal">1878</span>
-<span class="normal">1879</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1879</span>
 <span class="normal">1880</span>
 <span class="normal">1881</span>
 <span class="normal">1882</span>
 <span class="normal">1883</span>
 <span class="normal">1884</span>
-<span class="normal">1885</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
+<span class="normal">1885</span>
+<span class="normal">1886</span>
+<span class="normal">1887</span>
+<span class="normal">1888</span>
+<span class="normal">1889</span>
+<span class="normal">1890</span>
+<span class="normal">1891</span>
+<span class="normal">1892</span>
+<span class="normal">1893</span>
+<span class="normal">1894</span>
+<span class="normal">1895</span>
+<span class="normal">1896</span>
+<span class="normal">1897</span>
+<span class="normal">1898</span>
+<span class="normal">1899</span>
+<span class="normal">1900</span>
+<span class="normal">1901</span>
+<span class="normal">1902</span>
+<span class="normal">1903</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
 
 <span class="sd">    Warning:</span>
@@ -13010,6 +13169,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">    ```python</span>
 <span class="sd">    set(iterator.unwrap())</span>
 <span class="sd">    ```</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        set = {13, 42, 69}</span>
+
+<span class="sd">        iterator = iter(set)</span>
+
+<span class="sd">        assert iterator.set() == set</span>
+<span class="sd">        ```</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The [`Set[Q]`][set] over the iterator.</span>
@@ -13038,6 +13206,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <div class="highlight"><pre><span></span><code><span class="nb">tuple</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">unwrap</span><span class="p">())</span>
 </code></pre></div>
 
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">tuple</span><span class="p">()</span> <span class="o">==</span> <span class="nb">tuple</span>
+</code></pre></div>
+</details>
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -13058,19 +13235,28 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1887</span>
-<span class="normal">1888</span>
-<span class="normal">1889</span>
-<span class="normal">1890</span>
-<span class="normal">1891</span>
-<span class="normal">1892</span>
-<span class="normal">1893</span>
-<span class="normal">1894</span>
-<span class="normal">1895</span>
-<span class="normal">1896</span>
-<span class="normal">1897</span>
-<span class="normal">1898</span>
-<span class="normal">1899</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1905</span>
+<span class="normal">1906</span>
+<span class="normal">1907</span>
+<span class="normal">1908</span>
+<span class="normal">1909</span>
+<span class="normal">1910</span>
+<span class="normal">1911</span>
+<span class="normal">1912</span>
+<span class="normal">1913</span>
+<span class="normal">1914</span>
+<span class="normal">1915</span>
+<span class="normal">1916</span>
+<span class="normal">1917</span>
+<span class="normal">1918</span>
+<span class="normal">1919</span>
+<span class="normal">1920</span>
+<span class="normal">1921</span>
+<span class="normal">1922</span>
+<span class="normal">1923</span>
+<span class="normal">1924</span>
+<span class="normal">1925</span>
+<span class="normal">1926</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -13078,6 +13264,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">    ```python</span>
 <span class="sd">    tuple(iterator.unwrap())</span>
 <span class="sd">    ```</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        tuple = (-1, 0, 1)</span>
+
+<span class="sd">        iterator = iter(tuple)</span>
+
+<span class="sd">        assert iterator.tuple() == tuple</span>
+<span class="sd">        ```</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The [`Tuple[T, ...]`][tuple] over the iterator.</span>
@@ -13110,6 +13305,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <div class="highlight"><pre><span></span><code><span class="nb">dict</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">unwrap</span><span class="p">())</span>
 </code></pre></div>
 
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="mi">13</span><span class="p">:</span> <span class="s2">&quot;nekit&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">:</span> <span class="s2">&quot;dev&quot;</span><span class="p">}</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="o">==</span> <span class="n">mapping</span>
+</code></pre></div>
+</details>
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -13130,22 +13334,31 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1901</span>
-<span class="normal">1902</span>
-<span class="normal">1903</span>
-<span class="normal">1904</span>
-<span class="normal">1905</span>
-<span class="normal">1906</span>
-<span class="normal">1907</span>
-<span class="normal">1908</span>
-<span class="normal">1909</span>
-<span class="normal">1910</span>
-<span class="normal">1911</span>
-<span class="normal">1912</span>
-<span class="normal">1913</span>
-<span class="normal">1914</span>
-<span class="normal">1915</span>
-<span class="normal">1916</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1928</span>
+<span class="normal">1929</span>
+<span class="normal">1930</span>
+<span class="normal">1931</span>
+<span class="normal">1932</span>
+<span class="normal">1933</span>
+<span class="normal">1934</span>
+<span class="normal">1935</span>
+<span class="normal">1936</span>
+<span class="normal">1937</span>
+<span class="normal">1938</span>
+<span class="normal">1939</span>
+<span class="normal">1940</span>
+<span class="normal">1941</span>
+<span class="normal">1942</span>
+<span class="normal">1943</span>
+<span class="normal">1944</span>
+<span class="normal">1945</span>
+<span class="normal">1946</span>
+<span class="normal">1947</span>
+<span class="normal">1948</span>
+<span class="normal">1949</span>
+<span class="normal">1950</span>
+<span class="normal">1951</span>
+<span class="normal">1952</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
 
 <span class="sd">    Warning:</span>
@@ -13156,6 +13369,15 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">    ```python</span>
 <span class="sd">    dict(iterator.unwrap())</span>
 <span class="sd">    ```</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        mapping = {13: &quot;nekit&quot;, 42: &quot;dev&quot;}</span>
+
+<span class="sd">        iterator = iter(mapping.items())</span>
+
+<span class="sd">        assert iterator.dict() == mapping</span>
+<span class="sd">        ```</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The [`Dict[Q, V]`][dict] over the iterator.</span>
@@ -13188,6 +13410,17 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <div class="highlight"><pre><span></span><code><span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">unwrap</span><span class="p">())</span>
 </code></pre></div>
 
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;melody, nekit&quot;</span>
+
+<span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">==</span> <span class="n">result</span>
+</code></pre></div>
+</details>
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -13208,22 +13441,33 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1918</span>
-<span class="normal">1919</span>
-<span class="normal">1920</span>
-<span class="normal">1921</span>
-<span class="normal">1922</span>
-<span class="normal">1923</span>
-<span class="normal">1924</span>
-<span class="normal">1925</span>
-<span class="normal">1926</span>
-<span class="normal">1927</span>
-<span class="normal">1928</span>
-<span class="normal">1929</span>
-<span class="normal">1930</span>
-<span class="normal">1931</span>
-<span class="normal">1932</span>
-<span class="normal">1933</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1954</span>
+<span class="normal">1955</span>
+<span class="normal">1956</span>
+<span class="normal">1957</span>
+<span class="normal">1958</span>
+<span class="normal">1959</span>
+<span class="normal">1960</span>
+<span class="normal">1961</span>
+<span class="normal">1962</span>
+<span class="normal">1963</span>
+<span class="normal">1964</span>
+<span class="normal">1965</span>
+<span class="normal">1966</span>
+<span class="normal">1967</span>
+<span class="normal">1968</span>
+<span class="normal">1969</span>
+<span class="normal">1970</span>
+<span class="normal">1971</span>
+<span class="normal">1972</span>
+<span class="normal">1973</span>
+<span class="normal">1974</span>
+<span class="normal">1975</span>
+<span class="normal">1976</span>
+<span class="normal">1977</span>
+<span class="normal">1978</span>
+<span class="normal">1979</span>
+<span class="normal">1980</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator using the `string`.</span>
 
 <span class="sd">    Warning:</span>
@@ -13234,6 +13478,17 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">    ```python</span>
 <span class="sd">    string.join(iterator.unwrap())</span>
 <span class="sd">    ```</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        result = &quot;melody, nekit&quot;</span>
+
+<span class="sd">        string = &quot;, &quot;</span>
+
+<span class="sd">        iterator = iter(result.split(string))</span>
+
+<span class="sd">        assert iterator.join(string) == result</span>
+<span class="sd">        ```</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The joined [`str`][str] or [`bytes`][bytes] depending on the `string` type.</span>
@@ -13266,6 +13521,16 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <div class="highlight"><pre><span></span><code><span class="n">iterator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EMPTY_STRING</span><span class="p">)</span>
 </code></pre></div>
 
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">strings</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>
+<span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;xyz&quot;</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">string</span><span class="p">()</span> <span class="o">==</span> <span class="n">string</span>
+</code></pre></div>
+</details>
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -13286,22 +13551,32 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1935</span>
-<span class="normal">1936</span>
-<span class="normal">1937</span>
-<span class="normal">1938</span>
-<span class="normal">1939</span>
-<span class="normal">1940</span>
-<span class="normal">1941</span>
-<span class="normal">1942</span>
-<span class="normal">1943</span>
-<span class="normal">1944</span>
-<span class="normal">1945</span>
-<span class="normal">1946</span>
-<span class="normal">1947</span>
-<span class="normal">1948</span>
-<span class="normal">1949</span>
-<span class="normal">1950</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1982</span>
+<span class="normal">1983</span>
+<span class="normal">1984</span>
+<span class="normal">1985</span>
+<span class="normal">1986</span>
+<span class="normal">1987</span>
+<span class="normal">1988</span>
+<span class="normal">1989</span>
+<span class="normal">1990</span>
+<span class="normal">1991</span>
+<span class="normal">1992</span>
+<span class="normal">1993</span>
+<span class="normal">1994</span>
+<span class="normal">1995</span>
+<span class="normal">1996</span>
+<span class="normal">1997</span>
+<span class="normal">1998</span>
+<span class="normal">1999</span>
+<span class="normal">2000</span>
+<span class="normal">2001</span>
+<span class="normal">2002</span>
+<span class="normal">2003</span>
+<span class="normal">2004</span>
+<span class="normal">2005</span>
+<span class="normal">2006</span>
+<span class="normal">2007</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`str`][str] string.</span>
 
 <span class="sd">    Warning:</span>
@@ -13312,6 +13587,16 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">    ```python</span>
 <span class="sd">    iterator.join(EMPTY_STRING)</span>
 <span class="sd">    ```</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        strings = (&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)</span>
+<span class="sd">        string = &quot;xyz&quot;</span>
+
+<span class="sd">        iterator = iter(strings)</span>
+
+<span class="sd">        assert iterator.string() == string</span>
+<span class="sd">        ```</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The joined [`str`][str] string.</span>
@@ -13364,22 +13649,22 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1952</span>
-<span class="normal">1953</span>
-<span class="normal">1954</span>
-<span class="normal">1955</span>
-<span class="normal">1956</span>
-<span class="normal">1957</span>
-<span class="normal">1958</span>
-<span class="normal">1959</span>
-<span class="normal">1960</span>
-<span class="normal">1961</span>
-<span class="normal">1962</span>
-<span class="normal">1963</span>
-<span class="normal">1964</span>
-<span class="normal">1965</span>
-<span class="normal">1966</span>
-<span class="normal">1967</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2009</span>
+<span class="normal">2010</span>
+<span class="normal">2011</span>
+<span class="normal">2012</span>
+<span class="normal">2013</span>
+<span class="normal">2014</span>
+<span class="normal">2015</span>
+<span class="normal">2016</span>
+<span class="normal">2017</span>
+<span class="normal">2018</span>
+<span class="normal">2019</span>
+<span class="normal">2020</span>
+<span class="normal">2021</span>
+<span class="normal">2022</span>
+<span class="normal">2023</span>
+<span class="normal">2024</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`bytes`][bytes] string.</span>
 
 <span class="sd">    Warning:</span>
