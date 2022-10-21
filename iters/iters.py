@@ -1862,6 +1862,15 @@ class Iter(Iterator[T]):
         list(iterator.unwrap())
         ```
 
+        Example:
+            ```python
+            array = [1, 2, 3]
+
+            iterator = iter(array)
+
+            assert iterator.list() == array
+            ```
+
         Returns:
             The [`List[T]`][list] over the iterator.
         """
@@ -1879,6 +1888,15 @@ class Iter(Iterator[T]):
         set(iterator.unwrap())
         ```
 
+        Example:
+            ```python
+            set = {13, 42, 69}
+
+            iterator = iter(set)
+
+            assert iterator.set() == set
+            ```
+
         Returns:
             The [`Set[Q]`][set] over the iterator.
         """
@@ -1892,6 +1910,15 @@ class Iter(Iterator[T]):
         ```python
         tuple(iterator.unwrap())
         ```
+
+        Example:
+            ```python
+            tuple = (-1, 0, 1)
+
+            iterator = iter(tuple)
+
+            assert iterator.tuple() == tuple
+            ```
 
         Returns:
             The [`Tuple[T, ...]`][tuple] over the iterator.
@@ -1910,6 +1937,15 @@ class Iter(Iterator[T]):
         dict(iterator.unwrap())
         ```
 
+        Example:
+            ```python
+            mapping = {13: "nekit", 42: "dev"}
+
+            iterator = iter(mapping.items())
+
+            assert iterator.dict() == mapping
+            ```
+
         Returns:
             The [`Dict[Q, V]`][dict] over the iterator.
         """
@@ -1927,6 +1963,17 @@ class Iter(Iterator[T]):
         string.join(iterator.unwrap())
         ```
 
+        Example:
+            ```python
+            result = "melody, nekit"
+
+            string = ", "
+
+            iterator = iter(result.split(string))
+
+            assert iterator.join(string) == result
+            ```
+
         Returns:
             The joined [`str`][str] or [`bytes`][bytes] depending on the `string` type.
         """
@@ -1943,6 +1990,16 @@ class Iter(Iterator[T]):
         ```python
         iterator.join(EMPTY_STRING)
         ```
+
+        Example:
+            ```python
+            strings = ("x", "y", "z")
+            string = "xyz"
+
+            iterator = iter(strings)
+
+            assert iterator.string() == string
+            ```
 
         Returns:
             The joined [`str`][str] string.
