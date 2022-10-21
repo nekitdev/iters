@@ -3290,6 +3290,28 @@ class Iter(Iterator[T]):
         ...
 
     def cartesian_power(self, power: int) -> Iter[DynamicTuple[T]]:
+        """Creates an iterator over the
+        [*Cartesian power*](https://en.wikipedia.org/wiki/Cartesian_product) of the iterator.
+
+        Warning:
+            It only makes sense to compute the Cartesian power of finite iterators.
+
+        Example:
+            ```python
+            bits = (0, 1)
+            result = ((0, 0), (0, 1), (1, 0), (1, 1))
+
+            iterator = iter(bits)
+
+            assert iterator.cartesian_power(2).tuple() == result
+            ```
+
+        Arguments:
+            power: The power to "raise" the iterator to.
+
+        Returns:
+            An [`Iter[Tuple[...]]`] over the Cartesian power of the iterator.
+        """
         return self.create(cartesian_power(power, self.iterator))
 
     def reverse(self) -> Iter[T]:
@@ -3450,7 +3472,9 @@ class Iter(Iterator[T]):
 
 
 iter = Iter
+"""An alias of [`Iter`][iters.iters.Iter]."""
 reversed = iter.reversed
+"""An alias of [`iter.reversed`][iters.iters.Iter.reversed]."""
 
 
 def wrap_iter(function: Callable[PS, Iterable[T]]) -> Callable[PS, Iter[T]]:
