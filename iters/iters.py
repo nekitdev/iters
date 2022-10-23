@@ -2024,9 +2024,49 @@ class Iter(Iterator[T]):
         return self.join(EMPTY_BYTES)
 
     def count_dict(self: Iter[Q]) -> Counter[Q]:
+        """Collects the iterator into the [`Counter[Q]`][collections.Counter].
+
+        Warning:
+            The items of the iterator have to be hashable for this method to work.
+
+        Example:
+            ```python
+            bits = (1, 1, 0, 1, 1, 1, 0)
+
+            result = [(1, 5), (0, 2)]
+
+            iterator = iter(bits)
+
+            assert iterator.count_dict().most_common() == result
+            ```
+
+        Returns:
+            The [`Counter[Q]`][collections.Counter] over the items of the iterator.
+        """
         return count_dict(self.iterator)
 
     def count_dict_by(self, key: Unary[T, Q]) -> Counter[Q]:
+        """Collects the iterator into the [`Counter[Q]`][collections.Counter]
+        by applying the `key` function.
+
+        Example:
+            ```python
+            sets = [{}, {0}, {1}, {0, 1}]
+
+            iterator = iter(sets)
+
+            result = [(1, 2), (2, 1), (0, 1)]
+
+            assert iterator.count_dict_by(len).most_common() == result
+            ```
+
+        Arguments:
+            key: The key function.
+
+        Returns:
+            The [`Counter[Q]`][collections.Counter] over the keys
+                corresponding to the items of the iterator.
+        """
         return count_dict(self.iterator, key)
 
     def group_dict(self: Iter[Q]) -> Dict[Q, List[Q]]:
@@ -3478,6 +3518,16 @@ reversed = iter.reversed
 
 
 def wrap_iter(function: Callable[PS, Iterable[T]]) -> Callable[PS, Iter[T]]:
+    """Wraps the function returning [`Iterable[T]`][typing.Iterable],
+    creating a wrapping function returning [`Iter[T]`][iters.iters.Iter].
+
+    Arguments:
+        function: The function to wrap.
+
+    Returns:
+        The wrapping function.
+    """
+
     @wraps(function)
     def wrap(*args: PS.args, **kwargs: PS.kwargs) -> Iter[T]:
         return iter(function(*args, **kwargs))
