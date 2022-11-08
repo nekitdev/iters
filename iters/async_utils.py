@@ -28,6 +28,7 @@ from typing import (
     overload,
 )
 
+from named import get_name
 from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 
 from iters.concurrent import CONCURRENT
@@ -66,7 +67,6 @@ from iters.typing import (
     Tuple7,
     Tuple8,
     Unary,
-    get_name,
     is_async_iterable,
     is_async_iterator,
     is_bytes,
