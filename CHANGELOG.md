@@ -4,7 +4,11 @@
 
 ## 0.6.0 (2022-11-08)
 
-No significant changes.
+### Internal
+
+- Migrate to using [`named`](https://github.com/nekitdev/named) and
+  [`solus`](https://github.com/nekitdev/solus) packages instead of
+  reimplementing their functionality. ([#18](https://github.com/nekitdev/iters/pull/18))
 
 ## 0.5.0 (2022-10-11)
 
