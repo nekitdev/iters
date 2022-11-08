@@ -4,7 +4,7 @@ from enum import Enum
 from threading import Lock
 from typing import Any, Type, TypeVar
 
-from iters.typing import get_name
+from solus import Singleton
 
 __all__ = (
     # ordering
@@ -99,44 +99,17 @@ class Ordering(Enum):
         return self.is_greater() or self.is_equal()
 
 
-S = TypeVar("S")
-
-
-class SingletonType(type):
-    _INSTANCES = {}  # type: ignore
-    _LOCK = Lock()
-
-    def __call__(cls: Type[S], *args: Any, **kwargs: Any) -> S:
-        instances = cls._INSTANCES  # type: ignore
-        lock = cls._LOCK  # type: ignore
-
-        # use double-checked locking
-
-        if cls not in instances:
-            with lock:
-                if cls not in instances:
-                    instances[cls] = super().__call__(*args, **kwargs)  # type: ignore
-
-        return instances[cls]  # type: ignore
-
-
-class Singleton(metaclass=SingletonType):
-    def __repr__(self) -> str:
-        return get_name(type(self))
-
-
-singleton = Singleton()
-
-
 class NoDefault(Singleton):
-    pass
+    """Represents the absence of default values."""
 
 
 no_default = NoDefault()
+"""The instance of [`NoDefault`][iters.types.NoDefault]."""
 
 
 class Marker(Singleton):
-    pass
+    """Represents markers used for various checks."""
 
 
 marker = Marker()
+"""The instance of [`Marker`][iters.types.Marker]."""

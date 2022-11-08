@@ -79,10 +79,6 @@ __all__ = (
     # unions
     "AnyIterable",
     "AnyIterator",
-    # named
-    "Named",
-    "get_name",
-    "is_named",
     # checks
     "is_async_iterable",
     "is_async_iterator",
@@ -271,19 +267,3 @@ class Product(Protocol):
     @abstractmethod
     def __mul__(self: P, __other: P) -> P:
         raise NotImplementedError
-
-
-NAME = "__name__"
-
-
-@runtime_checkable
-class Named(Protocol):
-    __name__: str
-
-
-def is_named(item: Any) -> TypeGuard[Named]:
-    return hasattr(item, NAME)
-
-
-def get_name(item: Named) -> str:
-    return item.__name__
