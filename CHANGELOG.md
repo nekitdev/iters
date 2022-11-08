@@ -2,6 +2,10 @@
 
 <!-- changelogging: start -->
 
+## 0.6.0 (2022-11-08)
+
+No significant changes.
+
 ## 0.5.0 (2022-10-11)
 
 ### Changes
