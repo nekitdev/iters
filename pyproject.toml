@@ -34,7 +34,8 @@ python = ">= 3.7"
 typing-extensions = ">= 4.3.0"
 
 named = ">= 1.1.0"
-solus = ">= 1.0.1"
+orderings = ">= 1.1.0"
+solus = ">= 1.1.0"
 
 [tool.poetry.dependencies.anyio]
 version = ">= 3.6.1"

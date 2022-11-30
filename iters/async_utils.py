@@ -28,7 +28,7 @@ from typing import (
     overload,
 )
 
-from named import get_name
+from named import get_type_name
 from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 
@@ -544,11 +544,11 @@ NOT_ASYNC_ITERATOR = "{!r} is not an async iterator"
 
 
 def not_async_iterable(item: T) -> TypeError:
-    return TypeError(NOT_ASYNC_ITERABLE.format(get_name(type(item))))  # type: ignore
+    return TypeError(NOT_ASYNC_ITERABLE.format(get_type_name(item)))
 
 
 def not_async_iterator(item: T) -> TypeError:
-    return TypeError(NOT_ASYNC_ITERATOR.format(get_name(type(item))))  # type: ignore
+    return TypeError(NOT_ASYNC_ITERATOR.format(get_type_name(item)))
 
 
 NOT_ANY_ITERABLE = "{!r} is not an (async) iterable"
@@ -556,11 +556,11 @@ NOT_ANY_ITERATOR = "{!r} is not an (async) iterator"
 
 
 def not_any_iterable(item: T) -> TypeError:
-    return TypeError(NOT_ANY_ITERABLE.format(get_name(type(item))))  # type: ignore
+    return TypeError(NOT_ANY_ITERABLE.format(get_type_name(item)))
 
 
 def not_any_iterator(item: T) -> TypeError:
-    return TypeError(NOT_ANY_ITERATOR.format(get_name(type(item))))  # type: ignore
+    return TypeError(NOT_ANY_ITERATOR.format(get_type_name(item)))
 
 
 async def async_list(iterable: AnyIterable[T]) -> List[T]:
