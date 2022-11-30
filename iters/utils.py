@@ -39,16 +39,15 @@ from typing import (
     overload,
 )
 
+from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, TypeVarTuple, Unpack
 
-from iters.types import Ordering, marker, no_default
+from iters.types import marker, no_default
 from iters.typing import (
     AnyExceptionType,
     Binary,
     Compare,
     DynamicTuple,
-    EitherLenientOrdered,
-    EitherStrictOrdered,
     EmptyTuple,
     Nullary,
     Predicate,
@@ -221,8 +220,8 @@ Q = TypeVar("Q", bound=Hashable)
 S = TypeVar("S", bound=Sum)
 P = TypeVar("P", bound=Product)
 
-LT = TypeVar("LT", bound=EitherLenientOrdered)
-ST = TypeVar("ST", bound=EitherStrictOrdered)
+LT = TypeVar("LT", bound=LenientOrdered)
+ST = TypeVar("ST", bound=StrictOrdered)
 
 chain_from_iterable = chain.from_iterable
 skip_while = drop_while
@@ -1811,7 +1810,10 @@ REVERSE_TRUE = True
 REVERSE_FALSE = False
 
 
-COMPARE: Dict[Tuple[bool, bool], Union[Compare[LT, LT], Compare[ST, ST]]] = {  # type: ignore
+COMPARE: Dict[
+    Tuple[bool, bool],
+    Union[Compare[LenientOrdered, LenientOrdered], Compare[StrictOrdered, StrictOrdered]]
+] = {
     (STRICT_FALSE, REVERSE_FALSE): less_or_equal,
     (STRICT_FALSE, REVERSE_TRUE): greater_or_equal,
     (STRICT_TRUE, REVERSE_FALSE): less,

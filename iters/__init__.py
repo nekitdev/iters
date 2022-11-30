@@ -23,7 +23,6 @@ from iters.async_iters import (
     wrap_async_iter,
 )
 from iters.iters import Iter, iter, reversed, standard_iter, standard_reversed, wrap_iter
-from iters.types import Ordering
 
 __all__ = (
     # the async iterator type
@@ -49,6 +48,4 @@ __all__ = (
     "standard_reversed",
     # wrap results of function calls into iterators
     "wrap_iter",
-    # ordering
-    "Ordering",
 )

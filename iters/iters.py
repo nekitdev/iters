@@ -24,15 +24,13 @@ from typing import (
     overload,
 )
 
+from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec
 
-from iters.types import Ordering
 from iters.typing import (
     AnyExceptionType,
     Binary,
     DynamicTuple,
-    EitherLenientOrdered,
-    EitherStrictOrdered,
     EmptyTuple,
     Nullary,
     Predicate,
@@ -197,8 +195,8 @@ Q = TypeVar("Q", bound=Hashable)
 S = TypeVar("S", bound=Sum)
 P = TypeVar("P", bound=Product)
 
-LT = TypeVar("LT", bound=EitherLenientOrdered)
-ST = TypeVar("ST", bound=EitherStrictOrdered)
+LT = TypeVar("LT", bound=LenientOrdered)
+ST = TypeVar("ST", bound=StrictOrdered)
 
 PS = ParamSpec("PS")
 

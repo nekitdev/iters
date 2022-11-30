@@ -46,19 +46,6 @@ __all__ = (
     "DynamicCallable",
     "DynamicTuple",
     "AsyncDynamicCallable",
-    # ordering
-    "Less",
-    "Greater",
-    "LessOrEqual",
-    "GreaterOrEqual",
-    # combined
-    "FullyOrdered",
-    "StrictOrdered",
-    "LenientOrdered",
-    # either required
-    "EitherFullyOrdered",
-    "EitherStrictOrdered",
-    "EitherLenientOrdered",
     # sum / product
     "Sum",
     "Product",
@@ -89,7 +76,7 @@ __all__ = (
 )
 
 AnyException: TypeAlias = BaseException  # any exception type
-AnyExceptionType: TypeAlias = Type[AnyException]
+AnyExceptionType = Type[AnyException]
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -178,75 +165,6 @@ def is_error(item: Any) -> TypeGuard[AnyException]:
 RecursiveIterable: TypeAlias = Union[T, Iterable[Any]]
 RecursiveAsyncIterable: TypeAlias = Union[T, AsyncIterable[Any]]
 RecursiveAnyIterable: TypeAlias = Union[T, AnyIterable[Any]]
-
-# we could define the following protocols to be generic,
-# but we are ultimately using them for T: Ordered[T] bounds,
-# and there is no such thing as T: Ordered[Self] as of now,
-# which would be required to put the bound on T
-
-
-LT = TypeVar("LT", bound="Less")
-
-
-@runtime_checkable
-class Less(Protocol):
-    @abstractmethod
-    def __lt__(self: LT, __other: LT) -> MaybeBool:
-        raise NotImplementedError
-
-
-GT = TypeVar("GT", bound="Greater")
-
-
-@runtime_checkable
-class Greater(Protocol):
-    @abstractmethod
-    def __gt__(self: GT, __other: GT) -> MaybeBool:
-        raise NotImplementedError
-
-
-@runtime_checkable
-class StrictOrdered(Less, Greater, Protocol):
-    pass
-
-
-EitherStrictOrdered = Union[Less, Greater]
-
-
-LE = TypeVar("LE", bound="LessOrEqual")
-
-
-@runtime_checkable
-class LessOrEqual(Protocol):
-    @abstractmethod
-    def __le__(self: LE, __other: LE) -> MaybeBool:
-        raise NotImplementedError
-
-
-GE = TypeVar("GE", bound="GreaterOrEqual")
-
-
-@runtime_checkable
-class GreaterOrEqual(Protocol):
-    @abstractmethod
-    def __ge__(self: GE, __other: GE) -> MaybeBool:
-        raise NotImplementedError
-
-
-@runtime_checkable
-class LenientOrdered(LessOrEqual, GreaterOrEqual, Protocol):
-    pass
-
-
-EitherLenientOrdered = Union[LessOrEqual, GreaterOrEqual]
-
-
-@runtime_checkable
-class FullyOrdered(StrictOrdered, LenientOrdered, Protocol):
-    pass
-
-
-EitherFullyOrdered = Union[EitherStrictOrdered, EitherLenientOrdered]
 
 
 S = TypeVar("S", bound="Sum")

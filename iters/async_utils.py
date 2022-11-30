@@ -29,10 +29,11 @@ from typing import (
 )
 
 from named import get_name
+from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 
 from iters.concurrent import CONCURRENT
-from iters.types import Ordering, marker, no_default
+from iters.types import marker, no_default
 from iters.typing import (
     AnyExceptionType,
     AnyIterable,
@@ -48,8 +49,6 @@ from iters.typing import (
     Binary,
     DynamicCallable,
     DynamicTuple,
-    EitherLenientOrdered,
-    EitherStrictOrdered,
     EmptyTuple,
     Nullary,
     Predicate,
@@ -309,8 +308,8 @@ Q = TypeVar("Q", bound=Hashable)
 S = TypeVar("S", bound=Sum)
 P = TypeVar("P", bound=Product)
 
-LT = TypeVar("LT", bound=EitherLenientOrdered)
-ST = TypeVar("ST", bound=EitherStrictOrdered)
+LT = TypeVar("LT", bound=LenientOrdered)
+ST = TypeVar("ST", bound=StrictOrdered)
 
 
 try:
