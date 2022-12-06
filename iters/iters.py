@@ -145,6 +145,7 @@ from iters.utils import (
     repeat_last,
     repeat_with,
     reverse,
+    set_windows,
     side_effect,
     sort,
     spy,
@@ -2711,6 +2712,9 @@ class Iter(Iterator[T]):
     def tuple_windows(self, size: int) -> Iter[DynamicTuple[T]]:
         return self.create(tuple_windows(size, self.iterator))
 
+    def set_windows(self: Iter[Q], size: int) -> Iter[Set[Q]]:
+        return self.create(set_windows(size, self.iterator))
+
     @overload
     def zip(self) -> Iter[Tuple[T]]:
         ...
@@ -3505,7 +3509,7 @@ class Iter(Iterator[T]):
     def repeat_each(self, count: int) -> Iter[T]:
         return self.create(repeat_each(self.iterator, count))
 
-    def side_effect(self, function: Unary[T, Any]) -> Iter[T]:
+    def side_effect(self, function: Unary[T, None]) -> Iter[T]:
         return self.create(side_effect(function, self.iterator))
 
 

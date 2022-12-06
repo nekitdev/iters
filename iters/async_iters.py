@@ -193,6 +193,7 @@ from iters.async_utils import (
     async_reverse,
     async_reversed,
     async_set,
+    async_set_windows,
     async_side_effect,
     async_side_effect_await,
     async_sort,
@@ -2035,6 +2036,9 @@ class AsyncIter(AsyncIterator[T]):
 
     def tuple_windows(self, size: int) -> AsyncIter[DynamicTuple[T]]:
         return self.create(async_tuple_windows(size, self.iterator))
+
+    def set_windows(self: AsyncIter[Q], size: int) -> AsyncIter[Set[Q]]:
+        return self.create(async_set_windows(size, self.iterator))
 
     @overload
     def zip(self) -> AsyncIter[Tuple[T]]:

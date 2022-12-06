@@ -3265,7 +3265,15 @@ def async_tuple_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[Dy
 async def async_tuple_windows(
     size: int, iterable: AnyIterable[T]
 ) -> AsyncIterator[DynamicTuple[T]]:
-    async for window in async_list_windows(size, iterable):
+    iterator = async_iter(iterable)
+
+    window = deque(await async_list(async_take(size, iterator)), size)
+
+    if len(window) == size:
+        yield tuple(window)
+
+    async for item in iterator:
+        window.append(item)
         yield tuple(window)
 
 
@@ -3278,6 +3286,19 @@ async def async_iter_windows(
 ) -> AsyncIterator[AsyncIterator[T]]:
     async for window in async_list_windows(size, iterable):
         yield iter_to_async_iter(window)
+
+
+async def async_set_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[Set[T]]:
+    iterator = async_iter(iterable)
+
+    window = deque(await async_list(async_take(size, iterator)), size)
+
+    if len(window) == size:
+        yield set(window)
+
+    async for item in iterator:
+        window.append(item)
+        yield set(window)
 
 
 async def async_side_effect(function: Unary[T, Any], iterable: AnyIterable[T]) -> AsyncIterator[T]:

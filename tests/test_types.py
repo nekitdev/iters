@@ -1,7 +1,6 @@
-from iters.types import Marker, NoDefault, Singleton
+from iters.types import Marker, NoDefault
 
 
-def test_singleton_identity() -> None:
-    assert Singleton() is Singleton()
+def test_identity() -> None:
     assert Marker() is Marker()
     assert NoDefault() is NoDefault()

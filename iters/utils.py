@@ -1812,7 +1812,7 @@ REVERSE_FALSE = False
 
 COMPARE: Dict[
     Tuple[bool, bool],
-    Union[Compare[LenientOrdered, LenientOrdered], Compare[StrictOrdered, StrictOrdered]]
+    Union[Compare[LenientOrdered, LenientOrdered], Compare[StrictOrdered, StrictOrdered]],
 ] = {
     (STRICT_FALSE, REVERSE_FALSE): less_or_equal,
     (STRICT_FALSE, REVERSE_TRUE): greater_or_equal,
@@ -1872,10 +1872,11 @@ def is_sorted(
     strict: bool = False,
     reverse: bool = False,
 ) -> bool:
-    if key is None:
-        return is_sorted_simple(iterable, strict=strict, reverse=reverse)
-
-    return is_sorted_by(iterable, key, strict=strict, reverse=reverse)
+    return (
+        is_sorted_simple(iterable, strict=strict, reverse=reverse)
+        if key is None
+        else is_sorted_by(iterable, key, strict=strict, reverse=reverse)
+    )
 
 
 def is_sorted_simple(
@@ -1984,7 +1985,15 @@ def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]
 
 
 def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    for window in list_windows(size, iterable):
+    iterator = iter(iterable)
+
+    window = deque(take(size, iterator), size)
+
+    if len(window) == size:
+        yield tuple(window)
+
+    for item in iterator:
+        window.append(item)
         yield tuple(window)
 
 
@@ -1997,7 +2006,20 @@ def iter_windows(size: int, iterable: Iterable[T]) -> Iterator[Iterator[T]]:
         yield iter(window)
 
 
-def side_effect(function: Unary[T, Any], iterable: Iterable[T]) -> Iterator[T]:
+def set_windows(size: int, iterable: Iterable[Q]) -> Iterator[Set[Q]]:
+    iterator = iter(iterable)
+
+    window = deque(take(size, iterator), size)
+
+    if len(window) == size:
+        yield set(window)
+
+    for item in iterator:
+        window.append(item)
+        yield set(window)
+
+
+def side_effect(function: Unary[T, None], iterable: Iterable[T]) -> Iterator[T]:
     for item in iterable:
         function(item)
         yield item
