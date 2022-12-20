@@ -33,6 +33,7 @@ from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 
 from iters.concurrent import CONCURRENT
+from iters.ordered_set import OrderedSet, ordered_set
 from iters.types import marker, no_default
 from iters.typing import (
     AnyExceptionType,
@@ -215,6 +216,7 @@ __all__ = (
     "async_once",
     "async_once_with",
     "async_once_with_await",
+    "async_ordered_set",
     "async_pad",
     "async_pad_with",
     "async_pad_with_await",
@@ -573,6 +575,10 @@ async def async_dict(iterable: AnyIterable[Tuple[Q, T]]) -> Dict[Q, T]:
 
 async def async_set(iterable: AnyIterable[Q]) -> Set[Q]:
     return {item async for item in async_iter(iterable)}
+
+
+async def async_ordered_set(iterable: AnyIterable[Q]) -> OrderedSet[Q]:
+    return ordered_set(await async_list(iterable))
 
 
 async def async_tuple(iterable: AnyIterable[T]) -> DynamicTuple[T]:

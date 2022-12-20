@@ -11,7 +11,7 @@ __url__ = "https://github.com/nekitdev/iters"
 __title__ = "iters"
 __author__ = "nekitdev"
 __license__ = "MIT"
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 from iters.async_iters import (
     AsyncIter,
@@ -22,6 +22,7 @@ from iters.async_iters import (
     standard_async_next,
     wrap_async_iter,
 )
+from iters.ordered_set import OrderedSet, ordered_set
 from iters.iters import Iter, iter, reversed, standard_iter, standard_reversed, wrap_iter
 
 __all__ = (
@@ -48,4 +49,7 @@ __all__ = (
     "standard_reversed",
     # wrap results of function calls into iterators
     "wrap_iter",
+    # ordered set
+    "OrderedSet",
+    "ordered_set",
 )

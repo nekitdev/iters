@@ -2,11 +2,18 @@
 
 <!-- changelogging: start -->
 
+## 0.7.0 (2022-12-20)
+
+### Features
+
+- Added `OrderedSet[Q]` type within the `iters.ordered_set` module.
+- Added `ordered_set` method to `Iter[T]` and `AsyncIter[T]`.
+
 ## 0.6.0 (2022-11-08)
 
 ### Internal
 
-- Migrate to using [`named`](https://github.com/nekitdev/named) and
+- Migrated to using [`named`](https://github.com/nekitdev/named) and
   [`solus`](https://github.com/nekitdev/solus) packages instead of
   reimplementing their functionality. ([#18](https://github.com/nekitdev/iters/pull/18))
 
@@ -37,14 +44,14 @@
 
 ### Changes
 
-- Change functions of various arity returning `Awaitable[T]` to async functions returning `T`.
+- Changed functions of various arity returning `Awaitable[T]` to async functions returning `T`.
   ([#15](https://github.com/nekitdev/iters/pull/15))
 
 ## 0.2.0 (2022-08-15)
 
 ### Changes
 
-- Add `await async_iter`, equivalent to `await async_iter.list()`.
+- Added `await async_iter`, equivalent to `await async_iter.list()`.
 
 ## 0.1.0 (2022-08-01)
 

@@ -27,6 +27,7 @@ from typing import (
 from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec
 
+from iters.ordered_set import OrderedSet, ordered_set
 from iters.typing import (
     AnyExceptionType,
     Binary,
@@ -1900,6 +1901,32 @@ class Iter(Iterator[T]):
             The [`Set[Q]`][set] over the iterator.
         """
         return set(self.iterator)
+
+    def ordered_set(self: Iter[Q]) -> OrderedSet[Q]:
+        """Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].
+
+        Warning:
+            The items of the iterator have to be hashable for this method to work.
+
+        This is equivalent to:
+            
+        ```python
+        ordered_set(iterator.unwrap())
+        ```
+
+        Example:
+            ```python
+            ordered_set = OrderedSet([13, 42, 69])
+
+            iterator = iter(ordered_set)
+
+            assert iterator.ordered_set() == ordered_set
+            ```
+
+        Returns:
+            The [`OrderedSet[Q]`][iters.ordered_set.OrderedSet] over the iterator.
+        """
+        return ordered_set(self.iterator)
 
     def tuple(self) -> DynamicTuple[T]:
         """Collects the iterator into the [`Tuple[T, ...]`][tuple].

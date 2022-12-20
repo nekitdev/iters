@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from builtins import isinstance as is_instance
+from builtins import issubclass as is_subclass
 from typing import (
     Any,
     AsyncIterable,
@@ -73,6 +74,8 @@ __all__ = (
     "is_iterable",
     "is_iterator",
     "is_string",
+    "is_instance",
+    "is_subclass",
 )
 
 AnyException: TypeAlias = BaseException  # any exception type
@@ -104,18 +107,16 @@ AsyncBinary = Binary[T, U, Awaitable[R]]
 AsyncTernary = Ternary[T, U, V, Awaitable[R]]
 AsyncQuaternary = Quaternary[T, U, V, W, Awaitable[R]]
 
-MaybeBool = Union[bool, Any]
+Predicate = Unary[T, bool]
+Selectors = Iterable[bool]
 
-Predicate = Unary[T, MaybeBool]
-Selectors = Iterable[MaybeBool]
-
-AsyncPredicate = AsyncUnary[T, MaybeBool]
-AsyncSelectors = AsyncIterable[MaybeBool]
+AsyncPredicate = AsyncUnary[T, bool]
+AsyncSelectors = AsyncIterable[bool]
 
 AnySelectors = Union[AsyncSelectors, Selectors]
 
-Compare = Binary[T, U, MaybeBool]
-AsyncCompare = AsyncBinary[T, U, MaybeBool]
+Compare = Binary[T, U, bool]
+AsyncCompare = AsyncBinary[T, U, bool]
 
 EmptyTuple = Tuple[()]
 

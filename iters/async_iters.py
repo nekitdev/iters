@@ -162,6 +162,7 @@ from iters.async_utils import (
     async_once,
     async_once_with,
     async_once_with_await,
+    async_ordered_set,
     async_pad,
     async_pad_with,
     async_pad_with_await,
@@ -221,6 +222,7 @@ from iters.async_utils import (
     standard_async_next,
 )
 from iters.concurrent import CONCURRENT
+from iters.ordered_set import OrderedSet
 from iters.typing import (
     AnyExceptionType,
     AnyIterable,
@@ -1163,6 +1165,9 @@ class AsyncIter(AsyncIterator[T]):
 
     async def set(self: AsyncIter[Q]) -> Set[Q]:
         return await async_set(self.iterator)
+
+    async def ordered_set(self: AsyncIter[Q]) -> OrderedSet[Q]:
+        return await async_ordered_set(self.iterator)
 
     async def tuple(self) -> DynamicTuple[T]:
         return await async_tuple(self.iterator)
