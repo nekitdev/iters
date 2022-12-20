@@ -340,7 +340,7 @@
         
           <li class="md-nav__item">
   <a href="#iters.iters.Iter.iterator" class="md-nav__link">
-    iterator()
+    iterator
   </a>
   
 </li>
@@ -670,6 +670,13 @@
           <li class="md-nav__item">
   <a href="#iters.iters.Iter.set" class="md-nav__link">
     set()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.ordered_set" class="md-nav__link">
+    ordered_set()
   </a>
   
 </li>
@@ -928,7 +935,7 @@
         
           <li class="md-nav__item">
   <a href="#iters.iters.Iter.iterator" class="md-nav__link">
-    iterator()
+    iterator
   </a>
   
 </li>
@@ -1263,6 +1270,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#iters.iters.Iter.ordered_set" class="md-nav__link">
+    ordered_set()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#iters.iters.Iter.tuple" class="md-nav__link">
     tuple()
   </a>
@@ -1430,8 +1444,7 @@
 
         <details class="quote">
           <summary>Source code in <code>iters/iters.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 211</span>
-<span class="normal"> 212</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 212</span>
 <span class="normal"> 213</span>
 <span class="normal"> 214</span>
 <span class="normal"> 215</span>
@@ -4732,7 +4745,34 @@
 <span class="normal">3510</span>
 <span class="normal">3511</span>
 <span class="normal">3512</span>
-<span class="normal">3513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">3513</span>
+<span class="normal">3514</span>
+<span class="normal">3515</span>
+<span class="normal">3516</span>
+<span class="normal">3517</span>
+<span class="normal">3518</span>
+<span class="normal">3519</span>
+<span class="normal">3520</span>
+<span class="normal">3521</span>
+<span class="normal">3522</span>
+<span class="normal">3523</span>
+<span class="normal">3524</span>
+<span class="normal">3525</span>
+<span class="normal">3526</span>
+<span class="normal">3527</span>
+<span class="normal">3528</span>
+<span class="normal">3529</span>
+<span class="normal">3530</span>
+<span class="normal">3531</span>
+<span class="normal">3532</span>
+<span class="normal">3533</span>
+<span class="normal">3534</span>
+<span class="normal">3535</span>
+<span class="normal">3536</span>
+<span class="normal">3537</span>
+<span class="normal">3538</span>
+<span class="normal">3539</span>
+<span class="normal">3540</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -6425,6 +6465,32 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">ordered_set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OrderedSet</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            The items of the iterator have to be hashable for this method to work.</span>
+
+<span class="sd">        This is equivalent to:</span>
+
+<span class="sd">        ```python</span>
+<span class="sd">        ordered_set(iterator.unwrap())</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            ordered_set = OrderedSet([13, 42, 69])</span>
+
+<span class="sd">            iterator = iter(ordered_set)</span>
+
+<span class="sd">            assert iterator.ordered_set() == ordered_set</span>
+<span class="sd">            ```</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The [`OrderedSet[Q]`][iters.ordered_set.OrderedSet] over the iterator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ordered_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
 
@@ -8048,14 +8114,12 @@
 
 
 
-
-
-<div class="doc doc-object doc-function">
+<div class="doc doc-object doc-attribute">
 
 
 
 <h3 id="iters.iters.Iter.iterator" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">iterator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -8067,21 +8131,11 @@
   <div class="doc doc-contents ">
   
       <p>The underlying iterator.</p>
-
-      <details class="quote">
-        <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;The underlying iterator.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span>
-</code></pre></div></td></tr></table></div>
-      </details>
   </div>
 
 </div>
+
+
 
 <div class="doc doc-object doc-function">
 
@@ -8128,8 +8182,7 @@
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
-<span class="normal">223</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
@@ -8142,7 +8195,8 @@
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
-<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">236</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an empty iterator.</span>
 
@@ -8239,8 +8293,7 @@ but you only need to process one value.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">238</span>
-<span class="normal">239</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
@@ -8264,7 +8317,8 @@ but you only need to process one value.</p>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
-<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">263</span>
+<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">once</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that yields a `value` exactly once.</span>
 
@@ -8374,8 +8428,7 @@ lazily generate the value on request.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">265</span>
-<span class="normal">266</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
@@ -8402,7 +8455,8 @@ lazily generate the value on request.</p>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
-<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">293</span>
+<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">once_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that lazily generates a value exactly once</span>
 <span class="sd">    by invoking the `function` provided.</span>
@@ -8512,8 +8566,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
-<span class="normal">296</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
@@ -8537,7 +8590,8 @@ in order to make them finite.</p>
 <span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
-<span class="normal">320</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">320</span>
+<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly repeats a single `value`.</span>
 
@@ -8650,8 +8704,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">322</span>
-<span class="normal">323</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
@@ -8671,7 +8724,8 @@ in order to make them finite.</p>
 <span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
-<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">343</span>
+<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat_exactly</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that repeats a single `value` exactly `count` times.</span>
 
@@ -8776,8 +8830,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
-<span class="normal">346</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">346</span>
 <span class="normal">347</span>
 <span class="normal">348</span>
 <span class="normal">349</span>
@@ -8803,7 +8856,8 @@ in order to make them finite.</p>
 <span class="normal">369</span>
 <span class="normal">370</span>
 <span class="normal">371</span>
-<span class="normal">372</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">372</span>
+<span class="normal">373</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly generates values of type `V`.</span>
 
@@ -8917,8 +8971,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">374</span>
-<span class="normal">375</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">375</span>
 <span class="normal">376</span>
 <span class="normal">377</span>
 <span class="normal">378</span>
@@ -8937,7 +8990,8 @@ in order to make them finite.</p>
 <span class="normal">391</span>
 <span class="normal">392</span>
 <span class="normal">393</span>
-<span class="normal">394</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">394</span>
+<span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat_exactly_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that generates values of type `V` exactly `count` times.</span>
 
@@ -9047,8 +9101,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">396</span>
-<span class="normal">397</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">397</span>
 <span class="normal">398</span>
 <span class="normal">399</span>
 <span class="normal">400</span>
@@ -9069,7 +9122,8 @@ in order to make them finite.</p>
 <span class="normal">415</span>
 <span class="normal">416</span>
 <span class="normal">417</span>
-<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">418</span>
+<span class="normal">419</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count_from_by</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `start`.</span>
 
@@ -9163,8 +9217,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">420</span>
-<span class="normal">421</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">421</span>
 <span class="normal">422</span>
 <span class="normal">423</span>
 <span class="normal">424</span>
@@ -9179,7 +9232,8 @@ in order to make them finite.</p>
 <span class="normal">433</span>
 <span class="normal">434</span>
 <span class="normal">435</span>
-<span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">436</span>
+<span class="normal">437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count_from</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `start`.</span>
 
@@ -9267,8 +9321,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
-<span class="normal">439</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
 <span class="normal">442</span>
@@ -9283,7 +9336,8 @@ in order to make them finite.</p>
 <span class="normal">451</span>
 <span class="normal">452</span>
 <span class="normal">453</span>
-<span class="normal">454</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">454</span>
+<span class="normal">455</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count_by</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `0`.</span>
 
@@ -9347,8 +9401,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">456</span>
-<span class="normal">457</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">457</span>
 <span class="normal">458</span>
 <span class="normal">459</span>
 <span class="normal">460</span>
@@ -9360,7 +9413,8 @@ in order to make them finite.</p>
 <span class="normal">466</span>
 <span class="normal">467</span>
 <span class="normal">468</span>
-<span class="normal">469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">469</span>
+<span class="normal">470</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `0`.</span>
 
@@ -9463,8 +9517,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">471</span>
-<span class="normal">472</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">472</span>
 <span class="normal">473</span>
 <span class="normal">474</span>
 <span class="normal">475</span>
@@ -9485,7 +9538,8 @@ in order to make them finite.</p>
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span>
-<span class="normal">493</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">493</span>
+<span class="normal">494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls endlessly, i.e. `value`,</span>
 <span class="sd">    `function(value)`, `function(function(value))`, ...</span>
@@ -9606,8 +9660,7 @@ in order to make them finite.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">495</span>
-<span class="normal">496</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">496</span>
 <span class="normal">497</span>
 <span class="normal">498</span>
 <span class="normal">499</span>
@@ -9629,7 +9682,8 @@ in order to make them finite.</p>
 <span class="normal">515</span>
 <span class="normal">516</span>
 <span class="normal">517</span>
-<span class="normal">518</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">518</span>
+<span class="normal">519</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iterate_exactly</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls exactly `count` times.</span>
 
@@ -9740,8 +9794,7 @@ any of the <code>errors</code> is encountered.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">520</span>
-<span class="normal">521</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">521</span>
 <span class="normal">522</span>
 <span class="normal">523</span>
 <span class="normal">524</span>
@@ -9761,7 +9814,8 @@ any of the <code>errors</code> is encountered.</p>
 <span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span>
-<span class="normal">541</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">541</span>
+<span class="normal">542</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iter_except</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">errors</span><span class="p">:</span> <span class="n">AnyExceptionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
 <span class="sd">    any of the `errors` is encountered.</span>
@@ -9866,8 +9920,7 @@ let us consider parsing some file containing integers on every line.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">543</span>
-<span class="normal">544</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">544</span>
 <span class="normal">545</span>
 <span class="normal">546</span>
 <span class="normal">547</span>
@@ -9895,7 +9948,8 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">569</span>
 <span class="normal">570</span>
 <span class="normal">571</span>
-<span class="normal">572</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">572</span>
+<span class="normal">573</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iter_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">context_manager</span><span class="p">:</span> <span class="n">ContextManager</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over the iterable returned by `context_manager`.</span>
 
@@ -10003,8 +10057,7 @@ let us consider parsing some file containing integers on every line.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">574</span>
-<span class="normal">575</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">575</span>
 <span class="normal">576</span>
 <span class="normal">577</span>
 <span class="normal">578</span>
@@ -10024,7 +10077,8 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">592</span>
 <span class="normal">593</span>
 <span class="normal">594</span>
-<span class="normal">595</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">595</span>
+<span class="normal">596</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_chain</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
 
@@ -10128,8 +10182,7 @@ let us consider parsing some file containing integers on every line.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">597</span>
-<span class="normal">598</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">598</span>
 <span class="normal">599</span>
 <span class="normal">600</span>
 <span class="normal">601</span>
@@ -10153,7 +10206,8 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">619</span>
 <span class="normal">620</span>
 <span class="normal">621</span>
-<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">622</span>
+<span class="normal">623</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_chain_from_iterable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator chaining iterables in the `iterable` together.</span>
 
@@ -10258,8 +10312,7 @@ let us consider parsing some file containing integers on every line.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">624</span>
-<span class="normal">625</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">625</span>
 <span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
@@ -10280,7 +10333,8 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">643</span>
 <span class="normal">644</span>
 <span class="normal">645</span>
-<span class="normal">646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">646</span>
+<span class="normal">647</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_combine</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
 
@@ -10384,8 +10438,7 @@ let us consider parsing some file containing integers on every line.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">648</span>
-<span class="normal">649</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">649</span>
 <span class="normal">650</span>
 <span class="normal">651</span>
 <span class="normal">652</span>
@@ -10406,7 +10459,8 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">667</span>
 <span class="normal">668</span>
 <span class="normal">669</span>
-<span class="normal">670</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">670</span>
+<span class="normal">671</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_interleave</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
 
@@ -10508,8 +10562,7 @@ let us consider parsing some file containing integers on every line.</p>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">672</span>
-<span class="normal">673</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">673</span>
 <span class="normal">674</span>
 <span class="normal">675</span>
 <span class="normal">676</span>
@@ -10530,7 +10583,8 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">691</span>
 <span class="normal">692</span>
 <span class="normal">693</span>
-<span class="normal">694</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">694</span>
+<span class="normal">695</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_interleave_longest</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
 
@@ -10635,8 +10689,7 @@ the <em>i</em>-th tuple contains the <em>i</em>-th item from each of the iterabl
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">800</span>
-<span class="normal">801</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">801</span>
 <span class="normal">802</span>
 <span class="normal">803</span>
 <span class="normal">804</span>
@@ -10659,7 +10712,8 @@ the <em>i</em>-th tuple contains the <em>i</em>-th item from each of the iterabl
 <span class="normal">821</span>
 <span class="normal">822</span>
 <span class="normal">823</span>
-<span class="normal">824</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
+<span class="normal">824</span>
+<span class="normal">825</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_zip</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
@@ -10781,8 +10835,7 @@ the <em>i</em>-th tuple contains the <em>i</em>-th item from each of the iterabl
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">932</span>
-<span class="normal">933</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">933</span>
 <span class="normal">934</span>
 <span class="normal">935</span>
 <span class="normal">936</span>
@@ -10807,7 +10860,8 @@ the <em>i</em>-th tuple contains the <em>i</em>-th item from each of the iterabl
 <span class="normal">955</span>
 <span class="normal">956</span>
 <span class="normal">957</span>
-<span class="normal">958</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
+<span class="normal">958</span>
+<span class="normal">959</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_zip_equal</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
@@ -10914,8 +10968,7 @@ in place of a <em>j</em>-th item of an <em>i</em>-th tuple when a <em>j</em>-th 
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1087</span>
-<span class="normal">1088</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1088</span>
 <span class="normal">1089</span>
 <span class="normal">1090</span>
 <span class="normal">1091</span>
@@ -10938,7 +10991,8 @@ in place of a <em>j</em>-th item of an <em>i</em>-th tuple when a <em>j</em>-th 
 <span class="normal">1108</span>
 <span class="normal">1109</span>
 <span class="normal">1110</span>
-<span class="normal">1111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
+<span class="normal">1111</span>
+<span class="normal">1112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_zip_longest</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]:</span>
     <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
@@ -11043,8 +11097,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1256</span>
-<span class="normal">1257</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1257</span>
 <span class="normal">1258</span>
 <span class="normal">1259</span>
 <span class="normal">1260</span>
@@ -11069,7 +11122,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1279</span>
 <span class="normal">1280</span>
 <span class="normal">1281</span>
-<span class="normal">1282</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
+<span class="normal">1282</span>
+<span class="normal">1283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_zip_longest_with</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">fill</span><span class="p">:</span> <span class="n">V</span>
@@ -11183,8 +11237,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1390</span>
-<span class="normal">1391</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1391</span>
 <span class="normal">1392</span>
 <span class="normal">1393</span>
 <span class="normal">1394</span>
@@ -11212,7 +11265,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1416</span>
 <span class="normal">1417</span>
 <span class="normal">1418</span>
-<span class="normal">1419</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
+<span class="normal">1419</span>
+<span class="normal">1420</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
@@ -11315,8 +11369,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1421</span>
-<span class="normal">1422</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1422</span>
 <span class="normal">1423</span>
 <span class="normal">1424</span>
 <span class="normal">1425</span>
@@ -11330,7 +11383,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1433</span>
 <span class="normal">1434</span>
 <span class="normal">1435</span>
-<span class="normal">1436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">1436</span>
+<span class="normal">1437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">reversed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">reversible</span><span class="p">:</span> <span class="n">Reversible</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over the reversed `reversible`.</span>
 
@@ -11442,8 +11496,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1438</span>
-<span class="normal">1439</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1439</span>
 <span class="normal">1440</span>
 <span class="normal">1441</span>
 <span class="normal">1442</span>
@@ -11471,7 +11524,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1464</span>
 <span class="normal">1465</span>
 <span class="normal">1466</span>
-<span class="normal">1467</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">1467</span>
+<span class="normal">1468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">sentinel</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
 
@@ -11541,13 +11595,13 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1490</span>
-<span class="normal">1491</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1491</span>
 <span class="normal">1492</span>
 <span class="normal">1493</span>
 <span class="normal">1494</span>
 <span class="normal">1495</span>
-<span class="normal">1496</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1496</span>
+<span class="normal">1497</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
 
 <span class="sd">    Returns:</span>
@@ -11594,13 +11648,13 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1498</span>
-<span class="normal">1499</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1499</span>
 <span class="normal">1500</span>
 <span class="normal">1501</span>
 <span class="normal">1502</span>
 <span class="normal">1503</span>
-<span class="normal">1504</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1504</span>
+<span class="normal">1505</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
 
 <span class="sd">    Returns:</span>
@@ -11674,8 +11728,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1506</span>
-<span class="normal">1507</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1507</span>
 <span class="normal">1508</span>
 <span class="normal">1509</span>
 <span class="normal">1510</span>
@@ -11692,7 +11745,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1521</span>
 <span class="normal">1522</span>
 <span class="normal">1523</span>
-<span class="normal">1524</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1524</span>
+<span class="normal">1525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -11762,8 +11816,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1526</span>
-<span class="normal">1527</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1527</span>
 <span class="normal">1528</span>
 <span class="normal">1529</span>
 <span class="normal">1530</span>
@@ -11779,7 +11832,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1540</span>
 <span class="normal">1541</span>
 <span class="normal">1542</span>
-<span class="normal">1543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1543</span>
+<span class="normal">1544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
 
 <span class="sd">    Example:</span>
@@ -11851,8 +11905,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1545</span>
-<span class="normal">1546</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1546</span>
 <span class="normal">1547</span>
 <span class="normal">1548</span>
 <span class="normal">1549</span>
@@ -11874,7 +11927,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1565</span>
 <span class="normal">1566</span>
 <span class="normal">1567</span>
-<span class="normal">1568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1568</span>
+<span class="normal">1569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -11971,8 +12025,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1570</span>
-<span class="normal">1571</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1571</span>
 <span class="normal">1572</span>
 <span class="normal">1573</span>
 <span class="normal">1574</span>
@@ -11989,7 +12042,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1585</span>
 <span class="normal">1586</span>
 <span class="normal">1587</span>
-<span class="normal">1588</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">ST</span><span class="p">],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
+<span class="normal">1588</span>
+<span class="normal">1589</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">ST</span><span class="p">],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable.</span>
 
 <span class="sd">    Example:</span>
@@ -12092,8 +12146,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1590</span>
-<span class="normal">1591</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1591</span>
 <span class="normal">1592</span>
 <span class="normal">1593</span>
 <span class="normal">1594</span>
@@ -12112,7 +12165,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1607</span>
 <span class="normal">1608</span>
 <span class="normal">1609</span>
-<span class="normal">1610</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
+<span class="normal">1610</span>
+<span class="normal">1611</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable using the `key` function.</span>
 
 <span class="sd">    Example:</span>
@@ -12182,8 +12236,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1612</span>
-<span class="normal">1613</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1613</span>
 <span class="normal">1614</span>
 <span class="normal">1615</span>
 <span class="normal">1616</span>
@@ -12196,7 +12249,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1623</span>
 <span class="normal">1624</span>
 <span class="normal">1625</span>
-<span class="normal">1626</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">1626</span>
+<span class="normal">1627</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Computes the length of the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -12278,8 +12332,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1628</span>
-<span class="normal">1629</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1629</span>
 <span class="normal">1630</span>
 <span class="normal">1631</span>
 <span class="normal">1632</span>
@@ -12296,7 +12349,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1643</span>
 <span class="normal">1644</span>
 <span class="normal">1645</span>
-<span class="normal">1646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1646</span>
+<span class="normal">1647</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -12366,8 +12420,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1648</span>
-<span class="normal">1649</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1649</span>
 <span class="normal">1650</span>
 <span class="normal">1651</span>
 <span class="normal">1652</span>
@@ -12383,7 +12436,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1662</span>
 <span class="normal">1663</span>
 <span class="normal">1664</span>
-<span class="normal">1665</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1665</span>
+<span class="normal">1666</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator or the `default`.</span>
 
 <span class="sd">    Example:</span>
@@ -12455,8 +12509,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1667</span>
-<span class="normal">1668</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1668</span>
 <span class="normal">1669</span>
 <span class="normal">1670</span>
 <span class="normal">1671</span>
@@ -12478,7 +12531,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1687</span>
 <span class="normal">1688</span>
 <span class="normal">1689</span>
-<span class="normal">1690</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1690</span>
+<span class="normal">1691</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the first item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -12569,8 +12623,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1692</span>
-<span class="normal">1693</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1693</span>
 <span class="normal">1694</span>
 <span class="normal">1695</span>
 <span class="normal">1696</span>
@@ -12587,7 +12640,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1707</span>
 <span class="normal">1708</span>
 <span class="normal">1709</span>
-<span class="normal">1710</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1710</span>
+<span class="normal">1711</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">    Example:</span>
@@ -12657,8 +12711,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1712</span>
-<span class="normal">1713</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1713</span>
 <span class="normal">1714</span>
 <span class="normal">1715</span>
 <span class="normal">1716</span>
@@ -12674,7 +12727,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1726</span>
 <span class="normal">1727</span>
 <span class="normal">1728</span>
-<span class="normal">1729</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1729</span>
+<span class="normal">1730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">    Example:</span>
@@ -12746,8 +12800,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1731</span>
-<span class="normal">1732</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1732</span>
 <span class="normal">1733</span>
 <span class="normal">1734</span>
 <span class="normal">1735</span>
@@ -12769,7 +12822,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1751</span>
 <span class="normal">1752</span>
 <span class="normal">1753</span>
-<span class="normal">1754</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1754</span>
+<span class="normal">1755</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -12864,8 +12918,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1756</span>
-<span class="normal">1757</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1757</span>
 <span class="normal">1758</span>
 <span class="normal">1759</span>
 <span class="normal">1760</span>
@@ -12885,7 +12938,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1774</span>
 <span class="normal">1775</span>
 <span class="normal">1776</span>
-<span class="normal">1777</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="normal">1777</span>
+<span class="normal">1778</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">    Note:</span>
@@ -12962,8 +13016,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1779</span>
-<span class="normal">1780</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1780</span>
 <span class="normal">1781</span>
 <span class="normal">1782</span>
 <span class="normal">1783</span>
@@ -12982,7 +13035,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1796</span>
 <span class="normal">1797</span>
 <span class="normal">1798</span>
-<span class="normal">1799</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="normal">1799</span>
+<span class="normal">1800</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">    Note:</span>
@@ -13061,8 +13115,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1801</span>
-<span class="normal">1802</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1802</span>
 <span class="normal">1803</span>
 <span class="normal">1804</span>
 <span class="normal">1805</span>
@@ -13087,7 +13140,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1824</span>
 <span class="normal">1825</span>
 <span class="normal">1826</span>
-<span class="normal">1827</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1827</span>
+<span class="normal">1828</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">    Note:</span>
@@ -13190,8 +13244,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1829</span>
-<span class="normal">1830</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1830</span>
 <span class="normal">1831</span>
 <span class="normal">1832</span>
 <span class="normal">1833</span>
@@ -13214,7 +13267,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1850</span>
 <span class="normal">1851</span>
 <span class="normal">1852</span>
-<span class="normal">1853</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">:</span>
+<span class="normal">1853</span>
+<span class="normal">1854</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator with the `function`.</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -13291,8 +13345,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1855</span>
-<span class="normal">1856</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1856</span>
 <span class="normal">1857</span>
 <span class="normal">1858</span>
 <span class="normal">1859</span>
@@ -13312,7 +13365,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1873</span>
 <span class="normal">1874</span>
 <span class="normal">1875</span>
-<span class="normal">1876</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">1876</span>
+<span class="normal">1877</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`List[T]`][list].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -13390,8 +13444,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1878</span>
-<span class="normal">1879</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1879</span>
 <span class="normal">1880</span>
 <span class="normal">1881</span>
 <span class="normal">1882</span>
@@ -13414,7 +13467,8 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1899</span>
 <span class="normal">1900</span>
 <span class="normal">1901</span>
-<span class="normal">1902</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
+<span class="normal">1902</span>
+<span class="normal">1903</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
 
 <span class="sd">    Warning:</span>
@@ -13439,6 +13493,111 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="sd">        The [`Set[Q]`][set] over the iterator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.ordered_set" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ordered_set</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">OrderedSet</span><span class="p">[</span><span class="n">Q</span><span class="p">]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Collects the iterator into the [<code>OrderedSet[Q]</code>][iters.ordered_set.OrderedSet].</p>
+
+<details class="warning">
+  <summary>Warning</summary>
+  <p>The items of the iterator have to be hashable for this method to work.</p>
+</details>      <p>This is equivalent to:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ordered_set</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">unwrap</span><span class="p">())</span>
+</code></pre></div>
+
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="n">ordered_set</span> <span class="o">=</span> <span class="n">OrderedSet</span><span class="p">([</span><span class="mi">13</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">69</span><span class="p">])</span>
+
+<span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">ordered_set</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">iterator</span><span class="o">.</span><span class="n">ordered_set</span><span class="p">()</span> <span class="o">==</span> <span class="n">ordered_set</span>
+</code></pre></div>
+</details>
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="iters.ordered_set.OrderedSet">OrderedSet</span>[<span title="iters.iters.Q">Q</span>]</code>
+          </td>
+          <td><p>The [<code>OrderedSet[Q]</code>][iters.ordered_set.OrderedSet] over the iterator.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1905</span>
+<span class="normal">1906</span>
+<span class="normal">1907</span>
+<span class="normal">1908</span>
+<span class="normal">1909</span>
+<span class="normal">1910</span>
+<span class="normal">1911</span>
+<span class="normal">1912</span>
+<span class="normal">1913</span>
+<span class="normal">1914</span>
+<span class="normal">1915</span>
+<span class="normal">1916</span>
+<span class="normal">1917</span>
+<span class="normal">1918</span>
+<span class="normal">1919</span>
+<span class="normal">1920</span>
+<span class="normal">1921</span>
+<span class="normal">1922</span>
+<span class="normal">1923</span>
+<span class="normal">1924</span>
+<span class="normal">1925</span>
+<span class="normal">1926</span>
+<span class="normal">1927</span>
+<span class="normal">1928</span>
+<span class="normal">1929</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">ordered_set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OrderedSet</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].</span>
+
+<span class="sd">    Warning:</span>
+<span class="sd">        The items of the iterator have to be hashable for this method to work.</span>
+
+<span class="sd">    This is equivalent to:</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    ordered_set(iterator.unwrap())</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        ordered_set = OrderedSet([13, 42, 69])</span>
+
+<span class="sd">        iterator = iter(ordered_set)</span>
+
+<span class="sd">        assert iterator.ordered_set() == ordered_set</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The [`OrderedSet[Q]`][iters.ordered_set.OrderedSet] over the iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ordered_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -13491,28 +13650,28 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1904</span>
-<span class="normal">1905</span>
-<span class="normal">1906</span>
-<span class="normal">1907</span>
-<span class="normal">1908</span>
-<span class="normal">1909</span>
-<span class="normal">1910</span>
-<span class="normal">1911</span>
-<span class="normal">1912</span>
-<span class="normal">1913</span>
-<span class="normal">1914</span>
-<span class="normal">1915</span>
-<span class="normal">1916</span>
-<span class="normal">1917</span>
-<span class="normal">1918</span>
-<span class="normal">1919</span>
-<span class="normal">1920</span>
-<span class="normal">1921</span>
-<span class="normal">1922</span>
-<span class="normal">1923</span>
-<span class="normal">1924</span>
-<span class="normal">1925</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1931</span>
+<span class="normal">1932</span>
+<span class="normal">1933</span>
+<span class="normal">1934</span>
+<span class="normal">1935</span>
+<span class="normal">1936</span>
+<span class="normal">1937</span>
+<span class="normal">1938</span>
+<span class="normal">1939</span>
+<span class="normal">1940</span>
+<span class="normal">1941</span>
+<span class="normal">1942</span>
+<span class="normal">1943</span>
+<span class="normal">1944</span>
+<span class="normal">1945</span>
+<span class="normal">1946</span>
+<span class="normal">1947</span>
+<span class="normal">1948</span>
+<span class="normal">1949</span>
+<span class="normal">1950</span>
+<span class="normal">1951</span>
+<span class="normal">1952</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
 
 <span class="sd">    This is equivalent to:</span>
@@ -13590,31 +13749,31 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1927</span>
-<span class="normal">1928</span>
-<span class="normal">1929</span>
-<span class="normal">1930</span>
-<span class="normal">1931</span>
-<span class="normal">1932</span>
-<span class="normal">1933</span>
-<span class="normal">1934</span>
-<span class="normal">1935</span>
-<span class="normal">1936</span>
-<span class="normal">1937</span>
-<span class="normal">1938</span>
-<span class="normal">1939</span>
-<span class="normal">1940</span>
-<span class="normal">1941</span>
-<span class="normal">1942</span>
-<span class="normal">1943</span>
-<span class="normal">1944</span>
-<span class="normal">1945</span>
-<span class="normal">1946</span>
-<span class="normal">1947</span>
-<span class="normal">1948</span>
-<span class="normal">1949</span>
-<span class="normal">1950</span>
-<span class="normal">1951</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1954</span>
+<span class="normal">1955</span>
+<span class="normal">1956</span>
+<span class="normal">1957</span>
+<span class="normal">1958</span>
+<span class="normal">1959</span>
+<span class="normal">1960</span>
+<span class="normal">1961</span>
+<span class="normal">1962</span>
+<span class="normal">1963</span>
+<span class="normal">1964</span>
+<span class="normal">1965</span>
+<span class="normal">1966</span>
+<span class="normal">1967</span>
+<span class="normal">1968</span>
+<span class="normal">1969</span>
+<span class="normal">1970</span>
+<span class="normal">1971</span>
+<span class="normal">1972</span>
+<span class="normal">1973</span>
+<span class="normal">1974</span>
+<span class="normal">1975</span>
+<span class="normal">1976</span>
+<span class="normal">1977</span>
+<span class="normal">1978</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
 
 <span class="sd">    Warning:</span>
@@ -13697,33 +13856,33 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1953</span>
-<span class="normal">1954</span>
-<span class="normal">1955</span>
-<span class="normal">1956</span>
-<span class="normal">1957</span>
-<span class="normal">1958</span>
-<span class="normal">1959</span>
-<span class="normal">1960</span>
-<span class="normal">1961</span>
-<span class="normal">1962</span>
-<span class="normal">1963</span>
-<span class="normal">1964</span>
-<span class="normal">1965</span>
-<span class="normal">1966</span>
-<span class="normal">1967</span>
-<span class="normal">1968</span>
-<span class="normal">1969</span>
-<span class="normal">1970</span>
-<span class="normal">1971</span>
-<span class="normal">1972</span>
-<span class="normal">1973</span>
-<span class="normal">1974</span>
-<span class="normal">1975</span>
-<span class="normal">1976</span>
-<span class="normal">1977</span>
-<span class="normal">1978</span>
-<span class="normal">1979</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1980</span>
+<span class="normal">1981</span>
+<span class="normal">1982</span>
+<span class="normal">1983</span>
+<span class="normal">1984</span>
+<span class="normal">1985</span>
+<span class="normal">1986</span>
+<span class="normal">1987</span>
+<span class="normal">1988</span>
+<span class="normal">1989</span>
+<span class="normal">1990</span>
+<span class="normal">1991</span>
+<span class="normal">1992</span>
+<span class="normal">1993</span>
+<span class="normal">1994</span>
+<span class="normal">1995</span>
+<span class="normal">1996</span>
+<span class="normal">1997</span>
+<span class="normal">1998</span>
+<span class="normal">1999</span>
+<span class="normal">2000</span>
+<span class="normal">2001</span>
+<span class="normal">2002</span>
+<span class="normal">2003</span>
+<span class="normal">2004</span>
+<span class="normal">2005</span>
+<span class="normal">2006</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator using the `string`.</span>
 
 <span class="sd">    Warning:</span>
@@ -13807,32 +13966,32 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1981</span>
-<span class="normal">1982</span>
-<span class="normal">1983</span>
-<span class="normal">1984</span>
-<span class="normal">1985</span>
-<span class="normal">1986</span>
-<span class="normal">1987</span>
-<span class="normal">1988</span>
-<span class="normal">1989</span>
-<span class="normal">1990</span>
-<span class="normal">1991</span>
-<span class="normal">1992</span>
-<span class="normal">1993</span>
-<span class="normal">1994</span>
-<span class="normal">1995</span>
-<span class="normal">1996</span>
-<span class="normal">1997</span>
-<span class="normal">1998</span>
-<span class="normal">1999</span>
-<span class="normal">2000</span>
-<span class="normal">2001</span>
-<span class="normal">2002</span>
-<span class="normal">2003</span>
-<span class="normal">2004</span>
-<span class="normal">2005</span>
-<span class="normal">2006</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2008</span>
+<span class="normal">2009</span>
+<span class="normal">2010</span>
+<span class="normal">2011</span>
+<span class="normal">2012</span>
+<span class="normal">2013</span>
+<span class="normal">2014</span>
+<span class="normal">2015</span>
+<span class="normal">2016</span>
+<span class="normal">2017</span>
+<span class="normal">2018</span>
+<span class="normal">2019</span>
+<span class="normal">2020</span>
+<span class="normal">2021</span>
+<span class="normal">2022</span>
+<span class="normal">2023</span>
+<span class="normal">2024</span>
+<span class="normal">2025</span>
+<span class="normal">2026</span>
+<span class="normal">2027</span>
+<span class="normal">2028</span>
+<span class="normal">2029</span>
+<span class="normal">2030</span>
+<span class="normal">2031</span>
+<span class="normal">2032</span>
+<span class="normal">2033</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`str`][str] string.</span>
 
 <span class="sd">    Warning:</span>
@@ -13905,22 +14064,22 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2008</span>
-<span class="normal">2009</span>
-<span class="normal">2010</span>
-<span class="normal">2011</span>
-<span class="normal">2012</span>
-<span class="normal">2013</span>
-<span class="normal">2014</span>
-<span class="normal">2015</span>
-<span class="normal">2016</span>
-<span class="normal">2017</span>
-<span class="normal">2018</span>
-<span class="normal">2019</span>
-<span class="normal">2020</span>
-<span class="normal">2021</span>
-<span class="normal">2022</span>
-<span class="normal">2023</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2035</span>
+<span class="normal">2036</span>
+<span class="normal">2037</span>
+<span class="normal">2038</span>
+<span class="normal">2039</span>
+<span class="normal">2040</span>
+<span class="normal">2041</span>
+<span class="normal">2042</span>
+<span class="normal">2043</span>
+<span class="normal">2044</span>
+<span class="normal">2045</span>
+<span class="normal">2046</span>
+<span class="normal">2047</span>
+<span class="normal">2048</span>
+<span class="normal">2049</span>
+<span class="normal">2050</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`bytes`][bytes] string.</span>
 
 <span class="sd">    Warning:</span>
@@ -13991,27 +14150,27 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2025</span>
-<span class="normal">2026</span>
-<span class="normal">2027</span>
-<span class="normal">2028</span>
-<span class="normal">2029</span>
-<span class="normal">2030</span>
-<span class="normal">2031</span>
-<span class="normal">2032</span>
-<span class="normal">2033</span>
-<span class="normal">2034</span>
-<span class="normal">2035</span>
-<span class="normal">2036</span>
-<span class="normal">2037</span>
-<span class="normal">2038</span>
-<span class="normal">2039</span>
-<span class="normal">2040</span>
-<span class="normal">2041</span>
-<span class="normal">2042</span>
-<span class="normal">2043</span>
-<span class="normal">2044</span>
-<span class="normal">2045</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2052</span>
+<span class="normal">2053</span>
+<span class="normal">2054</span>
+<span class="normal">2055</span>
+<span class="normal">2056</span>
+<span class="normal">2057</span>
+<span class="normal">2058</span>
+<span class="normal">2059</span>
+<span class="normal">2060</span>
+<span class="normal">2061</span>
+<span class="normal">2062</span>
+<span class="normal">2063</span>
+<span class="normal">2064</span>
+<span class="normal">2065</span>
+<span class="normal">2066</span>
+<span class="normal">2067</span>
+<span class="normal">2068</span>
+<span class="normal">2069</span>
+<span class="normal">2070</span>
+<span class="normal">2071</span>
+<span class="normal">2072</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter].</span>
 
 <span class="sd">    Warning:</span>
@@ -14109,29 +14268,29 @@ corresponding to the items of the iterator.</p></td>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2047</span>
-<span class="normal">2048</span>
-<span class="normal">2049</span>
-<span class="normal">2050</span>
-<span class="normal">2051</span>
-<span class="normal">2052</span>
-<span class="normal">2053</span>
-<span class="normal">2054</span>
-<span class="normal">2055</span>
-<span class="normal">2056</span>
-<span class="normal">2057</span>
-<span class="normal">2058</span>
-<span class="normal">2059</span>
-<span class="normal">2060</span>
-<span class="normal">2061</span>
-<span class="normal">2062</span>
-<span class="normal">2063</span>
-<span class="normal">2064</span>
-<span class="normal">2065</span>
-<span class="normal">2066</span>
-<span class="normal">2067</span>
-<span class="normal">2068</span>
-<span class="normal">2069</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_dict_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2074</span>
+<span class="normal">2075</span>
+<span class="normal">2076</span>
+<span class="normal">2077</span>
+<span class="normal">2078</span>
+<span class="normal">2079</span>
+<span class="normal">2080</span>
+<span class="normal">2081</span>
+<span class="normal">2082</span>
+<span class="normal">2083</span>
+<span class="normal">2084</span>
+<span class="normal">2085</span>
+<span class="normal">2086</span>
+<span class="normal">2087</span>
+<span class="normal">2088</span>
+<span class="normal">2089</span>
+<span class="normal">2090</span>
+<span class="normal">2091</span>
+<span class="normal">2092</span>
+<span class="normal">2093</span>
+<span class="normal">2094</span>
+<span class="normal">2095</span>
+<span class="normal">2096</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_dict_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter]</span>
 <span class="sd">    by applying the `key` function.</span>
 
@@ -14233,30 +14392,30 @@ corresponding to the items of the iterator.</p></td>
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3334</span>
-<span class="normal">3335</span>
-<span class="normal">3336</span>
-<span class="normal">3337</span>
-<span class="normal">3338</span>
-<span class="normal">3339</span>
-<span class="normal">3340</span>
-<span class="normal">3341</span>
-<span class="normal">3342</span>
-<span class="normal">3343</span>
-<span class="normal">3344</span>
-<span class="normal">3345</span>
-<span class="normal">3346</span>
-<span class="normal">3347</span>
-<span class="normal">3348</span>
-<span class="normal">3349</span>
-<span class="normal">3350</span>
-<span class="normal">3351</span>
-<span class="normal">3352</span>
-<span class="normal">3353</span>
-<span class="normal">3354</span>
-<span class="normal">3355</span>
-<span class="normal">3356</span>
-<span class="normal">3357</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cartesian_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3361</span>
+<span class="normal">3362</span>
+<span class="normal">3363</span>
+<span class="normal">3364</span>
+<span class="normal">3365</span>
+<span class="normal">3366</span>
+<span class="normal">3367</span>
+<span class="normal">3368</span>
+<span class="normal">3369</span>
+<span class="normal">3370</span>
+<span class="normal">3371</span>
+<span class="normal">3372</span>
+<span class="normal">3373</span>
+<span class="normal">3374</span>
+<span class="normal">3375</span>
+<span class="normal">3376</span>
+<span class="normal">3377</span>
+<span class="normal">3378</span>
+<span class="normal">3379</span>
+<span class="normal">3380</span>
+<span class="normal">3381</span>
+<span class="normal">3382</span>
+<span class="normal">3383</span>
+<span class="normal">3384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cartesian_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
 <span class="sd">    [*Cartesian power*](https://en.wikipedia.org/wiki/Cartesian_product) of the iterator.</span>
 
@@ -14354,22 +14513,22 @@ creating a wrapping function returning <a class="autorefs autorefs-internal" hre
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3522</span>
-<span class="normal">3523</span>
-<span class="normal">3524</span>
-<span class="normal">3525</span>
-<span class="normal">3526</span>
-<span class="normal">3527</span>
-<span class="normal">3528</span>
-<span class="normal">3529</span>
-<span class="normal">3530</span>
-<span class="normal">3531</span>
-<span class="normal">3532</span>
-<span class="normal">3533</span>
-<span class="normal">3534</span>
-<span class="normal">3535</span>
-<span class="normal">3536</span>
-<span class="normal">3537</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">wrap_iter</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3549</span>
+<span class="normal">3550</span>
+<span class="normal">3551</span>
+<span class="normal">3552</span>
+<span class="normal">3553</span>
+<span class="normal">3554</span>
+<span class="normal">3555</span>
+<span class="normal">3556</span>
+<span class="normal">3557</span>
+<span class="normal">3558</span>
+<span class="normal">3559</span>
+<span class="normal">3560</span>
+<span class="normal">3561</span>
+<span class="normal">3562</span>
+<span class="normal">3563</span>
+<span class="normal">3564</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">wrap_iter</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Wraps the function returning [`Iterable[T]`][typing.Iterable],</span>
 <span class="sd">    creating a wrapping function returning [`Iter[T]`][iters.iters.Iter].</span>
 
