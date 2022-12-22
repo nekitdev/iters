@@ -2,6 +2,13 @@
 
 <!-- changelogging: start -->
 
+## 0.8.0 (2022-12-22)
+
+### Features
+
+- Added `into_iter` method for `AsyncIter[T]`.
+- Added `into_async_iter` method for `Iter[T]`.
+
 ## 0.7.0 (2022-12-20)
 
 ### Features

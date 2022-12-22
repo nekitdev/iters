@@ -3539,6 +3539,9 @@ class Iter(Iterator[T]):
     def side_effect(self, function: Unary[T, None]) -> Iter[T]:
         return self.create(side_effect(function, self.iterator))
 
+    def into_async_iter(self) -> AsyncIter[T]:
+        return AsyncIter(self.iterator)
+
 
 iter = Iter
 """An alias of [`Iter`][iters.iters.Iter]."""
@@ -3562,3 +3565,6 @@ def wrap_iter(function: Callable[PS, Iterable[T]]) -> Callable[PS, Iter[T]]:
         return iter(function(*args, **kwargs))
 
     return wrap
+
+
+from iters.async_iters import AsyncIter

@@ -2906,6 +2906,9 @@ class AsyncIter(AsyncIterator[T]):
         def wait_concurrent_bound(self: AsyncIter[Awaitable[U]], bound: int) -> AsyncIter[U]:
             return self.create(async_wait_concurrent_bound(bound, self.iterator))
 
+    async def into_iter(self) -> Iter[T]:
+        return Iter(await self.extract())
+
 
 async_iter = AsyncIter
 
@@ -2916,3 +2919,6 @@ def wrap_async_iter(function: Callable[PS, AnyIterable[T]]) -> Callable[PS, Asyn
         return async_iter(function(*args, **kwargs))
 
     return wrap
+
+
+from iters.iters import Iter
