@@ -55,9 +55,6 @@ __all__ = (
     # predicates
     "Predicate",
     "AsyncPredicate",
-    # type guarding predicates
-    "TypeGuarding",
-    "AsyncTypeGuarding",
     # comparing
     "Compare",
     "AsyncCompare",
@@ -117,9 +114,6 @@ Selectors = Iterable[bool]
 
 AsyncPredicate = AsyncUnary[T, bool]
 AsyncSelectors = AsyncIterable[bool]
-
-TypeGuarding = Unary[T, TypeGuard[U]]
-AsyncTypeGuarding = AsyncUnary[T, TypeGuard[U]]
 
 AnySelectors = Union[AsyncSelectors, Selectors]
 
