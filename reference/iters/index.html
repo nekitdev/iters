@@ -4780,7 +4780,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;The underlying iterator.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The underlying iterator.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span>
 
     <span class="k">def</span> <span class="nf">_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -4788,7 +4788,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an empty iterator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an empty iterator.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -4804,7 +4804,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">once</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that yields a `value` exactly once.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that yields a `value` exactly once.</span>
 
 <span class="sd">        This is commonly used to adapt a single value into a [`chain`][iters.iters.Iter.chain]</span>
 <span class="sd">        of other kinds of iteration. Maybe you have an iterator that covers almost everything,</span>
@@ -4831,7 +4831,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">once_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that lazily generates a value exactly once</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that lazily generates a value exactly once</span>
 <span class="sd">        by invoking the `function` provided.</span>
 
 <span class="sd">        This is commonly used to adapt a single value into a [`chain`][iters.iters.Iter.chain]</span>
@@ -4861,7 +4861,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly repeats a single `value`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly repeats a single `value`.</span>
 
 <span class="sd">        This function repeats a single value over and over again.</span>
 
@@ -4888,7 +4888,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">repeat_exactly</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that repeats a single `value` exactly `count` times.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that repeats a single `value` exactly `count` times.</span>
 
 <span class="sd">        This function is a shorthand for [`iter.repeat(value).take(count)`][iters.iters.Iter.take].</span>
 
@@ -4911,7 +4911,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">repeat_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly generates values of type `V`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly generates values of type `V`.</span>
 
 <span class="sd">        This function repeats values over and over again.</span>
 
@@ -4940,7 +4940,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">repeat_exactly_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that generates values of type `V` exactly `count` times.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that generates values of type `V` exactly `count` times.</span>
 
 <span class="sd">        This function is a shorthand for</span>
 <span class="sd">        [`iter.repeat_with(function).take(count)`][iters.iters.Iter.take].</span>
@@ -4962,7 +4962,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">count_from_by</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `start`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `start`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -4986,7 +4986,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">count_from</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `start`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `start`.</span>
 
 <span class="sd">        This is a shorthand for:</span>
 
@@ -5004,7 +5004,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">count_by</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `0`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `0`.</span>
 
 <span class="sd">        This is a shorthand for:</span>
 
@@ -5022,7 +5022,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `0`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `0`.</span>
 
 <span class="sd">        This is a shorthand for:</span>
 
@@ -5037,7 +5037,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls endlessly, i.e. `value`,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls endlessly, i.e. `value`,</span>
 <span class="sd">        `function(value)`, `function(function(value))`, ...</span>
 
 <span class="sd">        Example:</span>
@@ -5061,7 +5061,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">iterate_exactly</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls exactly `count` times.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls exactly `count` times.</span>
 
 <span class="sd">        This is a shorthand for</span>
 <span class="sd">        [`iter.iterate(function, value).taken(count)`][iters.iters.Iter.take].</span>
@@ -5086,7 +5086,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">iter_except</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">errors</span><span class="p">:</span> <span class="n">AnyExceptionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
 <span class="sd">        any of the `errors` is encountered.</span>
 
 <span class="sd">        Example:</span>
@@ -5109,7 +5109,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">iter_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">context_manager</span><span class="p">:</span> <span class="n">ContextManager</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator over the iterable returned by `context_manager`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the iterable returned by `context_manager`.</span>
 
 <span class="sd">        This is essentially equivalent to:</span>
 
@@ -5140,7 +5140,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_chain</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
 
 <span class="sd">        For example, it can be used to chain arrays.</span>
 
@@ -5163,7 +5163,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_chain_from_iterable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator chaining iterables in the `iterable` together.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator chaining iterables in the `iterable` together.</span>
 
 <span class="sd">        This function essentially flattens the `iterable` provided.</span>
 
@@ -5190,7 +5190,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_combine</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
 
 <span class="sd">        This method is a slightly different version of</span>
 <span class="sd">        [`create_interleave_longest`][iters.iters.Iter.create_interleave_longest].</span>
@@ -5214,7 +5214,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_interleave</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
 
 <span class="sd">        Note:</span>
 <span class="sd">            This method stops when the shortest iterable is exhausted.</span>
@@ -5238,7 +5238,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_interleave_longest</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
 
 <span class="sd">        This method is a slightly different version of</span>
 <span class="sd">        [`create_combine`][iters.iters.Iter.create_combine].</span>
@@ -5367,7 +5367,7 @@
     <span class="nd">@no_type_check</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_zip</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">        the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">        Note:</span>
@@ -5499,7 +5499,7 @@
     <span class="nd">@no_type_check</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_zip_equal</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">        the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">        This is a strict version of [`create_zip`][iters.iters.Iter.create_zip].</span>
@@ -5654,7 +5654,7 @@
     <span class="nd">@no_type_check</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_zip_longest</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">        the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">        This is a version of [`create_zip`][iters.iters.Iter.create_zip] that places [`None`][None]</span>
@@ -5825,7 +5825,7 @@
     <span class="k">def</span> <span class="nf">create_zip_longest_with</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">fill</span><span class="p">:</span> <span class="n">V</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">V</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">        the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">        This is a version of [`create_zip`][iters.iters.Iter.create_zip] that places the `fill` of</span>
@@ -5957,7 +5957,7 @@
     <span class="nd">@no_type_check</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
 <span class="sd">        [*Cartesian product*](https://en.wikipedia.org/wiki/Cartesian_product) of `iterables`.</span>
 
 <span class="sd">        Warning:</span>
@@ -5987,7 +5987,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">reversed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">reversible</span><span class="p">:</span> <span class="n">Reversible</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator over the reversed `reversible`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the reversed `reversible`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6004,7 +6004,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">sentinel</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6055,7 +6055,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The underlying iterator.</span>
@@ -6063,7 +6063,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span>
 
     <span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `self`, the current iterator.</span>
@@ -6071,7 +6071,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6091,7 +6091,7 @@
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6110,7 +6110,7 @@
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
 
 <span class="sd">        This is equivalent to:</span>
 
@@ -6135,7 +6135,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_or</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">ST</span><span class="p">],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6155,7 +6155,7 @@
         <span class="k">return</span> <span class="n">compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compare_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable using the `key` function.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable using the `key` function.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6177,7 +6177,7 @@
         <span class="k">return</span> <span class="n">compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Computes the length of the iterator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the length of the iterator.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6193,7 +6193,7 @@
         <span class="k">return</span> <span class="n">iter_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the first item in the iterator.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6213,7 +6213,7 @@
         <span class="k">return</span> <span class="n">first</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">first_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator or the `default`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the first item in the iterator or the `default`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6232,7 +6232,7 @@
         <span class="k">return</span> <span class="n">first</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">first_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the first item or [`None`][None].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the first item or [`None`][None].</span>
 
 <span class="sd">        This is equivalent to:</span>
 
@@ -6257,7 +6257,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_or</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6277,7 +6277,7 @@
         <span class="k">return</span> <span class="n">last</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">last_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            ```python</span>
@@ -6296,7 +6296,7 @@
         <span class="k">return</span> <span class="n">last</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">last_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">        This is equivalent to:</span>
 
@@ -6321,7 +6321,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_or</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">        Note:</span>
 <span class="sd">            This method uses the [`tail`][iters.utils.tail] function.</span>
@@ -6344,7 +6344,7 @@
         <span class="k">return</span> <span class="n">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">last_with_tail_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">        Note:</span>
 <span class="sd">            This method uses the [`tail`][iters.utils.tail] function.</span>
@@ -6366,7 +6366,7 @@
         <span class="k">return</span> <span class="n">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">last_with_tail_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">        Note:</span>
 <span class="sd">            This method uses the [`tail`][iters.utils.tail] function.</span>
@@ -6394,7 +6394,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_with_tail_or</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator with the `function`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator with the `function`.</span>
 
 <span class="sd">        This is equivalent to:</span>
 
@@ -6420,7 +6420,7 @@
         <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`List[T]`][list].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`List[T]`][list].</span>
 
 <span class="sd">        This is equivalent to:</span>
 
@@ -6443,7 +6443,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The items of the iterator have to be hashable for this method to work.</span>
@@ -6469,7 +6469,7 @@
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">ordered_set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OrderedSet</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The items of the iterator have to be hashable for this method to work.</span>
@@ -6495,7 +6495,7 @@
         <span class="k">return</span> <span class="n">ordered_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
 
 <span class="sd">        This is equivalent to:</span>
 
@@ -6518,7 +6518,7 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The first item in each couple has to be hashable for this method to work.</span>
@@ -6544,7 +6544,7 @@
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Joins the iterator using the `string`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Joins the iterator using the `string`.</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The iterator must contain only string items for this method to work.</span>
@@ -6572,7 +6572,7 @@
         <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`str`][str] string.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Joins the iterator into the [`str`][str] string.</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The iterator must contain only items of type [`str`][str] for this method to work.</span>
@@ -6599,7 +6599,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EMPTY_STRING</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`bytes`][bytes] string.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Joins the iterator into the [`bytes`][bytes] string.</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The iterator must contain only items of type [`bytes`][bytes] for this method to work.</span>
@@ -6616,7 +6616,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EMPTY_BYTES</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">count_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter].</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter].</span>
 
 <span class="sd">        Warning:</span>
 <span class="sd">            The items of the iterator have to be hashable for this method to work.</span>
@@ -6638,7 +6638,7 @@
         <span class="k">return</span> <span class="n">count_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">count_dict_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter]</span>
 <span class="sd">        by applying the `key` function.</span>
 
 <span class="sd">        Example:</span>
@@ -7925,7 +7925,7 @@
         <span class="o">...</span>
 
     <span class="k">def</span> <span class="nf">cartesian_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
 <span class="sd">        [*Cartesian power*](https://en.wikipedia.org/wiki/Cartesian_product) of the iterator.</span>
 
 <span class="sd">        Warning:</span>
@@ -8204,7 +8204,7 @@
 <span class="normal">236</span>
 <span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an empty iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an empty iterator.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -8326,7 +8326,7 @@ but you only need to process one value.</p>
 <span class="normal">263</span>
 <span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">once</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that yields a `value` exactly once.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that yields a `value` exactly once.</span>
 
 <span class="sd">    This is commonly used to adapt a single value into a [`chain`][iters.iters.Iter.chain]</span>
 <span class="sd">    of other kinds of iteration. Maybe you have an iterator that covers almost everything,</span>
@@ -8464,7 +8464,7 @@ lazily generate the value on request.</p>
 <span class="normal">293</span>
 <span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">once_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that lazily generates a value exactly once</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that lazily generates a value exactly once</span>
 <span class="sd">    by invoking the `function` provided.</span>
 
 <span class="sd">    This is commonly used to adapt a single value into a [`chain`][iters.iters.Iter.chain]</span>
@@ -8599,7 +8599,7 @@ in order to make them finite.</p>
 <span class="normal">320</span>
 <span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly repeats a single `value`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly repeats a single `value`.</span>
 
 <span class="sd">    This function repeats a single value over and over again.</span>
 
@@ -8733,7 +8733,7 @@ in order to make them finite.</p>
 <span class="normal">343</span>
 <span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat_exactly</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that repeats a single `value` exactly `count` times.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that repeats a single `value` exactly `count` times.</span>
 
 <span class="sd">    This function is a shorthand for [`iter.repeat(value).take(count)`][iters.iters.Iter.take].</span>
 
@@ -8865,7 +8865,7 @@ in order to make them finite.</p>
 <span class="normal">372</span>
 <span class="normal">373</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly generates values of type `V`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that endlessly generates values of type `V`.</span>
 
 <span class="sd">    This function repeats values over and over again.</span>
 
@@ -8999,7 +8999,7 @@ in order to make them finite.</p>
 <span class="normal">394</span>
 <span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">repeat_exactly_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">V</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that generates values of type `V` exactly `count` times.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that generates values of type `V` exactly `count` times.</span>
 
 <span class="sd">    This function is a shorthand for</span>
 <span class="sd">    [`iter.repeat_with(function).take(count)`][iters.iters.Iter.take].</span>
@@ -9131,7 +9131,7 @@ in order to make them finite.</p>
 <span class="normal">418</span>
 <span class="normal">419</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count_from_by</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `start`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `start`.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -9241,7 +9241,7 @@ in order to make them finite.</p>
 <span class="normal">436</span>
 <span class="normal">437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count_from</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `start`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `start`.</span>
 
 <span class="sd">    This is a shorthand for:</span>
 
@@ -9345,7 +9345,7 @@ in order to make them finite.</p>
 <span class="normal">454</span>
 <span class="normal">455</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count_by</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `0`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `step`) values starting from `0`.</span>
 
 <span class="sd">    This is a shorthand for:</span>
 
@@ -9422,7 +9422,7 @@ in order to make them finite.</p>
 <span class="normal">469</span>
 <span class="normal">470</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `0`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator of evenly spaced (by `1`) values starting from `0`.</span>
 
 <span class="sd">    This is a shorthand for:</span>
 
@@ -9547,7 +9547,7 @@ in order to make them finite.</p>
 <span class="normal">493</span>
 <span class="normal">494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls endlessly, i.e. `value`,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls endlessly, i.e. `value`,</span>
 <span class="sd">    `function(value)`, `function(function(value))`, ...</span>
 
 <span class="sd">    Example:</span>
@@ -9691,7 +9691,7 @@ in order to make them finite.</p>
 <span class="normal">518</span>
 <span class="normal">519</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iterate_exactly</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls exactly `count` times.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that iterates function calls exactly `count` times.</span>
 
 <span class="sd">    This is a shorthand for</span>
 <span class="sd">    [`iter.iterate(function, value).taken(count)`][iters.iters.Iter.take].</span>
@@ -9823,7 +9823,7 @@ any of the <code>errors</code> is encountered.</p>
 <span class="normal">541</span>
 <span class="normal">542</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iter_except</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">errors</span><span class="p">:</span> <span class="n">AnyExceptionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator that repeatedly calls `function` until</span>
 <span class="sd">    any of the `errors` is encountered.</span>
 
 <span class="sd">    Example:</span>
@@ -9957,7 +9957,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">572</span>
 <span class="normal">573</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">iter_with</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">context_manager</span><span class="p">:</span> <span class="n">ContextManager</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator over the iterable returned by `context_manager`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the iterable returned by `context_manager`.</span>
 
 <span class="sd">    This is essentially equivalent to:</span>
 
@@ -10086,7 +10086,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">595</span>
 <span class="normal">596</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_chain</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator chaining `iterables` together.</span>
 
 <span class="sd">    For example, it can be used to chain arrays.</span>
 
@@ -10215,7 +10215,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">622</span>
 <span class="normal">623</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_chain_from_iterable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator chaining iterables in the `iterable` together.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator chaining iterables in the `iterable` together.</span>
 
 <span class="sd">    This function essentially flattens the `iterable` provided.</span>
 
@@ -10342,7 +10342,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">646</span>
 <span class="normal">647</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_combine</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator combining `iterables`.</span>
 
 <span class="sd">    This method is a slightly different version of</span>
 <span class="sd">    [`create_interleave_longest`][iters.iters.Iter.create_interleave_longest].</span>
@@ -10468,7 +10468,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">670</span>
 <span class="normal">671</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_interleave</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
 
 <span class="sd">    Note:</span>
 <span class="sd">        This method stops when the shortest iterable is exhausted.</span>
@@ -10592,7 +10592,7 @@ let us consider parsing some file containing integers on every line.</p>
 <span class="normal">694</span>
 <span class="normal">695</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_interleave_longest</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator interleaving `iterables`.</span>
 
 <span class="sd">    This method is a slightly different version of</span>
 <span class="sd">    [`create_combine`][iters.iters.Iter.create_combine].</span>
@@ -10722,7 +10722,7 @@ the <em>i</em>-th tuple contains the <em>i</em>-th item from each of the iterabl
 <span class="normal">825</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_zip</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">    the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">    Note:</span>
@@ -10870,7 +10870,7 @@ the <em>i</em>-th tuple contains the <em>i</em>-th item from each of the iterabl
 <span class="normal">959</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_zip_equal</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">    the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">    This is a strict version of [`create_zip`][iters.iters.Iter.create_zip].</span>
@@ -11001,7 +11001,7 @@ in place of a <em>j</em>-th item of an <em>i</em>-th tuple when a <em>j</em>-th 
 <span class="normal">1112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_zip_longest</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]:</span>
-    <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">    the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">    This is a version of [`create_zip`][iters.iters.Iter.create_zip] that places [`None`][None]</span>
@@ -11134,7 +11134,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="k">def</span> <span class="nf">create_zip_longest_with</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">fill</span><span class="p">:</span> <span class="n">V</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">V</span><span class="p">]]]:</span>
-    <span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Zips `iterables` into an iterator of tuples, where</span>
 <span class="sd">    the *i*-th tuple contains the *i*-th item from each of the iterables.</span>
 
 <span class="sd">    This is a version of [`create_zip`][iters.iters.Iter.create_zip] that places the `fill` of</span>
@@ -11275,7 +11275,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1420</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@no_type_check</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">iterables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
 <span class="sd">    [*Cartesian product*](https://en.wikipedia.org/wiki/Cartesian_product) of `iterables`.</span>
 
 <span class="sd">    Warning:</span>
@@ -11392,7 +11392,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1436</span>
 <span class="normal">1437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">reversed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">reversible</span><span class="p">:</span> <span class="n">Reversible</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator over the reversed `reversible`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the reversed `reversible`.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -11533,7 +11533,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1467</span>
 <span class="normal">1468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Nullary</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">sentinel</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator over `function` call results until it returns the `sentinel`.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -11608,7 +11608,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1495</span>
 <span class="normal">1496</span>
 <span class="normal">1497</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unwraps the underlying iterator.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The underlying iterator.</span>
@@ -11661,7 +11661,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1503</span>
 <span class="normal">1504</span>
 <span class="normal">1505</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simply returns `self`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        `self`, the current iterator.</span>
@@ -11753,7 +11753,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1523</span>
 <span class="normal">1524</span>
 <span class="normal">1525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the next item in the iterator.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -11840,7 +11840,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1542</span>
 <span class="normal">1543</span>
 <span class="normal">1544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the next item or the provided `default`.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -11935,7 +11935,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1567</span>
 <span class="normal">1568</span>
 <span class="normal">1569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">next_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the next item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
 
@@ -12050,7 +12050,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1587</span>
 <span class="normal">1588</span>
 <span class="normal">1589</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">ST</span><span class="p">],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -12173,7 +12173,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1609</span>
 <span class="normal">1610</span>
 <span class="normal">1611</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compare_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">ST</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable using the `key` function.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compares `self` with the `other` iterable using the `key` function.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -12257,7 +12257,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1625</span>
 <span class="normal">1626</span>
 <span class="normal">1627</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Computes the length of the iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the length of the iterator.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -12357,7 +12357,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1645</span>
 <span class="normal">1646</span>
 <span class="normal">1647</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the first item in the iterator.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -12444,7 +12444,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1664</span>
 <span class="normal">1665</span>
 <span class="normal">1666</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the first item in the iterator or the `default`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the first item in the iterator or the `default`.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -12539,7 +12539,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1689</span>
 <span class="normal">1690</span>
 <span class="normal">1691</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">first_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the first item or [`None`][None].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the first item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
 
@@ -12648,7 +12648,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1709</span>
 <span class="normal">1710</span>
 <span class="normal">1711</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -12735,7 +12735,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1728</span>
 <span class="normal">1729</span>
 <span class="normal">1730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
@@ -12830,7 +12830,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1753</span>
 <span class="normal">1754</span>
 <span class="normal">1755</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">    This is equivalent to:</span>
 
@@ -12946,7 +12946,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1776</span>
 <span class="normal">1777</span>
 <span class="normal">1778</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator.</span>
 
 <span class="sd">    Note:</span>
 <span class="sd">        This method uses the [`tail`][iters.utils.tail] function.</span>
@@ -13043,7 +13043,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1798</span>
 <span class="normal">1799</span>
 <span class="normal">1800</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last item in the iterator or the `default`.</span>
 
 <span class="sd">    Note:</span>
 <span class="sd">        This method uses the [`tail`][iters.utils.tail] function.</span>
@@ -13148,7 +13148,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1826</span>
 <span class="normal">1827</span>
 <span class="normal">1828</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">last_with_tail_or_none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last item or [`None`][None].</span>
 
 <span class="sd">    Note:</span>
 <span class="sd">        This method uses the [`tail`][iters.utils.tail] function.</span>
@@ -13275,7 +13275,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1852</span>
 <span class="normal">1853</span>
 <span class="normal">1854</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator with the `function`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator with the `function`.</span>
 
 <span class="sd">    This is equivalent to:</span>
 
@@ -13373,7 +13373,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1875</span>
 <span class="normal">1876</span>
 <span class="normal">1877</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`List[T]`][list].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`List[T]`][list].</span>
 
 <span class="sd">    This is equivalent to:</span>
 
@@ -13475,7 +13475,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1901</span>
 <span class="normal">1902</span>
 <span class="normal">1903</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Set[Q]`][set].</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The items of the iterator have to be hashable for this method to work.</span>
@@ -13580,7 +13580,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1927</span>
 <span class="normal">1928</span>
 <span class="normal">1929</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">ordered_set</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OrderedSet</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The items of the iterator have to be hashable for this method to work.</span>
@@ -13678,7 +13678,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1950</span>
 <span class="normal">1951</span>
 <span class="normal">1952</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Tuple[T, ...]`][tuple].</span>
 
 <span class="sd">    This is equivalent to:</span>
 
@@ -13780,7 +13780,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">1976</span>
 <span class="normal">1977</span>
 <span class="normal">1978</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Q</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Dict[Q, V]`][dict].</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The first item in each couple has to be hashable for this method to work.</span>
@@ -13889,7 +13889,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">2004</span>
 <span class="normal">2005</span>
 <span class="normal">2006</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">],</span> <span class="n">string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Joins the iterator using the `string`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Joins the iterator using the `string`.</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The iterator must contain only string items for this method to work.</span>
@@ -13998,7 +13998,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">2031</span>
 <span class="normal">2032</span>
 <span class="normal">2033</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`str`][str] string.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Joins the iterator into the [`str`][str] string.</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The iterator must contain only items of type [`str`][str] for this method to work.</span>
@@ -14086,7 +14086,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">2048</span>
 <span class="normal">2049</span>
 <span class="normal">2050</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Joins the iterator into the [`bytes`][bytes] string.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Joins the iterator into the [`bytes`][bytes] string.</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The iterator must contain only items of type [`bytes`][bytes] for this method to work.</span>
@@ -14177,7 +14177,7 @@ type <code>V</code> in place of a <em>j</em>-th item of an <em>i</em>-th tuple w
 <span class="normal">2070</span>
 <span class="normal">2071</span>
 <span class="normal">2072</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Iter</span><span class="p">[</span><span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter].</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter].</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        The items of the iterator have to be hashable for this method to work.</span>
@@ -14297,7 +14297,7 @@ corresponding to the items of the iterator.</p></td>
 <span class="normal">2094</span>
 <span class="normal">2095</span>
 <span class="normal">2096</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_dict_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Unary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Counter</span><span class="p">[</span><span class="n">Q</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collects the iterator into the [`Counter[Q]`][collections.Counter]</span>
 <span class="sd">    by applying the `key` function.</span>
 
 <span class="sd">    Example:</span>
@@ -14422,7 +14422,7 @@ corresponding to the items of the iterator.</p></td>
 <span class="normal">3382</span>
 <span class="normal">3383</span>
 <span class="normal">3384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cartesian_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iter</span><span class="p">[</span><span class="n">DynamicTuple</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an iterator over the</span>
 <span class="sd">    [*Cartesian power*](https://en.wikipedia.org/wiki/Cartesian_product) of the iterator.</span>
 
 <span class="sd">    Warning:</span>
@@ -14535,7 +14535,7 @@ creating a wrapping function returning <a class="autorefs autorefs-internal" hre
 <span class="normal">3565</span>
 <span class="normal">3566</span>
 <span class="normal">3567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">wrap_iter</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Wraps the function returning [`Iterable[T]`][typing.Iterable],</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps the function returning [`Iterable[T]`][typing.Iterable],</span>
 <span class="sd">    creating a wrapping function returning [`Iter[T]`][iters.iters.Iter].</span>
 
 <span class="sd">    Arguments:</span>
