@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from functools import partial
 from typing import Any, Awaitable, Callable, Iterable, List, Tuple, TypeVar, Union, overload
 
@@ -13,7 +15,7 @@ except ImportError:
 else:
     CONCURRENT = True
 
-from iters.typing import AnyException, DynamicTuple, EmptyTuple, is_error
+from iters.typing import AnyException, DynamicTuple, EmptyTuple, is_any_exception
 
 __all__ = (
     "CONCURRENT",
@@ -75,7 +77,7 @@ async def _append_tagged_result(
 
 
 def unwrap_result(result: AnyResult[T]) -> T:
-    if is_error(result):
+    if is_any_exception(result):
         raise result
 
     return result  # type: ignore

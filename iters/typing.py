@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 from builtins import isinstance as is_instance
 from builtins import issubclass as is_subclass
@@ -53,6 +55,9 @@ __all__ = (
     # predicates
     "Predicate",
     "AsyncPredicate",
+    # type guarding predicates
+    "TypeGuarding",
+    "AsyncTypeGuarding",
     # comparing
     "Compare",
     "AsyncCompare",
@@ -113,6 +118,9 @@ Selectors = Iterable[bool]
 AsyncPredicate = AsyncUnary[T, bool]
 AsyncSelectors = AsyncIterable[bool]
 
+TypeGuarding = Unary[T, TypeGuard[U]]
+AsyncTypeGuarding = AsyncUnary[T, TypeGuard[U]]
+
 AnySelectors = Union[AsyncSelectors, Selectors]
 
 Compare = Binary[T, U, bool]
@@ -159,7 +167,7 @@ def is_bytes(item: Any) -> TypeGuard[bytes]:
     return is_instance(item, bytes)
 
 
-def is_error(item: Any) -> TypeGuard[AnyException]:
+def is_any_exception(item: Any) -> TypeGuard[AnyException]:
     return is_instance(item, AnyException)
 
 

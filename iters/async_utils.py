@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from builtins import next as standard_next
 from collections import Counter as counter_dict
 from collections import deque
@@ -4848,7 +4850,7 @@ async def async_cartesian_product_step(
 
     async for items in async_iter(stack):
         for item in array:
-            yield items + tuple_args(item)
+            yield items + unary_tuple(item)
 
 
 @overload
@@ -4914,7 +4916,7 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
 
         async for items in async_iter(stack):
             for item in state:
-                yield items + tuple_args(item)
+                yield items + unary_tuple(item)
 
     stack = async_once(())
 
@@ -4924,8 +4926,5 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
     return stack
 
 
-Args = TypeVarTuple("Args")  # type: ignore
-
-
-def tuple_args(*args: Unpack[Args]) -> Tuple[Unpack[Args]]:  # type: ignore
-    return args  # type: ignore
+def unary_tuple(item: T) -> Tuple[T]:
+    return (item,)

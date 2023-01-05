@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from builtins import zip as standard_zip
 from collections import Counter as counter_dict
 from collections import deque
