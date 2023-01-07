@@ -1160,6 +1160,9 @@ class AsyncIter(AsyncIterator[T]):
     async def collect_await(self, function: AsyncUnary[AsyncIterable[T], U]) -> U:
         return await function(self.iterator)
 
+    def collect_iter(self, function: Unary[AsyncIterable[T], AnyIterable[U]]) -> AsyncIter[U]:
+        return self.create(self.collect(function))
+
     async def list(self) -> List[T]:
         return await async_list(self.iterator)
 

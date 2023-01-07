@@ -1853,6 +1853,39 @@ class Iter(Iterator[T]):
         """
         return function(self.iterator)
 
+    def collect_iter(self, function: Unary[Iterable[T], Iterable[U]]) -> Iter[U]:
+        """Collects the iterator with the `function`.
+
+        This is equivalent to:
+
+        ```python
+        iterator.create(iterator.collect(function))
+        ```
+
+        Example:
+            ```python
+            from typing import TypeVar
+
+            T = TypeVar("T")
+
+            def identity(item: T) -> T:
+                return item
+
+            array = [13, 25, 34]
+
+            iterator = iter(array).collect_iter(identity)
+
+            assert iterator.list() == array
+            ```
+
+        Arguments:
+            function: The function to use.
+
+        Returns:
+            The result of the `function` call, wrapped back into an iterator.
+        """
+        return self.create(self.collect(function))
+
     def list(self) -> List[T]:
         """Collects the iterator into the [`List[T]`][list].
 

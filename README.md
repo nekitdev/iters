@@ -48,7 +48,7 @@ Or by directly specifying it in the configuration like so:
 
 ```toml
 [tool.poetry.dependencies]
-iters = "^0.8.0"
+iters = "^0.9.0"
 ```
 
 Alternatively, you can add it directly from the source:

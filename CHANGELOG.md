@@ -2,6 +2,12 @@
 
 <!-- changelogging: start -->
 
+## 0.9.0 (2022-01-07)
+
+### Features
+
+- Added `collect_iter` method for `AsyncIter[T]` and `Iter[T]`.
+
 ## 0.8.0 (2022-12-22)
 
 ### Features
