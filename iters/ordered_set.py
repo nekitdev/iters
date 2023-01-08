@@ -22,7 +22,7 @@ from named import get_type_name
 
 from iters.typing import is_instance, is_subclass
 
-__all__ = ("OrderedSet", "ordered_set")
+__all__ = ("OrderedSet", "ordered_set", "ordered_set_unchecked")
 
 Q = TypeVar("Q", bound=Hashable)
 
@@ -51,26 +51,26 @@ ITEM_NOT_IN_ORDERED_SET = "item {!r} is not in the ordered set"
 
 class OrderedSet(MutableSet[Q], Sequence[Q]):
     def __init__(self, iterable: Iterable[Q] = ()) -> None:
-        self.items: List[Q] = []
-        self.item_to_index: Dict[Q, int] = {}
+        self._items: List[Q] = []
+        self._item_to_index: Dict[Q, int] = {}
 
         self.update(iterable)
 
     @classmethod
     def create_unchecked(cls: Type[OS], iterable: Iterable[Q]) -> OS:
-        result = cls()
+        self = cls()
 
-        items = result.items
-        item_to_index = result.item_to_index
+        items = self._items
+        item_to_index = self._item_to_index
 
         for index, item in enumerate(iterable):
             items.append(item)
             item_to_index[item] = index
 
-        return result
+        return self
 
     def __len__(self) -> int:
-        return len(self.items)
+        return len(self._items)
 
     @overload
     def __getitem__(self, index: int) -> Q:
@@ -85,21 +85,21 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             if index == SLICE_ALL:
                 return self.copy()
 
-            return type(self)(self.items[index])
+            return type(self)(self._items[index])
 
-        return self.items[index]  # type: ignore
+        return self._items[index]  # type: ignore
 
     def copy(self: OS) -> OS:
         return type(self)(self)
 
     def __contains__(self, item: Any) -> bool:
-        return item in self.item_to_index
+        return item in self._item_to_index
 
     def add(self, item: Q) -> None:
-        item_to_index = self.item_to_index
+        item_to_index = self._item_to_index
 
         if item not in item_to_index:
-            items = self.items
+            items = self._items
 
             item_to_index[item] = len(items)
 
@@ -115,7 +115,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
     def index(self, item: Q, start: Optional[int] = None, stop: Optional[int] = None) -> int:
         try:
-            index = self.item_to_index[item]
+            index = self._item_to_index[item]
 
         except KeyError:
             raise ValueError(ITEM_NOT_IN_ORDERED_SET.format(item)) from None
@@ -131,10 +131,10 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return index
 
     def count(self, item: Q) -> int:
-        return int(item in self.item_to_index)
+        return int(item in self._item_to_index)
 
     def pop(self, index: int = LAST) -> Q:
-        items = self.items
+        items = self._items
 
         item = items[index]
 
@@ -143,12 +143,12 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return item
 
     def discard(self, item: Q) -> None:
-        item_to_index = self.item_to_index
+        item_to_index = self._item_to_index
 
         if item in item_to_index:
             index = item_to_index[item]
 
-            del self.items[index]
+            del self._items[index]
 
             for item_in, index_in in item_to_index.items():
                 if index_in >= index:
@@ -162,12 +162,12 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             raise KeyError(ITEM_NOT_IN_ORDERED_SET.format(item))
 
     def insert(self, index: int, item: Q) -> None:
-        item_to_index = self.item_to_index
+        item_to_index = self._item_to_index
 
         if item in item_to_index:
             return
 
-        items = self.items
+        items = self._items
 
         if index < len(items):
             items.insert(index, item)
@@ -182,19 +182,19 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             self.append(item)
 
     def clear(self) -> None:
-        self.items.clear()
-        self.item_to_index.clear()
+        self._items.clear()
+        self._item_to_index.clear()
 
     def __iter__(self) -> Iterator[Q]:
-        return iter(self.items)
+        return iter(self._items)
 
     def __reversed__(self) -> Iterator[Q]:
-        return reversed(self.items)
+        return reversed(self._items)
 
     def __repr__(self) -> str:
         name = get_type_name(self)
 
-        items = self.items
+        items = self._items
 
         if not items:
             return EMPTY_REPRESENTATION.format(name)
@@ -204,9 +204,9 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
     def __eq__(self, other: Any) -> bool:
         if is_instance(other, Iterable):
             if is_instance(other, Sequence):
-                return self.items == list(other)
+                return self._items == list(other)
 
-            return set(self.item_to_index) == set(other)
+            return set(self._item_to_index) == set(other)
 
         return False
 
@@ -325,3 +325,4 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 AnyOrderedSet = OrderedSet[Any]
 
 ordered_set = OrderedSet
+ordered_set_unchecked = ordered_set.create_unchecked

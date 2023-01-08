@@ -2,6 +2,12 @@
 
 <!-- changelogging: start -->
 
+## 0.10.0 (2022-01-08)
+
+### Internal
+
+- Mark the internals of the `OrderedSet[Q]` private.
+
 ## 0.9.0 (2022-01-07)
 
 ### Features
