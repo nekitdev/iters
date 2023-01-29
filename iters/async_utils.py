@@ -34,7 +34,6 @@ from named import get_type_name
 from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
 
-from iters.concurrent import CONCURRENT
 from iters.ordered_set import OrderedSet, ordered_set
 from iters.types import marker, no_default
 from iters.typing import (
@@ -77,9 +76,6 @@ from iters.typing import (
     is_string,
 )
 from iters.utils import COMPARE, repeat, repeat_with, take, unpack_binary
-
-if CONCURRENT:
-    from iters.concurrent import collect_iterable
 
 
 __all__ = (
@@ -314,42 +310,6 @@ P = TypeVar("P", bound=Product)
 
 LT = TypeVar("LT", bound=LenientOrdered)
 ST = TypeVar("ST", bound=StrictOrdered)
-
-
-try:
-    from builtins import aiter as standard_async_iter  # type: ignore
-    from builtins import anext as standard_async_next  # type: ignore
-
-except ImportError:
-
-    def standard_async_iter(async_iterable: AsyncIterable[T]) -> AsyncIterator[T]:  # type: ignore
-        if is_async_iterable(async_iterable):
-            return async_iterable.__aiter__()
-
-        raise not_async_iterable(async_iterable)
-
-    @overload  # type: ignore
-    async def standard_async_next(async_iterator: AsyncIterator[T]) -> T:
-        ...
-
-    @overload
-    async def standard_async_next(async_iterator: AsyncIterator[T], default: U) -> Union[T, U]:
-        ...
-
-    async def standard_async_next(
-        async_iterator: AsyncIterator[Any], default: Any = no_default
-    ) -> Any:
-        if is_async_iterator(async_iterator):
-            try:
-                return await async_iterator.__anext__()
-
-            except StopAsyncIteration:
-                if default is no_default:
-                    raise
-
-                return default
-
-        raise not_async_iterator(async_iterator)
 
 
 @overload
@@ -4182,41 +4142,6 @@ async def async_wait(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:
         raise not_any_iterable(iterable)
 
 
-if CONCURRENT:
-
-    async def async_wait_concurrent(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:
-        awaitables: Iterable[Awaitable[T]]
-
-        if is_async_iterable(iterable):
-            awaitables = await async_extract(iterable)  # type: ignore
-
-        elif is_iterable(iterable):
-            awaitables = iterable  # type: ignore
-
-        else:
-            raise not_any_iterable(iterable)
-
-        results = await collect_iterable(awaitables)
-
-        for result in results:
-            yield result
-
-    def async_wait_concurrent_bound(
-        bound: int, iterable: AnyIterable[Awaitable[T]]
-    ) -> AsyncIterator[T]:
-        return async_flat_map(async_wait_concurrent, async_chunks(bound, iterable))
-
-    def async_map_concurrent(
-        function: AsyncUnary[T, U], iterable: AnyIterable[T]
-    ) -> AsyncIterator[U]:
-        return async_wait_concurrent(async_map(function, iterable))
-
-    def async_map_concurrent_bound(
-        bound: int, function: AsyncUnary[T, U], iterable: AnyIterable[T]
-    ) -> AsyncIterator[U]:
-        return async_wait_concurrent_bound(bound, async_map(function, iterable))
-
-
 async def async_all(iterable: AnyIterable[T]) -> bool:
     async for item in async_iter(iterable):
         if not item:
@@ -4928,3 +4853,40 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
 
 def unary_tuple(item: T) -> Tuple[T]:
     return (item,)
+
+
+CONCURRENT = True
+
+# try:
+from async_extensions.collect import collect_iterable
+
+# except ImportError:
+#     CONCURRENT = False
+
+
+from async_extensions.standard import async_iter as standard_async_iter
+from async_extensions.standard import async_next as standard_async_next
+
+
+if CONCURRENT:
+
+    async def async_wait_concurrent(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:
+        results = await collect_iterable(iterable)
+
+        for result in results:
+            yield result
+
+    def async_wait_concurrent_bound(
+        bound: int, iterable: AnyIterable[Awaitable[T]]
+    ) -> AsyncIterator[T]:
+        return async_flat_map(async_wait_concurrent, async_chunks(bound, iterable))
+
+    def async_map_concurrent(
+        function: AsyncUnary[T, U], iterable: AnyIterable[T]
+    ) -> AsyncIterator[U]:
+        return async_wait_concurrent(async_map(function, iterable))
+
+    def async_map_concurrent_bound(
+        bound: int, function: AsyncUnary[T, U], iterable: AnyIterable[T]
+    ) -> AsyncIterator[U]:
+        return async_wait_concurrent_bound(bound, async_map(function, iterable))

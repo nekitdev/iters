@@ -3573,6 +3573,12 @@ class Iter(Iterator[T]):
         return self.create(side_effect(function, self.iterator))
 
     def into_async_iter(self) -> AsyncIter[T]:
+        """Converts an [`Iter[T]`][iters.iters.Iter] into
+        an [`AsyncIter[T]`][iters.async.AsyncIter].
+
+        Returns:
+            The async iterator created from the iterator.
+        """
         return AsyncIter(self.iterator)
 
 

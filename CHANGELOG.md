@@ -2,13 +2,19 @@
 
 <!-- changelogging: start -->
 
-## 0.10.0 (2022-01-08)
+## 0.11.0 (2023-01-29)
 
 ### Internal
 
-- Mark the internals of the `OrderedSet[Q]` private.
+- `async-extensions` is now used instead of reimplementing `collect_iterable` functionality.
 
-## 0.9.0 (2022-01-07)
+## 0.10.0 (2023-01-08)
+
+### Internal
+
+- Marked the internals of the `OrderedSet[Q]` private.
+
+## 0.9.0 (2023-01-07)
 
 ### Features
 

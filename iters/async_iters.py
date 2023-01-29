@@ -30,6 +30,7 @@ from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec
 
 from iters.async_utils import (
+    CONCURRENT,
     async_accumulate_fold,
     async_accumulate_fold_await,
     async_accumulate_product,
@@ -221,7 +222,6 @@ from iters.async_utils import (
     standard_async_iter,
     standard_async_next,
 )
-from iters.concurrent import CONCURRENT
 from iters.ordered_set import OrderedSet
 from iters.typing import (
     AnyExceptionType,

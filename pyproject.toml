@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iters"
-version = "0.10.0"
+version = "0.11.0"
 description = "Composable external iteration."
 authors = ["nekitdev"]
 license = "MIT"
@@ -37,12 +37,12 @@ named = ">= 1.1.0"
 orderings = ">= 1.1.0"
 solus = ">= 1.1.0"
 
-[tool.poetry.dependencies.anyio]
-version = ">= 3.6.1"
+[tool.poetry.dependencies.async-extensions]
+version = ">= 1.1.0"
 optional = true
 
 [tool.poetry.extras]
-concurrent = ["anyio"]
+concurrent = ["async-extensions"]
 
 [tool.poetry.group.format]
 optional = true
@@ -135,7 +135,7 @@ warn_unused_ignores = false  # compatibility
 
 [tool.changelogging]
 name = "iters"
-version = "0.10.0"
+version = "0.11.0"
 url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"
