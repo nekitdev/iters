@@ -400,6 +400,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#iters.types.is_no_default" class="md-nav__link">
+    is_no_default()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iters.types.is_marker" class="md-nav__link">
+    is_marker()
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -534,6 +548,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#iters.types.is_no_default" class="md-nav__link">
+    is_no_default()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iters.types.is_marker" class="md-nav__link">
+    is_marker()
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -636,8 +664,8 @@
 
         <details class="quote">
           <summary>Source code in <code>iters/types.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NoDefault</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NoDefault</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the absence of default values.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -667,8 +695,8 @@
 
         <details class="quote">
           <summary>Source code in <code>iters/types.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Marker</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Marker</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents markers used for various checks.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -677,6 +705,112 @@
 
 </div>
 
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="iters.types.is_no_default" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_no_default</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">NoDefault</span><span class="p">]</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Checks if the <code>item</code> is <a class="autorefs autorefs-internal" href="#iters.types.NoDefault"><code>NoDefault</code></a>.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing_extensions.TypeGuard">TypeGuard</span>[<a class="autorefs autorefs-internal" title="iters.types.NoDefault" href="#iters.types.NoDefault">NoDefault</a>]</code>
+          </td>
+          <td><p>Whether the <code>item</code> is <a class="autorefs autorefs-internal" href="#iters.types.NoDefault"><code>NoDefault</code></a>.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/types.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_no_default</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">NoDefault</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the `item` is [`NoDefault`][iters.types.NoDefault].</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Whether the `item` is [`NoDefault`][iters.types.NoDefault].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">item</span> <span class="ow">is</span> <span class="n">no_default</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="iters.types.is_marker" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_marker</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">Marker</span><span class="p">]</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Checks if the <code>item</code> is <a class="autorefs autorefs-internal" href="#iters.types.Marker"><code>Marker</code></a>.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing_extensions.TypeGuard">TypeGuard</span>[<a class="autorefs autorefs-internal" title="iters.types.Marker" href="#iters.types.Marker">Marker</a>]</code>
+          </td>
+          <td><p>Whether the <code>item</code> is <a class="autorefs autorefs-internal" href="#iters.types.Marker"><code>Marker</code></a>.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/types.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_marker</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">Marker</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the `item` is [`Marker`][iters.types.Marker].</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Whether the `item` is [`Marker`][iters.types.Marker].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">item</span> <span class="ow">is</span> <span class="n">marker</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
 
 
 

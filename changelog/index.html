@@ -390,11 +390,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#0100-2022-01-08" class="md-nav__link">
-    0.10.0 (2022-01-08)
+  <a href="#0110-2023-01-29" class="md-nav__link">
+    0.11.0 (2023-01-29)
   </a>
   
-    <nav class="md-nav" aria-label="0.10.0 (2022-01-08)">
+    <nav class="md-nav" aria-label="0.11.0 (2023-01-29)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -410,11 +410,31 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#090-2022-01-07" class="md-nav__link">
-    0.9.0 (2022-01-07)
+  <a href="#0100-2023-01-08" class="md-nav__link">
+    0.10.0 (2023-01-08)
   </a>
   
-    <nav class="md-nav" aria-label="0.9.0 (2022-01-07)">
+    <nav class="md-nav" aria-label="0.10.0 (2023-01-08)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal_1" class="md-nav__link">
+    Internal
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#090-2023-01-07" class="md-nav__link">
+    0.9.0 (2023-01-07)
+  </a>
+  
+    <nav class="md-nav" aria-label="0.9.0 (2023-01-07)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -478,7 +498,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#internal_1" class="md-nav__link">
+  <a href="#internal_2" class="md-nav__link">
     Internal
   </a>
   
@@ -656,11 +676,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#0100-2022-01-08" class="md-nav__link">
-    0.10.0 (2022-01-08)
+  <a href="#0110-2023-01-29" class="md-nav__link">
+    0.11.0 (2023-01-29)
   </a>
   
-    <nav class="md-nav" aria-label="0.10.0 (2022-01-08)">
+    <nav class="md-nav" aria-label="0.11.0 (2023-01-29)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -676,11 +696,31 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#090-2022-01-07" class="md-nav__link">
-    0.9.0 (2022-01-07)
+  <a href="#0100-2023-01-08" class="md-nav__link">
+    0.10.0 (2023-01-08)
   </a>
   
-    <nav class="md-nav" aria-label="0.9.0 (2022-01-07)">
+    <nav class="md-nav" aria-label="0.10.0 (2023-01-08)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal_1" class="md-nav__link">
+    Internal
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#090-2023-01-07" class="md-nav__link">
+    0.9.0 (2023-01-07)
+  </a>
+  
+    <nav class="md-nav" aria-label="0.9.0 (2023-01-07)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -744,7 +784,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#internal_1" class="md-nav__link">
+  <a href="#internal_2" class="md-nav__link">
     Internal
   </a>
   
@@ -865,12 +905,17 @@
 <h1 id="changelog">Changelog</h1>
 <!-- changelogging: start -->
 
-<h2 id="0100-2022-01-08">0.10.0 (2022-01-08)</h2>
+<h2 id="0110-2023-01-29">0.11.0 (2023-01-29)</h2>
 <h3 id="internal">Internal</h3>
 <ul>
-<li>Mark the internals of the <code>OrderedSet[Q]</code> private.</li>
+<li><code>async-extensions</code> is now used instead of reimplementing <code>collect_iterable</code> functionality.</li>
 </ul>
-<h2 id="090-2022-01-07">0.9.0 (2022-01-07)</h2>
+<h2 id="0100-2023-01-08">0.10.0 (2023-01-08)</h2>
+<h3 id="internal_1">Internal</h3>
+<ul>
+<li>Marked the internals of the <code>OrderedSet[Q]</code> private.</li>
+</ul>
+<h2 id="090-2023-01-07">0.9.0 (2023-01-07)</h2>
 <h3 id="features">Features</h3>
 <ul>
 <li>Added <code>collect_iter</code> method for <code>AsyncIter[T]</code> and <code>Iter[T]</code>.</li>
@@ -888,7 +933,7 @@
 <li>Added <code>ordered_set</code> method to <code>Iter[T]</code> and <code>AsyncIter[T]</code>.</li>
 </ul>
 <h2 id="060-2022-11-08">0.6.0 (2022-11-08)</h2>
-<h3 id="internal_1">Internal</h3>
+<h3 id="internal_2">Internal</h3>
 <ul>
 <li>Migrated to using <a href="https://github.com/nekitdev/named"><code>named</code></a> and
   <a href="https://github.com/nekitdev/solus"><code>solus</code></a> packages instead of

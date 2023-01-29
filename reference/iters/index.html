@@ -744,6 +744,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.into_async_iter" class="md-nav__link">
+    into_async_iter()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1342,6 +1349,13 @@
           <li class="md-nav__item">
   <a href="#iters.iters.Iter.cartesian_power" class="md-nav__link">
     cartesian_power()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iters.iters.Iter.into_async_iter" class="md-nav__link">
+    into_async_iter()
   </a>
   
 </li>
@@ -4822,7 +4836,13 @@
 <span class="normal">3573</span>
 <span class="normal">3574</span>
 <span class="normal">3575</span>
-<span class="normal">3576</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">3576</span>
+<span class="normal">3577</span>
+<span class="normal">3578</span>
+<span class="normal">3579</span>
+<span class="normal">3580</span>
+<span class="normal">3581</span>
+<span class="normal">3582</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Iter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -8186,6 +8206,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">side_effect</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">into_async_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts an [`Iter[T]`][iters.iters.Iter] into</span>
+<span class="sd">        an [`AsyncIter[T]`][iters.async.AsyncIter].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The async iterator created from the iterator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">AsyncIter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -14677,6 +14703,62 @@ corresponding to the items of the iterator.</p></td>
 
 </div>
 
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iters.iters.Iter.into_async_iter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">into_async_iter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIter</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Converts an <a class="autorefs autorefs-internal" href="#iters.iters.Iter"><code>Iter[T]</code></a> into
+an [<code>AsyncIter[T]</code>][iters.async.AsyncIter].</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="iters.async_iters.AsyncIter">AsyncIter</span>[<span title="iters.iters.T">T</span>]</code>
+          </td>
+          <td><p>The async iterator created from the iterator.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iters/iters.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3575</span>
+<span class="normal">3576</span>
+<span class="normal">3577</span>
+<span class="normal">3578</span>
+<span class="normal">3579</span>
+<span class="normal">3580</span>
+<span class="normal">3581</span>
+<span class="normal">3582</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">into_async_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIter</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts an [`Iter[T]`][iters.iters.Iter] into</span>
+<span class="sd">    an [`AsyncIter[T]`][iters.async.AsyncIter].</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The async iterator created from the iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AsyncIter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
 
 
   </div>
@@ -14745,13 +14827,7 @@ creating a wrapping function returning <a class="autorefs autorefs-internal" hre
 
       <details class="quote">
         <summary>Source code in <code>iters/iters.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3585</span>
-<span class="normal">3586</span>
-<span class="normal">3587</span>
-<span class="normal">3588</span>
-<span class="normal">3589</span>
-<span class="normal">3590</span>
-<span class="normal">3591</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">3591</span>
 <span class="normal">3592</span>
 <span class="normal">3593</span>
 <span class="normal">3594</span>
@@ -14760,7 +14836,13 @@ creating a wrapping function returning <a class="autorefs autorefs-internal" hre
 <span class="normal">3597</span>
 <span class="normal">3598</span>
 <span class="normal">3599</span>
-<span class="normal">3600</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">wrap_iter</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
+<span class="normal">3600</span>
+<span class="normal">3601</span>
+<span class="normal">3602</span>
+<span class="normal">3603</span>
+<span class="normal">3604</span>
+<span class="normal">3605</span>
+<span class="normal">3606</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">wrap_iter</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">PS</span><span class="p">,</span> <span class="n">Iter</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps the function returning [`Iterable[T]`][typing.Iterable],</span>
 <span class="sd">    creating a wrapping function returning [`Iter[T]`][iters.iters.Iter].</span>
 
