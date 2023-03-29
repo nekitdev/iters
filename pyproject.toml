@@ -48,7 +48,7 @@ concurrent = ["async-extensions"]
 optional = true
 
 [tool.poetry.group.format.dependencies]
-black = "22.8.0"
+black = "23.3.0"
 
 [tool.poetry.group.format.dependencies.isort]
 version = "5.10.1"
