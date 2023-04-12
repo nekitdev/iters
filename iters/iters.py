@@ -145,6 +145,7 @@ from iters.utils import (
     repeat_each,
     repeat_last,
     repeat_with,
+    rest,
     reverse,
     set_windows,
     side_effect,
@@ -2411,6 +2412,9 @@ class Iter(Iterator[T]):
         return self.create(drop(size, self.iterator))
 
     skip = drop
+
+    def rest(self) -> Iter[T]:
+        return self.create(rest(self.iterator))
 
     def drop_while(self, predicate: Predicate[T]) -> Iter[T]:
         return self.create(drop_while(predicate, self.iterator))

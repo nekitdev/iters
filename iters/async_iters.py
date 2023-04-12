@@ -192,6 +192,7 @@ from iters.async_utils import (
     async_repeat_last,
     async_repeat_with,
     async_repeat_with_await,
+    async_rest,
     async_reverse,
     async_reversed,
     async_set,
@@ -1660,6 +1661,9 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_drop(size, self.iterator))
 
     skip = drop
+
+    def rest(self) -> AsyncIter[T]:
+        return self.create(async_rest(self.iterator))
 
     def drop_while(self, predicate: Predicate[T]) -> AsyncIter[T]:
         return self.create(async_drop_while(predicate, self.iterator))
