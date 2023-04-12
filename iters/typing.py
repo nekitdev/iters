@@ -11,6 +11,7 @@ from typing import (
     Callable,
     Iterable,
     Iterator,
+    Sized,
     Tuple,
     Type,
     TypeVar,
@@ -188,3 +189,7 @@ class Product(Protocol):
     @abstractmethod
     def __mul__(self: P, __other: P) -> P:
         raise NotImplementedError
+
+
+def is_sized(item: Any) -> TypeGuard[Sized]:
+    return is_instance(item, Sized)

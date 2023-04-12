@@ -41,8 +41,9 @@ from typing import (
     overload,
 )
 
+from named import get_type_name
 from orderings import LenientOrdered, Ordering, StrictOrdered
-from typing_extensions import Literal, Never, TypeVarTuple, Unpack
+from typing_extensions import Literal, Never, Protocol, TypeGuard, TypeVarTuple, Unpack, runtime_checkable
 
 from iters.types import marker, no_default
 from iters.typing import (
@@ -68,6 +69,8 @@ from iters.typing import (
     Tuple8,
     Unary,
     is_bytes,
+    is_instance,
+    is_sized,
     is_string,
 )
 
@@ -225,6 +228,50 @@ P = TypeVar("P", bound=Product)
 
 LT = TypeVar("LT", bound=LenientOrdered)
 ST = TypeVar("ST", bound=StrictOrdered)
+
+
+MUST_IMPLEMENT = "types derived from `{}` must implement `{}` method"
+LENGTH_HINT = "__length_hint__"
+
+
+@runtime_checkable
+class LengthHint(Protocol):
+    def __length_hint__(self) -> int:
+        raise NotImplementedError(MUST_IMPLEMENT.format(get_type_name(self), LENGTH_HINT))
+
+
+def is_length_hint(item: Any) -> TypeGuard[LengthHint]:
+    return is_instance(item, LengthHint)
+
+
+def length_hint_unchecked(item: LengthHint) -> int:
+    return item.__length_hint__()
+
+
+@overload
+def length_hint(item: Sized) -> int:
+    ...
+
+
+@overload
+def length_hint(item: LengthHint) -> int:
+    ...
+
+
+@overload
+def length_hint(item: Iterable[T]) -> None:
+    ...
+
+
+def length_hint(item: Any) -> Optional[int]:
+    if is_sized(item):
+        return len(item)
+
+    if is_length_hint(item):
+        return length_hint_unchecked(item)
+
+    return None
+
 
 chain_from_iterable = chain.from_iterable
 skip_while = drop_while
