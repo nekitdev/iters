@@ -245,6 +245,7 @@ __all__ = (
     "async_repeat_last",
     "async_repeat_with",
     "async_repeat_with_await",
+    "async_rest",
     "async_reverse",
     "async_reversed",
     "async_set",
@@ -1196,6 +1197,10 @@ async def async_drop_unchecked(size: int, iterable: AnyIterable[T]) -> AsyncIter
 
 
 async_skip = async_drop
+
+
+def async_rest(iterable: AnyIterable[T]) -> AsyncIterator[T]:
+    return async_drop(1, iterable)
 
 
 def async_take(size: int, iterable: AnyIterable[T]) -> AsyncIterator[T]:
@@ -2444,22 +2449,18 @@ async def async_divide(count: int, iterable: AnyIterable[T]) -> AsyncIterator[As
         yield async_iter(array[start:stop])
 
 
-# async_interleave(async_repeat(value), iterable) -> (value, item_1, ..., value, item_n)
-# async_drop(1, ...) -> (item_1, ..., value, item_n)
-
-
 def async_intersperse(value: T, iterable: AnyIterable[T]) -> AsyncIterator[T]:
-    return async_drop(1, async_interleave(async_repeat(value), iterable))
+    return async_rest(async_interleave(async_repeat(value), iterable))
 
 
 def async_intersperse_with(function: Nullary[T], iterable: AnyIterable[T]) -> AsyncIterator[T]:
-    return async_drop(1, async_interleave(async_repeat_with(function), iterable))
+    return async_rest(async_interleave(async_repeat_with(function), iterable))
 
 
 def async_intersperse_with_await(
     function: AsyncNullary[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
-    return async_drop(1, async_interleave(async_repeat_with_await(function), iterable))
+    return async_rest(async_interleave(async_repeat_with_await(function), iterable))
 
 
 def async_interleave(*iterables: AnyIterable[T]) -> AsyncIterator[T]:

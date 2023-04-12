@@ -172,6 +172,7 @@ __all__ = (
     "repeat_each",
     "repeat_last",
     "repeat_with",
+    "rest",
     "reverse",
     "side_effect",
     "skip",
@@ -711,6 +712,10 @@ def drop(size: int, iterable: Iterable[T]) -> Iterator[T]:
 
 
 skip = drop
+
+
+def rest(iterable: Iterable[T]) -> Iterator[T]:
+    return drop(1, iterable)
 
 
 def take(size: int, iterable: Iterable[T]) -> Iterator[T]:
@@ -1477,16 +1482,12 @@ def divide(count: int, iterable: Iterable[T]) -> Iterator[Iterator[T]]:
         yield iter(array[start:stop])
 
 
-# interleave(repeat(value), iterable) -> (value, item_1, ..., value, item_n)
-# drop(1, ...) -> (item_1, ..., value, item_n)
-
-
 def intersperse(value: T, iterable: Iterable[T]) -> Iterator[T]:
-    return drop(1, interleave(repeat(value), iterable))
+    return rest(interleave(repeat(value), iterable))
 
 
 def intersperse_with(function: Nullary[T], iterable: Iterable[T]) -> Iterator[T]:
-    return drop(1, interleave(repeat_with(function), iterable))
+    return rest(interleave(repeat_with(function), iterable))
 
 
 def interleave(*iterables: Iterable[T]) -> Iterator[T]:
