@@ -22,13 +22,14 @@ from iters.async_iters import (
     standard_async_next,
     wrap_async_iter,
 )
-from iters.ordered_set import OrderedSet, ordered_set, ordered_set_unchecked
 from iters.iters import Iter, iter, reversed, standard_iter, standard_reversed, wrap_iter
+from iters.ordered_set import OrderedSet, ordered_set, ordered_set_unchecked
+from iters.sequence_view import SequenceView, sequence_view
 
 __all__ = (
     # the async iterator type
     "AsyncIter",
-    # the alias of the previous type
+    # an alias of the previous type
     "async_iter",
     # next functions; checked version works on any iterator, unchecked assumes async iteration
     "async_next",
@@ -40,9 +41,9 @@ __all__ = (
     "wrap_async_iter",
     # the iterator type
     "Iter",
-    # the alias of the previous type
+    # an alias of the previous type
     "iter",
-    # the alias of `iter.reversed`
+    # an alias of `iter.reversed`
     "reversed",
     # since we are shadowing standard functions
     "standard_iter",
@@ -53,4 +54,7 @@ __all__ = (
     "OrderedSet",
     "ordered_set",
     "ordered_set_unchecked",
+    # sequence view
+    "SequenceView",
+    "sequence_view",
 )

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from typing import Any, TypeVar, Union
 
 from solus import Singleton
 from typing_extensions import TypeGuard
+from wraps.option import Null, Option, Some
 
 __all__ = (
     # markers
@@ -10,6 +13,8 @@ __all__ = (
     # no default
     "NoDefault",
     "no_default",
+    # wrap marked
+    "wrap_marked",
     # type guards
     "is_marker",
     "is_not_marker",
@@ -76,3 +81,7 @@ def is_not_marker(item: MarkerOr[T]) -> TypeGuard[T]:
         Whether the `item` is not [`Marker`][iters.types.Marker].
     """
     return item is not marker
+
+
+def wrap_marked(item: MarkerOr[T]) -> Option[T]:
+    return Some(item) if is_not_marker(item) else Null()

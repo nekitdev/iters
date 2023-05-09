@@ -5,17 +5,19 @@ from collections import Counter as counter_dict
 from collections import deque
 from functools import reduce as standard_reduce
 from itertools import accumulate as standard_accumulate
-from itertools import chain, compress
+from itertools import chain, combinations, combinations_with_replacement, compress
 from itertools import count as standard_count
 from itertools import cycle
-from itertools import dropwhile as drop_while
+from itertools import dropwhile as standard_drop_while
 from itertools import filterfalse as filter_false
 from itertools import groupby as standard_group
 from itertools import islice as iter_slice
+from itertools import permutations
 from itertools import product as standard_product
-from itertools import takewhile as take_while
+from itertools import takewhile as standard_take_while
 from itertools import tee as standard_copy
 from itertools import zip_longest as standard_zip_longest
+from math import copysign as copy_sign
 from operator import add
 from operator import ge as greater_or_equal
 from operator import gt as greater
@@ -25,7 +27,6 @@ from operator import mul
 from sys import version_info
 from typing import (
     Any,
-    Callable,
     ContextManager,
     Counter,
     Dict,
@@ -41,24 +42,15 @@ from typing import (
     overload,
 )
 
-from named import get_type_name
-from orderings import LenientOrdered, Ordering, StrictOrdered
-from typing_extensions import Literal, Never, Protocol, TypeGuard, TypeVarTuple, Unpack, runtime_checkable
-
-from iters.types import marker, no_default
-from iters.typing import (
-    AnyExceptionType,
+from funcs.typing import (
+    AnyErrorType,
     Binary,
     Compare,
     DynamicTuple,
     EmptyTuple,
+    Inspect,
     Nullary,
     Predicate,
-    Product,
-    Quaternary,
-    RecursiveIterable,
-    Sum,
-    Ternary,
     Tuple1,
     Tuple2,
     Tuple3,
@@ -68,9 +60,20 @@ from iters.typing import (
     Tuple7,
     Tuple8,
     Unary,
+)
+from funcs.unpacking import unpack_binary
+from orderings import LenientOrdered, Ordering, StrictOrdered
+from typing_extensions import Literal, Never
+
+from iters.types import is_marker, is_no_default, is_not_marker, marker, no_default
+from iters.typing import (
+    ForEach,
+    Pair,
+    Product,
+    RecursiveIterable,
+    Sum,
+    Validate,
     is_bytes,
-    is_instance,
-    is_sized,
     is_string,
 )
 
@@ -91,6 +94,8 @@ __all__ = (
     "chain_from_iterable",
     "chunks",
     "collapse",
+    "combinations",
+    "combinations_with_replacement",
     "combine",
     "compare",
     "compress",
@@ -131,6 +136,7 @@ __all__ = (
     "groups",
     "groups_longest",
     "has_next",
+    "inspect",
     "interleave",
     "interleave_longest",
     "intersperse",
@@ -164,8 +170,10 @@ __all__ = (
     "partition_infinite",
     "partition_unsafe",
     "peek",
+    "permutations",
     "position_all",
     "position",
+    "power_set",
     "prepend",
     "product",
     "reduce",
@@ -177,7 +185,6 @@ __all__ = (
     "repeat_with",
     "rest",
     "reverse",
-    "side_effect",
     "skip",
     "skip_while",
     "sort",
@@ -187,14 +194,10 @@ __all__ = (
     "tail",
     "take",
     "take_while",
+    "transpose",
     "tuple_windows",
     "unique",
     "unique_fast",
-    "unpack_any",
-    "unpack_binary",
-    "unpack_quaternary",
-    "unpack_ternary",
-    "unpack_unary",
     "zip",
     "zip_equal",
     "zip_longest",
@@ -230,47 +233,12 @@ LT = TypeVar("LT", bound=LenientOrdered)
 ST = TypeVar("ST", bound=StrictOrdered)
 
 
-MUST_IMPLEMENT = "types derived from `{}` must implement `{}` method"
-LENGTH_HINT = "__length_hint__"
+def take_while(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
+    return standard_take_while(predicate or bool, iterable)
 
 
-@runtime_checkable
-class LengthHint(Protocol):
-    def __length_hint__(self) -> int:
-        raise NotImplementedError(MUST_IMPLEMENT.format(get_type_name(self), LENGTH_HINT))
-
-
-def is_length_hint(item: Any) -> TypeGuard[LengthHint]:
-    return is_instance(item, LengthHint)
-
-
-def length_hint_unchecked(item: LengthHint) -> int:
-    return item.__length_hint__()
-
-
-@overload
-def length_hint(item: Sized) -> int:
-    ...
-
-
-@overload
-def length_hint(item: LengthHint) -> int:
-    ...
-
-
-@overload
-def length_hint(item: Iterable[T]) -> None:
-    ...
-
-
-def length_hint(item: Any) -> Optional[int]:
-    if is_sized(item):
-        return len(item)
-
-    if is_length_hint(item):
-        return length_hint_unchecked(item)
-
-    return None
+def drop_while(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
+    return standard_drop_while(predicate or bool, iterable)
 
 
 chain_from_iterable = chain.from_iterable
@@ -300,10 +268,10 @@ def compare(
 
 def compare_simple(left_iterable: Iterable[ST], right_iterable: Iterable[ST]) -> Ordering:
     for left, right in zip_longest(left_iterable, right_iterable, fill=marker):
-        if left is marker:
+        if is_marker(left):
             return Ordering.LESS
 
-        if right is marker:
+        if is_marker(right):
             return Ordering.GREATER
 
         if left < right:  # type: ignore
@@ -359,13 +327,13 @@ def repeat_with(function: Nullary[T], count: Optional[int] = None) -> Iterator[T
 
 
 def repeat_factory(count: int) -> Unary[T, Iterator[T]]:
-    def actual_repeat(item: T) -> Iterator[T]:
-        return repeat(item, count)
+    def actual_repeat(value: T) -> Iterator[T]:
+        return repeat(value, count)
 
     return actual_repeat
 
 
-def repeat_each(iterable: Iterable[T], count: int = 2) -> Iterator[T]:
+def repeat_each(count: int, iterable: Iterable[T]) -> Iterator[T]:
     return flat_map(repeat_factory(count), iterable)
 
 
@@ -385,8 +353,8 @@ def repeat_last(iterable: Iterable[Any], default: Any = no_default) -> Iterator[
     for item in iterable:
         yield item
 
-    if item is marker:
-        if default is no_default:
+    if is_marker(item):
+        if is_no_default(default):
             return
 
         item = default
@@ -398,11 +366,15 @@ def count(start: int = 0, step: int = 1) -> Iterator[int]:
     return standard_count(start, step)
 
 
+def tabulate(function: Unary[int, T], start: int = 0, step: int = 1) -> Iterator[T]:
+    return map(function, count(start, step))
+
+
 def consume(iterable: Iterable[T]) -> None:
     deque(iterable, 0)
 
 
-def for_each(function: Unary[T, Any], iterable: Iterable[T]) -> None:
+def for_each(function: ForEach[T], iterable: Iterable[T]) -> None:
     for item in iterable:
         function(item)
 
@@ -425,8 +397,8 @@ def first(iterable: Iterable[Any], default: Any = no_default) -> Any:
 
     result = next(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(FIRST_ON_EMPTY)
 
         return default
@@ -459,61 +431,13 @@ def last(iterable: Iterable[Any], default: Any = no_default) -> Any:
         for result in iterable:  # noqa
             pass
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(LAST_ON_EMPTY)
 
         return default
 
     return result
-
-
-def unpack_unary(unary: Unary[T, R]) -> Unary[Tuple[T], R]:
-    def unpack(args: Tuple[T]) -> R:
-        (t,) = args
-
-        return unary(t)
-
-    return unpack
-
-
-def unpack_binary(binary: Binary[T, U, R]) -> Unary[Tuple[T, U], R]:
-    def unpack(args: Tuple[T, U]) -> R:
-        (t, u) = args
-
-        return binary(t, u)
-
-    return unpack
-
-
-def unpack_ternary(ternary: Ternary[T, U, V, R]) -> Unary[Tuple[T, U, V], R]:
-    def unpack(args: Tuple[T, U, V]) -> R:
-        (t, u, v) = args
-
-        return ternary(t, u, v)
-
-    return unpack
-
-
-def unpack_quaternary(quaternary: Quaternary[T, U, V, W, R]) -> Unary[Tuple[T, U, V, W], R]:
-    def unpack(args: Tuple[T, U, V, W]) -> R:
-        (t, u, v, w) = args
-
-        return quaternary(t, u, v, w)
-
-    return unpack
-
-
-Ts = TypeVarTuple("Ts")  # type: ignore
-
-
-def unpack_any(
-    function: Callable[[Unpack[Ts]], T]  # type: ignore
-) -> Unary[Tuple[Unpack[Ts]], T]:  # type: ignore
-    def unpack(args: Tuple[Unpack[Ts]]) -> T:  # type: ignore
-        return function(*args)
-
-    return unpack
 
 
 REDUCE_ON_EMPTY = "reduce() called on an empty iterable"
@@ -554,7 +478,7 @@ def accumulate_sum(iterable: Iterable[S], initial: S) -> Iterator[S]:
 
 
 def accumulate_sum(iterable: Iterable[Any], initial: Any = no_default) -> Iterator[Any]:
-    if initial is no_default:
+    if is_no_default(initial):
         return accumulate_reduce(add, iterable)
 
     return accumulate_fold(initial, add, iterable)
@@ -571,7 +495,7 @@ def accumulate_product(iterable: Iterable[P], initial: P) -> Iterator[P]:
 
 
 def accumulate_product(iterable: Iterable[Any], initial: Any = no_default) -> Iterator[Any]:
-    if initial is no_default:
+    if is_no_default(initial):
         return accumulate_reduce(mul, iterable)
 
     return accumulate_fold(initial, mul, iterable)
@@ -595,8 +519,8 @@ def at(index: int, iterable: Iterable[Any], default: Any = no_default) -> Any:
 
     result = next(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(AT_ON_EMPTY)
 
         return default
@@ -618,12 +542,14 @@ def at_or_last(index: int, iterable: Iterable[T], default: U) -> Union[T, U]:
 
 
 def at_or_last(index: int, iterable: Iterable[Any], default: Any = no_default) -> Any:
-    iterator = take(index + 1, iterable)
+    length = index + 1
+
+    iterator = take(length, iterable)
 
     result = last(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(AT_OR_LAST_ON_EMPTY)
 
         return default
@@ -632,7 +558,7 @@ def at_or_last(index: int, iterable: Iterable[Any], default: Any = no_default) -
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
+def copy_unsafe(iterable: Iterable[T]) -> Pair[Iterator[T]]:
     ...
 
 
@@ -694,7 +620,7 @@ copy_infinite = copy_unsafe
 
 
 @overload
-def copy(iterable: Iterable[T]) -> Tuple[Iterator[T], Iterator[T]]:
+def copy(iterable: Iterable[T]) -> Pair[Iterator[T]]:
     ...
 
 
@@ -950,20 +876,20 @@ def groups_longest(
 
 
 @overload
-def pairs_longest(iterable: Iterable[T]) -> Iterator[Tuple[Optional[T], Optional[T]]]:
+def pairs_longest(iterable: Iterable[T]) -> Iterator[Pair[Optional[T]]]:
     ...
 
 
 @overload
-def pairs_longest(iterable: Iterable[T], fill: U) -> Iterator[Tuple[Union[T, U], Union[T, U]]]:
+def pairs_longest(iterable: Iterable[T], fill: U) -> Iterator[Pair[Union[T, U]]]:
     ...
 
 
-def pairs_longest(iterable: Iterable[Any], fill: Optional[Any] = None) -> Iterator[Tuple[Any, Any]]:
+def pairs_longest(iterable: Iterable[Any], fill: Optional[Any] = None) -> Iterator[Pair[Any]]:
     return groups_longest(2, iterable, fill)
 
 
-def pairs(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
+def pairs(iterable: Iterable[T]) -> Iterator[Pair[T]]:
     return groups(2, iterable)
 
 
@@ -1005,7 +931,7 @@ def filter_false_map(
 
 def partition_unsafe(
     predicate: Optional[Predicate[T]], iterable: Iterable[T]
-) -> Tuple[Iterator[T], Iterator[T]]:
+) -> Pair[Iterator[T]]:
     for_true, for_false = copy_unsafe(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
@@ -1016,18 +942,18 @@ partition_infinite = partition_unsafe
 
 def partition(
     predicate: Optional[Predicate[T]], iterable: Iterable[T]
-) -> Tuple[Iterator[T], Iterator[T]]:
+) -> Pair[Iterator[T]]:
     for_true, for_false = copy(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
 
 
-def prepend(item: T, iterable: Iterable[T]) -> Iterator[T]:
-    return chain(once(item), iterable)
+def prepend(value: T, iterable: Iterable[T]) -> Iterator[T]:
+    return chain(once(value), iterable)
 
 
-def append(item: T, iterable: Iterable[T]) -> Iterator[T]:
-    return chain(iterable, once(item))
+def append(value: T, iterable: Iterable[T]) -> Iterator[T]:
+    return chain(iterable, once(value))
 
 
 @overload
@@ -1164,7 +1090,7 @@ def sum(iterable: Iterable[S], initial: S) -> S:
 
 
 def sum(iterable: Iterable[Any], initial: Any = no_default) -> Any:
-    if initial is no_default:
+    if is_no_default(initial):
         return reduce(add, iterable)
 
     return fold(initial, add, iterable)
@@ -1181,7 +1107,7 @@ def product(iterable: Iterable[P], initial: P) -> P:
 
 
 def product(iterable: Iterable[Any], initial: Any = no_default) -> Any:
-    if initial is no_default:
+    if is_no_default(initial):
         return reduce(mul, iterable)
 
     return fold(initial, mul, iterable)
@@ -1226,14 +1152,14 @@ def collapse(iterable: Iterable[RecursiveIterable[T]]) -> Iterator[T]:
 
 
 def pad(
-    value: U,
+    value: T,
     iterable: Iterable[T],
     size: Optional[int] = None,
     *,
     multiple: bool = False,
-) -> Iterator[Union[T, U]]:
+) -> Iterator[T]:
     if size is None:
-        yield from chain(iterable, repeat(value))  # type: ignore
+        yield from chain(iterable, repeat(value))
 
     else:
         count = 0
@@ -1249,12 +1175,12 @@ def pad(
 
 
 def pad_with(
-    function: Unary[int, U],
+    function: Unary[int, T],
     iterable: Iterable[T],
     size: Optional[int] = None,
     *,
     multiple: bool = False,
-) -> Iterator[Union[T, U]]:
+) -> Iterator[T]:
     index = 0
 
     for item in iterable:
@@ -1307,7 +1233,7 @@ def all_unique(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> bool
 def all_equal(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> bool:
     groups = group(iterable, key)
 
-    return next(groups, marker) is marker or next(groups, marker) is marker
+    return is_marker(next(groups, marker)) or is_marker(next(groups, marker))
 
 
 def remove(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
@@ -1350,8 +1276,8 @@ def peek(iterable: Iterable[Any], default: Any = no_default) -> Tuple[Any, Itera
 
     result = next(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(PEEK_ON_EMPTY)
 
         return (default, iterator)
@@ -1360,20 +1286,15 @@ def peek(iterable: Iterable[Any], default: Any = no_default) -> Tuple[Any, Itera
 
 
 def has_next(iterable: Iterable[T]) -> Tuple[bool, Iterator[T]]:
-    iterator = iter(iterable)
+    result, iterator = peek(iterable, marker)
 
-    result = next(iterator, marker)
-
-    if result is marker:
-        return (False, iterator)
-
-    return (True, prepend(result, iterator))  # type: ignore
+    return (is_not_marker(result), iterator)
 
 
 def is_empty(iterable: Iterable[T]) -> Tuple[bool, Iterator[T]]:
-    has_some, iterator = has_next(iterable)
+    result, iterator = peek(iterable, marker)
 
-    return (not has_some, iterator)
+    return (is_marker(result), iterator)
 
 
 def next_of(iterator: Iterator[T]) -> Nullary[T]:
@@ -1383,9 +1304,13 @@ def next_of(iterator: Iterator[T]) -> Nullary[T]:
     return call
 
 
+def next_of_iterable(iterable: Iterable[T]) -> Nullary[T]:
+    return next_of(iter(iterable))
+
+
 def combine(*iterables: Iterable[T]) -> Iterator[T]:
     pending = len(iterables)
-    nexts = cycle(next_of(iter(iterable)) for iterable in iterables)
+    nexts = cycle(map(next_of_iterable, iterables))
 
     while pending:
         try:
@@ -1543,7 +1468,7 @@ def interleave(*iterables: Iterable[T]) -> Iterator[T]:
 
 def interleave_longest(*iterables: Iterable[T]) -> Iterator[T]:
     iterator = flatten(zip_longest(*iterables, fill=marker))
-    return (item for item in iterator if item is not marker)  # type: ignore
+    return (item for item in iterator if is_not_marker(item))
 
 
 def position_all(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[int]:
@@ -1577,7 +1502,7 @@ def position(
     index = next(position_all(predicate, iterable), None)
 
     if index is None:
-        if default is no_default:
+        if is_no_default(default):
             raise ValueError(POSITION_NO_MATCH)
 
         return default
@@ -1618,8 +1543,8 @@ def find(
             if predicate(item):
                 return item
 
-    if default is no_default:
-        raise ValueError(FIND_ON_EMPTY if item is marker else FIND_NO_MATCH)
+    if is_no_default(default):
+        raise ValueError(FIND_ON_EMPTY if is_marker(item) else FIND_NO_MATCH)
 
     return default
 
@@ -1646,8 +1571,8 @@ def find_or_first(
 
     first = next(iterator, marker)
 
-    if first is marker:
-        if default is no_default:
+    if is_marker(first):
+        if is_no_default(default):
             raise ValueError(FIND_OR_FIRST_ON_EMPTY)
 
         first = default
@@ -1697,8 +1622,8 @@ def find_or_last(
             if predicate(item):
                 return item
 
-    if item is marker:
-        if default is no_default:
+    if is_marker(item):
+        if is_no_default(default):
             raise ValueError(FIND_OR_LAST_ON_EMPTY)
 
         return default
@@ -1710,26 +1635,22 @@ MIN_MAX_ON_EMPTY = "min_max() called on an empty iterable"
 
 
 @overload
-def min_max(iterable: Iterable[ST], *, key: None = ...) -> Tuple[ST, ST]:
+def min_max(iterable: Iterable[ST], *, key: None = ...) -> Pair[ST]:
     ...
 
 
 @overload
-def min_max(iterable: Iterable[T], *, key: Unary[T, ST]) -> Tuple[T, T]:
+def min_max(iterable: Iterable[T], *, key: Unary[T, ST]) -> Pair[T]:
     ...
 
 
 @overload
-def min_max(
-    iterable: Iterable[ST], *, key: None = ..., default: Tuple[U, V]
-) -> Union[Tuple[ST, ST], Tuple[U, V]]:
+def min_max(iterable: Iterable[ST], *, key: None = ..., default: U) -> Union[Pair[ST], U]:
     ...
 
 
 @overload
-def min_max(
-    iterable: Iterable[T], *, key: Unary[T, ST], default: Tuple[U, V]
-) -> Union[Tuple[T, T], Tuple[U, V]]:
+def min_max(iterable: Iterable[T], *, key: Unary[T, ST], default: U) -> Union[Pair[T], U]:
     ...
 
 
@@ -1738,47 +1659,45 @@ def min_max(
     *,
     key: Optional[Unary[Any, Any]] = None,
     default: Any = no_default,
-) -> Tuple[Any, Any]:
+) -> Any:
     iterator = iter(iterable)
 
     result = next(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(MIN_MAX_ON_EMPTY)
 
-        default_min, default_max = default
-
-        return (default_min, default_max)
+        return default
 
     return min_max_simple(iterator, result) if key is None else min_max_by(iterator, result, key)
 
 
-def min_max_simple(iterable: Iterable[ST], value: ST) -> Tuple[ST, ST]:
+def min_max_simple(iterable: Iterable[ST], value: ST) -> Pair[ST]:
     low = high = value
 
     for item in iterable:
-        if item < low:  # type: ignore
+        if item < low:
             low = item
 
-        if high < item:  # type: ignore
+        if high < item:
             high = item
 
     return (low, high)
 
 
-def min_max_by(iterable: Iterable[T], value: T, key: Unary[T, ST]) -> Tuple[T, T]:
+def min_max_by(iterable: Iterable[T], value: T, key: Unary[T, ST]) -> Pair[T]:
     low = high = value
     low_key = high_key = key(value)
 
     for item in iterable:
         item_key = key(item)
 
-        if item_key < low_key:  # type: ignore  # investigate
+        if item_key < low_key:
             low_key = item_key
             low = item
 
-        if high_key < item_key:  # type: ignore  # investigate
+        if high_key < item_key:
             high_key = item_key
             high = item
 
@@ -1786,7 +1705,7 @@ def min_max_by(iterable: Iterable[T], value: T, key: Unary[T, ST]) -> Tuple[T, T
 
 
 def filter_except(
-    validate: Unary[T, Any], iterable: Iterable[T], *errors: AnyExceptionType
+    validate: Validate[T], iterable: Iterable[T], *errors: AnyErrorType
 ) -> Iterator[T]:
     for item in iterable:
         try:
@@ -1799,9 +1718,7 @@ def filter_except(
             yield item
 
 
-def map_except(
-    function: Unary[T, U], iterable: Iterable[T], *errors: AnyExceptionType
-) -> Iterator[U]:
+def map_except(function: Unary[T, U], iterable: Iterable[T], *errors: AnyErrorType) -> Iterator[U]:
     for item in iterable:
         try:
             yield function(item)
@@ -1810,7 +1727,7 @@ def map_except(
             pass
 
 
-def iter_except(function: Nullary[T], *errors: AnyExceptionType) -> Iterator[T]:
+def iter_except(function: Nullary[T], *errors: AnyErrorType) -> Iterator[T]:
     try:
         while True:
             yield function()
@@ -1841,8 +1758,8 @@ def last_with_tail(iterable: Iterable[Any], default: Any = no_default) -> Any:
 
     result = next(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(LAST_WITH_TAIL_ON_EMPTY)
 
         return default
@@ -1861,7 +1778,7 @@ REVERSE_FALSE = False
 
 
 COMPARE: Dict[
-    Tuple[bool, bool],
+    Pair[bool],
     Union[Compare[LenientOrdered, LenientOrdered], Compare[StrictOrdered, StrictOrdered]],
 ] = {
     (STRICT_FALSE, REVERSE_FALSE): less_or_equal,
@@ -2047,7 +1964,7 @@ def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]
         yield tuple(window)
 
 
-def pairs_windows(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
+def pairs_windows(iterable: Iterable[T]) -> Iterator[Pair[T]]:
     return tuple_windows(2, iterable)
 
 
@@ -2069,7 +1986,7 @@ def set_windows(size: int, iterable: Iterable[Q]) -> Iterator[Set[Q]]:
         yield set(window)
 
 
-def side_effect(function: Unary[T, None], iterable: Iterable[T]) -> Iterator[T]:
+def inspect(function: Inspect[T], iterable: Iterable[T]) -> Iterator[T]:
     for item in iterable:
         function(item)
         yield item
@@ -2343,7 +2260,7 @@ def zip(
     __iterable_f: Iterable[Any],
     __iterable_g: Iterable[Any],
     __iterable_h: Iterable[Any],
-    __iterable_next: Iterable[Any],
+    __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
 ) -> Iterator[DynamicTuple[Any]]:
     ...
@@ -2445,7 +2362,7 @@ def zip_equal(
     __iterable_f: Iterable[Any],
     __iterable_g: Iterable[Any],
     __iterable_h: Iterable[Any],
-    __iterable_next: Iterable[Any],
+    __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
 ) -> Iterator[DynamicTuple[Any]]:
     ...
@@ -2488,14 +2405,14 @@ def zip_equal_simple(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
     for item in zip_longest(*iterables, fill=marker):  # check for length
         head, *tail = item
 
-        if head is marker:  # argument longer than previous arguments
+        if is_marker(head):  # argument longer than previous arguments
             for index, value in enumerate(tail, 1):
                 if value is not marker:
                     raise ValueError(format_longer(index))
 
         else:  # argument shorter than previous ones
             for index, value in enumerate(tail, 1):
-                if value is marker:
+                if is_marker(value):
                     raise ValueError(format_shorter(index))
 
         yield item  # simply yield if everything is alright
@@ -2618,7 +2535,7 @@ def zip_longest(
     __iterable_f: Iterable[Any],
     __iterable_g: Iterable[Any],
     __iterable_h: Iterable[Any],
-    __iterable_next: Iterable[Any],
+    __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
 ) -> Iterator[DynamicTuple[Optional[Any]]]:
     ...
@@ -2753,7 +2670,7 @@ def zip_longest(
     __iterable_f: Iterable[Any],
     __iterable_g: Iterable[Any],
     __iterable_h: Iterable[Any],
-    __iterable_next: Iterable[Any],
+    __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
     fill: T,
 ) -> Iterator[DynamicTuple[Union[Any, T]]]:
@@ -2764,6 +2681,26 @@ def zip_longest(
     *iterables: Iterable[Any], fill: Optional[Any] = None
 ) -> Iterator[DynamicTuple[Any]]:
     return standard_zip_longest(*iterables, fillvalue=fill)
+
+
+def transpose(iterable: Iterable[Iterable[T]]) -> Iterator[DynamicTuple[T]]:
+    return zip_equal(*iterable)
+
+
+def power_set(iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    array = list(iterable)
+
+    return flatten(combinations(array, count) for count in inclusive(range(len(array))))
+
+
+def inclusive(non_inclusive: range) -> range:
+    step = non_inclusive.step
+
+    return range(non_inclusive.start, non_inclusive.stop + sign(step), step)
+
+
+def sign(value: int) -> int:
+    return int(copy_sign(1, value))
 
 
 @overload
@@ -2860,7 +2797,7 @@ def cartesian_product(
     __iterable_f: Iterable[Any],
     __iterable_g: Iterable[Any],
     __iterable_h: Iterable[Any],
-    __iterable_next: Iterable[Any],
+    __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
 ) -> Iterator[DynamicTuple[Any]]:
     ...

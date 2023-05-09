@@ -31,55 +31,69 @@ include = "iters"
 
 [tool.poetry.dependencies]
 python = ">= 3.7"
-typing-extensions = ">= 4.3.0"
+
+typing-extensions = ">= 4.5.0"
 
 named = ">= 1.1.0"
 orderings = ">= 1.1.0"
+
 solus = ">= 1.1.0"
 
-[tool.poetry.dependencies.async-extensions]
-version = ">= 1.1.0"
-optional = true
-
-[tool.poetry.extras]
-concurrent = ["async-extensions"]
+async-extensions = ">= 1.2.2"
 
 [tool.poetry.group.format]
 optional = true
 
 [tool.poetry.group.format.dependencies]
-black = "22.8.0"
+black = "23.3.0"
+flake8-pyproject = "1.2.3"
+
+[tool.poetry.group.format.dependencies.flake8]
+version = "6.0.0"
+python = ">= 3.8.1"
 
 [tool.poetry.group.format.dependencies.isort]
-version = "5.10.1"
-python = "^3.7"
+version = "5.12.0"
+python = ">= 3.8"
 
 [tool.poetry.group.check]
 optional = true
 
 [tool.poetry.group.check.dependencies]
-mypy = "0.991"
+mypy = "1.2.0"
 
 [tool.poetry.group.test]
 optional = true
 
 [tool.poetry.group.test.dependencies]
-pytest = "7.1.3"
-pytest-cov = "3.0.0"
+pytest = "7.3.1"
+pytest-cov = "4.0.0"
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "1.3.1"
-mkdocs-material = "8.5.3"
+mkdocs = "1.4.2"
+mkdocs-material = "9.1.8"
 
 [tool.poetry.group.docs.dependencies.mkdocstrings]
-version = "0.19.0"
+version = "0.21.2"
 extras = ["python"]
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+changelogging = "1.2.0"
 
 [tool.black]
 line_length = 100
+
+[tool.flake8]
+max_line_length = 100
+ignore = [
+    "E402",  # module level import not at top of file (circular import fixes)
+]
 
 [tool.isort]
 line_length = 100
@@ -152,5 +166,5 @@ wrap_size = 100
 display = ["feature", "change", "fix", "security", "deprecation", "removal", "internal"]
 
 [build-system]
-requires = ["poetry-core >= 1.3.2"]
+requires = ["poetry-core >= 1.5.2"]
 build-backend = "poetry.core.masonry.api"

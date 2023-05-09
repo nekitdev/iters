@@ -90,7 +90,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return self._items[index]  # type: ignore
 
     def copy(self: OS) -> OS:
-        return type(self)(self)
+        return self.create_unchecked(self)
 
     def __contains__(self, item: Any) -> bool:
         return item in self._item_to_index

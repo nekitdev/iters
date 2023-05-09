@@ -1,64 +1,33 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import abstractmethod as required
 from builtins import isinstance as is_instance
 from builtins import issubclass as is_subclass
 from typing import (
     Any,
     AsyncIterable,
     AsyncIterator,
-    Awaitable,
-    Callable,
     Iterable,
     Iterator,
     Sized,
     Tuple,
-    Type,
     TypeVar,
     Union,
 )
 
-from typing_extensions import Protocol, TypeAlias, TypeGuard, runtime_checkable
+from funcs.typing import Unary
+from typing_extensions import Protocol, TypeGuard, runtime_checkable
 
 __all__ = (
-    # exceptions
-    "AnyException",
-    "AnyExceptionType",
-    # tuples
-    "EmptyTuple",
-    "Tuple1",
-    "Tuple2",
-    "Tuple3",
-    "Tuple4",
-    "Tuple5",
-    "Tuple6",
-    "Tuple7",
-    "Tuple8",
-    # functions
-    "Nullary",
-    "Unary",
-    "Binary",
-    "Ternary",
-    "Quaternary",
-    # async functions
-    "AsyncNullary",
-    "AsyncUnary",
-    "AsyncBinary",
-    "AsyncTernary",
-    "AsyncQuaternary",
-    # dynamic size
-    "DynamicCallable",
-    "DynamicTuple",
-    "AsyncDynamicCallable",
+    # for each
+    "ForEach",
+    # validators
+    "Validate",
+    # pairs
+    "Pair",
     # sum / product
     "Sum",
     "Product",
-    # predicates
-    "Predicate",
-    "AsyncPredicate",
-    # comparing
-    "Compare",
-    "AsyncCompare",
     # selectors
     "Selectors",
     "AsyncSelectors",
@@ -72,70 +41,30 @@ __all__ = (
     "AnyIterator",
     # checks
     "is_async_iterable",
-    "is_async_iterator",
-    "is_bytes",
     "is_iterable",
+    "is_async_iterator",
     "is_iterator",
+    "is_bytes",
     "is_string",
+    "is_slice",
+    "is_sized",
     "is_instance",
     "is_subclass",
 )
 
-AnyException: TypeAlias = BaseException  # any exception type
-AnyExceptionType = Type[AnyException]
-
 T = TypeVar("T")
-U = TypeVar("U")
-V = TypeVar("V")
-W = TypeVar("W")
-R = TypeVar("R")
 
-DynamicCallable = Callable[..., T]
-AnyCallable = DynamicCallable[Any]
+ForEach = Unary[T, None]
+Validate = Unary[T, None]
 
-AsyncDynamicCallable = Callable[..., Awaitable[T]]
-
-F = TypeVar("F", bound=AnyCallable)
-G = TypeVar("G", bound=AnyCallable)
-
-Nullary = Callable[[], R]
-Unary = Callable[[T], R]
-Binary = Callable[[T, U], R]
-Ternary = Callable[[T, U, V], R]
-Quaternary = Callable[[T, U, V, W], R]
-
-AsyncNullary = Nullary[Awaitable[R]]
-AsyncUnary = Unary[T, Awaitable[R]]
-AsyncBinary = Binary[T, U, Awaitable[R]]
-AsyncTernary = Ternary[T, U, V, Awaitable[R]]
-AsyncQuaternary = Quaternary[T, U, V, W, Awaitable[R]]
-
-Predicate = Unary[T, bool]
-Selectors = Iterable[bool]
-
-AsyncPredicate = AsyncUnary[T, bool]
-AsyncSelectors = AsyncIterable[bool]
-
-AnySelectors = Union[AsyncSelectors, Selectors]
-
-Compare = Binary[T, U, bool]
-AsyncCompare = AsyncBinary[T, U, bool]
-
-EmptyTuple = Tuple[()]
-
-Tuple1 = Tuple[T]
-Tuple2 = Tuple[T, T]
-Tuple3 = Tuple[T, T, T]
-Tuple4 = Tuple[T, T, T, T]
-Tuple5 = Tuple[T, T, T, T, T]
-Tuple6 = Tuple[T, T, T, T, T, T]
-Tuple7 = Tuple[T, T, T, T, T, T, T]
-Tuple8 = Tuple[T, T, T, T, T, T, T, T]
-
-DynamicTuple = Tuple[T, ...]
+Pair = Tuple[T, T]
 
 AnyIterable = Union[AsyncIterable[T], Iterable[T]]
 AnyIterator = Union[AsyncIterator[T], Iterator[T]]
+
+Selectors = Iterable[bool]
+AsyncSelectors = AsyncIterable[bool]
+AnySelectors = AnyIterable[bool]
 
 
 def is_async_iterable(iterable: AnyIterable[T]) -> TypeGuard[AsyncIterable[T]]:
@@ -162,13 +91,15 @@ def is_bytes(item: Any) -> TypeGuard[bytes]:
     return is_instance(item, bytes)
 
 
-def is_any_exception(item: Any) -> TypeGuard[AnyException]:
-    return is_instance(item, AnyException)
+def is_slice(item: Any) -> TypeGuard[slice]:
+    return is_instance(item, slice)
 
 
-RecursiveIterable: TypeAlias = Union[T, Iterable[Any]]
-RecursiveAsyncIterable: TypeAlias = Union[T, AsyncIterable[Any]]
-RecursiveAnyIterable: TypeAlias = Union[T, AnyIterable[Any]]
+# XXX: can not define recursive types yet
+
+RecursiveIterable = Union[T, Iterable[Any]]
+RecursiveAsyncIterable = Union[T, AsyncIterable[Any]]
+RecursiveAnyIterable = Union[T, AnyIterable[Any]]
 
 
 S = TypeVar("S", bound="Sum")
@@ -176,7 +107,7 @@ S = TypeVar("S", bound="Sum")
 
 @runtime_checkable
 class Sum(Protocol):
-    @abstractmethod
+    @required
     def __add__(self: S, __other: S) -> S:
         raise NotImplementedError
 
@@ -186,7 +117,7 @@ P = TypeVar("P", bound="Product")
 
 @runtime_checkable
 class Product(Protocol):
-    @abstractmethod
+    @required
     def __mul__(self: P, __other: P) -> P:
         raise NotImplementedError
 
