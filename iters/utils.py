@@ -1886,6 +1886,18 @@ def reverse(iterable: Iterable[T]) -> Iterator[T]:
         return reversed(list(iterable))
 
 
+# def circular_list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
+#     ...
+
+
+# def circular_tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+#     ...
+
+
+# def circular_set_windows(size: int, iterable: Iterable[T]) -> Iterator[Set[T]]:
+#     ...
+
+
 def list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
     iterator = iter(iterable)
 
@@ -1896,8 +1908,10 @@ def list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
     if len(window) == size:
         yield list(window)
 
+    window_append = window.append
+
     for item in iterator:
-        window.append(item)
+        window_append(item)
         yield list(window)
 
 
@@ -1959,8 +1973,10 @@ def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]
     if len(window) == size:
         yield tuple(window)
 
+    window_append = window.append
+
     for item in iterator:
-        window.append(item)
+        window_append(item)
         yield tuple(window)
 
 
@@ -1981,8 +1997,10 @@ def set_windows(size: int, iterable: Iterable[Q]) -> Iterator[Set[Q]]:
     if len(window) == size:
         yield set(window)
 
+    window_append = window.append
+
     for item in iterator:
-        window.append(item)
+        window_append(item)
         yield set(window)
 
 

@@ -32,7 +32,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: poetry install --extras concurrent --with test
+        run: poetry install --with test
 
       - name: Run tests
         run: poetry run pytest --cov-report xml
