@@ -5,14 +5,17 @@ from collections import Counter as counter_dict
 from collections import deque
 from functools import reduce as standard_reduce
 from itertools import accumulate as standard_accumulate
-from itertools import chain, combinations, combinations_with_replacement, compress
+from itertools import chain
+from itertools import combinations as standard_combinations
+from itertools import combinations_with_replacement as standard_combinations_with_replacement
+from itertools import compress
 from itertools import count as standard_count
 from itertools import cycle
 from itertools import dropwhile as standard_drop_while
 from itertools import filterfalse as filter_false
 from itertools import groupby as standard_group
 from itertools import islice as iter_slice
-from itertools import permutations
+from itertools import permutations as standard_permutations
 from itertools import product as standard_product
 from itertools import takewhile as standard_take_while
 from itertools import tee as standard_copy
@@ -159,6 +162,7 @@ __all__ = (
     "map_except",
     "min_max",
     "next_of",
+    "none",
     "once",
     "once_with",
     "pad",
@@ -239,6 +243,10 @@ def take_while(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iter
 
 def drop_while(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
     return standard_drop_while(predicate or bool, iterable)
+
+
+def none(iterable: Iterable[Any]) -> bool:
+    return not any(iterable)
 
 
 chain_from_iterable = chain.from_iterable
@@ -337,29 +345,16 @@ def repeat_each(count: int, iterable: Iterable[T]) -> Iterator[T]:
     return flat_map(repeat_factory(count), iterable)
 
 
-@overload
 def repeat_last(iterable: Iterable[T]) -> Iterator[T]:
-    ...
-
-
-@overload
-def repeat_last(iterable: Iterable[T], default: U) -> Iterator[Union[T, U]]:
-    ...
-
-
-def repeat_last(iterable: Iterable[Any], default: Any = no_default) -> Iterator[Any]:
     item = marker
 
-    for item in iterable:
-        yield item
+    for item in iterable:  # type: ignore
+        yield item  # type: ignore
 
     if is_marker(item):
-        if is_no_default(default):
-            return
+        return
 
-        item = default
-
-    yield from repeat(item)
+    yield from repeat(item)  # type: ignore
 
 
 def count(start: int = 0, step: int = 1) -> Iterator[int]:
@@ -929,9 +924,7 @@ def filter_false_map(
                 yield function(item)
 
 
-def partition_unsafe(
-    predicate: Optional[Predicate[T]], iterable: Iterable[T]
-) -> Pair[Iterator[T]]:
+def partition_unsafe(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Pair[Iterator[T]]:
     for_true, for_false = copy_unsafe(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
@@ -940,9 +933,7 @@ def partition_unsafe(
 partition_infinite = partition_unsafe
 
 
-def partition(
-    predicate: Optional[Predicate[T]], iterable: Iterable[T]
-) -> Pair[Iterator[T]]:
+def partition(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Pair[Iterator[T]]:
     for_true, for_false = copy(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
@@ -1898,21 +1889,24 @@ def reverse(iterable: Iterable[T]) -> Iterator[T]:
 #     ...
 
 
-def list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
+def windows_with(function: Unary[Iterable[T], U], size: int, iterable: Iterable[T]) -> Iterator[U]:
     iterator = iter(iterable)
 
     window = deque(take(size, iterator), size)
 
-    # list(window) to copy, since windows are mutable
-
     if len(window) == size:
-        yield list(window)
+        yield function(window)
 
     window_append = window.append
 
     for item in iterator:
         window_append(item)
-        yield list(window)
+
+        yield function(window)
+
+
+def list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
+    return windows_with(list, size, iterable)
 
 
 @overload
@@ -1966,18 +1960,7 @@ def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]
 
 
 def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    iterator = iter(iterable)
-
-    window = deque(take(size, iterator), size)
-
-    if len(window) == size:
-        yield tuple(window)
-
-    window_append = window.append
-
-    for item in iterator:
-        window_append(item)
-        yield tuple(window)
+    return windows_with(tuple, size, iterable)
 
 
 def pairs_windows(iterable: Iterable[T]) -> Iterator[Pair[T]]:
@@ -1985,23 +1968,11 @@ def pairs_windows(iterable: Iterable[T]) -> Iterator[Pair[T]]:
 
 
 def iter_windows(size: int, iterable: Iterable[T]) -> Iterator[Iterator[T]]:
-    for window in list_windows(size, iterable):
-        yield iter(window)
+    return map(iter, list_windows(size, iterable))
 
 
 def set_windows(size: int, iterable: Iterable[Q]) -> Iterator[Set[Q]]:
-    iterator = iter(iterable)
-
-    window = deque(take(size, iterator), size)
-
-    if len(window) == size:
-        yield set(window)
-
-    window_append = window.append
-
-    for item in iterator:
-        window_append(item)
-        yield set(window)
+    return windows_with(set, size, iterable)
 
 
 def inspect(function: Inspect[T], iterable: Iterable[T]) -> Iterator[T]:
@@ -2055,8 +2026,8 @@ def duplicates_fast(
 def duplicates_simple(iterable: Iterable[T]) -> Iterator[T]:
     seen_set: Set[T] = set()
     add_to_seen_set = seen_set.add
-    seen_list: List[T] = []
-    add_to_seen_list = seen_list.append
+    seen_array: List[T] = []
+    add_to_seen_array = seen_array.append
 
     for item in iterable:
         try:
@@ -2067,18 +2038,18 @@ def duplicates_simple(iterable: Iterable[T]) -> Iterator[T]:
                 add_to_seen_set(item)
 
         except TypeError:
-            if item in seen_list:
+            if item in seen_array:
                 yield item
 
             else:
-                add_to_seen_list(item)
+                add_to_seen_array(item)
 
 
 def duplicates_by(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[T]:
     seen_values_set: Set[U] = set()
     add_to_seen_values_set = seen_values_set.add
-    seen_values_list: List[U] = []
-    add_to_seen_values_list = seen_values_list.append
+    seen_values_array: List[U] = []
+    add_to_seen_values_array = seen_values_array.append
 
     for item in iterable:
         value = key(item)
@@ -2091,11 +2062,11 @@ def duplicates_by(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[T]:
                 add_to_seen_values_set(value)
 
         except TypeError:
-            if value in seen_values_list:
+            if value in seen_values_array:
                 yield item
 
             else:
-                add_to_seen_values_list(value)
+                add_to_seen_values_array(value)
 
 
 def duplicates(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> Iterator[T]:
@@ -2143,8 +2114,8 @@ def unique_fast(iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None) 
 def unique_simple(iterable: Iterable[T]) -> Iterator[T]:
     seen_set: Set[T] = set()
     add_to_seen_set = seen_set.add
-    seen_list: List[T] = []
-    add_to_seen_list = seen_list.append
+    seen_array: List[T] = []
+    add_to_seen_array = seen_array.append
 
     for item in iterable:
         try:
@@ -2154,8 +2125,8 @@ def unique_simple(iterable: Iterable[T]) -> Iterator[T]:
                 yield item
 
         except TypeError:
-            if item not in seen_list:
-                add_to_seen_list(item)
+            if item not in seen_array:
+                add_to_seen_array(item)
 
                 yield item
 
@@ -2163,8 +2134,8 @@ def unique_simple(iterable: Iterable[T]) -> Iterator[T]:
 def unique_by(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[T]:
     seen_values_set: Set[U] = set()
     add_to_seen_values_set = seen_values_set.add
-    seen_values_list: List[U] = []
-    add_to_seen_values_list = seen_values_list.append
+    seen_values_array: List[U] = []
+    add_to_seen_values_array = seen_values_array.append
 
     for item in iterable:
         value = key(item)
@@ -2176,8 +2147,8 @@ def unique_by(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[T]:
                 yield item
 
         except TypeError:
-            if value not in seen_values_list:
-                add_to_seen_values_list(value)
+            if value not in seen_values_array:
+                add_to_seen_values_array(value)
 
                 yield item
 
@@ -2706,9 +2677,9 @@ def transpose(iterable: Iterable[Iterable[T]]) -> Iterator[DynamicTuple[T]]:
 
 
 def power_set(iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    array = list(iterable)
+    pool = tuple(iterable)
 
-    return flatten(combinations(array, count) for count in inclusive(range(len(array))))
+    return flatten(combinations(count, pool) for count in inclusive(range(len(pool))))
 
 
 def inclusive(non_inclusive: range) -> range:
@@ -2877,3 +2848,169 @@ def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[
 
 def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
     return standard_product(iterable, repeat=power)
+
+
+@overload
+def permutations(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
+    ...
+
+
+@overload
+def permutations(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
+    ...
+
+
+@overload
+def permutations(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
+    ...
+
+
+@overload
+def permutations(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
+    ...
+
+
+@overload
+def permutations(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
+    ...
+
+
+@overload
+def permutations(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
+    ...
+
+
+@overload
+def permutations(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
+    ...
+
+
+@overload
+def permutations(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
+    ...
+
+
+@overload
+def permutations(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
+    ...
+
+
+@overload
+def permutations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    ...
+
+
+def permutations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    return standard_permutations(iterable, count)
+
+
+def permute(iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    return standard_permutations(iterable)
+
+
+@overload
+def combinations(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
+    ...
+
+
+@overload
+def combinations(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
+    ...
+
+
+@overload
+def combinations(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
+    ...
+
+
+@overload
+def combinations(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
+    ...
+
+
+@overload
+def combinations(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
+    ...
+
+
+@overload
+def combinations(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
+    ...
+
+
+@overload
+def combinations(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
+    ...
+
+
+@overload
+def combinations(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
+    ...
+
+
+@overload
+def combinations(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
+    ...
+
+
+@overload
+def combinations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    ...
+
+
+def combinations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    return standard_combinations(iterable, count)
+
+
+@overload
+def combinations_with_replacement(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
+    ...
+
+
+@overload
+def combinations_with_replacement(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    ...
+
+
+def combinations_with_replacement(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
+    return standard_combinations_with_replacement(iterable, count)

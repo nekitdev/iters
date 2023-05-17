@@ -13,9 +13,12 @@ nav:
   - Reference:
     - Iterators: "reference/iters.md"
     - Async Iterators: "reference/async_iters.md"
+    - Ordered Set: "reference/ordered_set.md"
     - Utilities: "reference/utils.md"
     - Async Utilities: "reference/async_utils.md"
+    - Mappings: "reference/mappings.md"
     - Types: "reference/types.md"
+    - Typing: "reference/typing.md"
   - Changelog: "changelog.md"
   - Security: "security.md"
   - Code of Conduct: "code_of_conduct.md"
@@ -62,6 +65,7 @@ plugins:
 
           import:
             - https://docs.python.org/3/objects.inv
+            - https://nekitdev.github.io/wraps/objects.inv
 
 markdown_extensions:
   - pymdownx.highlight

@@ -2,6 +2,12 @@
 
 <!-- changelogging: start -->
 
+## 0.12.0 (2023-05-10)
+
+### Changes
+
+- This release contains lots of breaking changes. Please refer to the API documentation.
+
 ## 0.11.0 (2023-01-29)
 
 ### Internal

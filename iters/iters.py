@@ -144,6 +144,7 @@ from iters.utils import (
     partition_unsafe,
     peek,
     permutations,
+    permute,
     position,
     position_all,
     power_set,
@@ -2896,7 +2897,7 @@ class Iter(Iterator[T]):
         ...
 
     def combinations(self, count: int) -> Iter[DynamicTuple[T]]:
-        return self.create(combinations(self.iterator, count))
+        return self.create(combinations(count, self.iterator))
 
     @overload
     def combinations_with_replacement(self, count: Literal[0]) -> Iter[EmptyTuple]:
@@ -2939,10 +2940,10 @@ class Iter(Iterator[T]):
         ...
 
     def combinations_with_replacement(self, count: int) -> Iter[DynamicTuple[T]]:
-        return self.create(combinations_with_replacement(self.iterator, count))
+        return self.create(combinations_with_replacement(count, self.iterator))
 
     def permute(self) -> Iter[DynamicTuple[T]]:
-        return self.create(permutations(self.iterator))
+        return self.create(permute(self.iterator))
 
     @overload
     def permutations(self, count: Literal[0]) -> Iter[EmptyTuple]:
@@ -2985,7 +2986,7 @@ class Iter(Iterator[T]):
         ...
 
     def permutations(self, count: int) -> Iter[DynamicTuple[T]]:
-        return self.create(permutations(self.iterator, count))
+        return self.create(permutations(count, self.iterator))
 
     def power_set(self) -> Iter[DynamicTuple[T]]:
         """Computes the power set of the iterator.
