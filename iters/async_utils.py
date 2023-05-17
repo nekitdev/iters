@@ -75,6 +75,7 @@ from iters.typing import (
     AsyncForEach,
     AsyncValidate,
     ForEach,
+    Pair,
     Product,
     RecursiveAnyIterable,
     Sum,
@@ -922,7 +923,7 @@ async def async_at_or_last(
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T]) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+def async_copy_unsafe(iterable: AnyIterable[T]) -> Pair[AsyncIterator[T]]:
     ...
 
 
@@ -1001,7 +1002,7 @@ async_copy_infinite = async_copy_unsafe
 
 
 @overload
-def async_copy(iterable: AnyIterable[T]) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+def async_copy(iterable: AnyIterable[T]) -> Pair[AsyncIterator[T]]:
     ...
 
 
@@ -1429,24 +1430,22 @@ def async_groups_longest(
 
 
 @overload
-def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Tuple[Optional[T], Optional[T]]]:
+def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Pair[Optional[T]]]:
     ...
 
 
 @overload
-def async_pairs_longest(
-    iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple[Union[T, U], Union[T, U]]]:
+def async_pairs_longest(iterable: AnyIterable[T], fill: U) -> AsyncIterator[Pair[Union[T, U]]]:
     ...
 
 
 def async_pairs_longest(
     iterable: AnyIterable[Any], fill: Optional[Any] = None
-) -> AsyncIterator[Tuple[Any, Any]]:
+) -> AsyncIterator[Pair[Any]]:
     return async_groups_longest(2, iterable, fill)
 
 
-def async_pairs(iterable: AnyIterable[T]) -> AsyncIterator[Tuple[T, T]]:
+def async_pairs(iterable: AnyIterable[T]) -> AsyncIterator[Pair[T]]:
     return async_groups(2, iterable)
 
 
@@ -1559,7 +1558,7 @@ async def async_filter_false_await_map_await(
 
 def async_partition_unsafe(
     predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
-) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+) -> Pair[AsyncIterator[T]]:
     for_true, for_false = async_copy_unsafe(iterable)
 
     return async_filter(predicate, for_true), async_filter_false(predicate, for_false)
@@ -1570,7 +1569,7 @@ async_partition_infinite = async_partition_unsafe
 
 def async_partition_unsafe_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T]
-) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+) -> Pair[AsyncIterator[T]]:
     for_true, for_false = async_copy_unsafe(iterable)
 
     return async_filter_await(predicate, for_true), async_filter_false_await(predicate, for_false)
@@ -1581,7 +1580,7 @@ async_partition_infinite_await = async_partition_unsafe_await
 
 def async_partition(
     predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
-) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+) -> Pair[AsyncIterator[T]]:
     for_true, for_false = async_copy(iterable)
 
     return async_filter(predicate, for_true), async_filter_false(predicate, for_false)
@@ -1589,7 +1588,7 @@ def async_partition(
 
 def async_partition_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T]
-) -> Tuple[AsyncIterator[T], AsyncIterator[T]]:
+) -> Pair[AsyncIterator[T]]:
     for_true, for_false = async_copy(iterable)
 
     return async_filter_await(predicate, for_true), async_filter_false_await(predicate, for_false)
@@ -2783,26 +2782,26 @@ ASYNC_MIN_MAX_ON_EMPTY = "async_min_max() called on an empty iterable"
 
 
 @overload
-async def async_min_max(iterable: AnyIterable[ST], *, key: None = ...) -> Tuple[ST, ST]:
+async def async_min_max(iterable: AnyIterable[ST], *, key: None = ...) -> Pair[ST]:
     ...
 
 
 @overload
-async def async_min_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> Tuple[T, T]:
+async def async_min_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> Pair[T]:
     ...
 
 
 @overload
 async def async_min_max(
     iterable: AnyIterable[ST], *, key: None = ..., default: U
-) -> Union[Tuple[ST, ST], U]:
+) -> Union[Pair[ST], U]:
     ...
 
 
 @overload
 async def async_min_max(
     iterable: AnyIterable[T], *, key: Unary[T, ST], default: U
-) -> Union[Tuple[T, T], U]:
+) -> Union[Pair[T], U]:
     ...
 
 
@@ -2825,7 +2824,7 @@ async def async_min_max(
     return await async_min_max_by(iterator, result, key)
 
 
-async def async_min_max_simple(iterable: AnyIterable[ST], value: ST) -> Tuple[ST, ST]:
+async def async_min_max_simple(iterable: AnyIterable[ST], value: ST) -> Pair[ST]:
     low = high = value
 
     async for item in async_iter(iterable):
@@ -2838,7 +2837,7 @@ async def async_min_max_simple(iterable: AnyIterable[ST], value: ST) -> Tuple[ST
     return (low, high)
 
 
-async def async_min_max_by(iterable: AnyIterable[T], value: T, key: Unary[T, ST]) -> Tuple[T, T]:
+async def async_min_max_by(iterable: AnyIterable[T], value: T, key: Unary[T, ST]) -> Pair[T]:
     low = high = value
     low_key = high_key = key(value)
 
@@ -2860,14 +2859,14 @@ ASYNC_MIN_MAX_AWAIT_ON_EMPTY = "async_min_max_await() called on an empty iterabl
 
 
 @overload
-async def async_min_max_await(iterable: AnyIterable[T], *, key: AsyncUnary[T, ST]) -> Tuple[T, T]:
+async def async_min_max_await(iterable: AnyIterable[T], *, key: AsyncUnary[T, ST]) -> Pair[T]:
     ...
 
 
 @overload
 async def async_min_max_await(
     iterable: AnyIterable[T], *, key: AsyncUnary[T, ST], default: U
-) -> Union[Tuple[T, T], U]:
+) -> Union[Pair[T], U]:
     ...
 
 
@@ -2889,7 +2888,7 @@ async def async_min_max_await(
 
 async def async_min_max_by_await(
     iterable: AnyIterable[T], value: T, key: AsyncUnary[T, ST]
-) -> Tuple[T, T]:
+) -> Pair[T]:
     low = high = value
     low_key = high_key = await key(value)
 
@@ -3235,7 +3234,7 @@ def async_tuple_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[Dy
     return async_windows_with(tuple, size, iterable)
 
 
-def async_pairs_windows(iterable: AnyIterable[T]) -> AsyncIterator[Tuple[T, T]]:
+def async_pairs_windows(iterable: AnyIterable[T]) -> AsyncIterator[Pair[T]]:
     return async_tuple_windows(2, iterable)
 
 

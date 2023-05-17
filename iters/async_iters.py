@@ -271,6 +271,7 @@ from iters.typing import (
     AsyncForEach,
     AsyncValidate,
     ForEach,
+    Pair,
     Product,
     RecursiveAnyIterable,
     Sum,
@@ -338,7 +339,7 @@ def async_groups_longest(
     return wrap_marked_iterable(standard_async_groups_longest(size, iterable, marker))
 
 
-def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Tuple[Option[T], Option[T]]]:
+def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Pair[Option[T]]]:
     return wrap_marked_iterable(standard_async_pairs_longest(iterable, marker))  # type: ignore
 
 
@@ -1243,15 +1244,11 @@ class AsyncIter(AsyncIterator[T]):
 
     @wrap_future_option
     async def find(self, predicate: Optional[Predicate[T]]) -> Option[T]:
-        return wrap_marked(
-            await async_find(predicate, self.iterator, marker)  # type: ignore
-        )
+        return wrap_marked(await async_find(predicate, self.iterator, marker))  # type: ignore
 
     @wrap_future_option
     async def find_await(self, predicate: AsyncPredicate[T]) -> Option[T]:
-        return wrap_marked(
-            await async_find_await(predicate, self.iterator, marker)  # type: ignore
-        )
+        return wrap_marked(await async_find_await(predicate, self.iterator, marker))  # type: ignore
 
     @wrap_future_option
     async def find_or_first(self, predicate: Optional[Predicate[T]]) -> Option[T]:
@@ -1347,9 +1344,7 @@ class AsyncIter(AsyncIterator[T]):
 
     @wrap_future_option
     async def min_by(self, key: Unary[T, ST]) -> Option[T]:
-        return wrap_marked(
-            await async_min(self.iterator, key=key, default=marker)  # type: ignore
-        )
+        return wrap_marked(await async_min(self.iterator, key=key, default=marker))  # type: ignore
 
     @wrap_future_option
     async def min_by_await(self, key: AsyncUnary[T, ST]) -> Option[T]:
@@ -1363,9 +1358,7 @@ class AsyncIter(AsyncIterator[T]):
 
     @wrap_future_option
     async def max_by(self, key: Unary[T, ST]) -> Option[T]:
-        return wrap_marked(
-            await async_max(self.iterator, key=key, default=marker)  # type: ignore
-        )
+        return wrap_marked(await async_max(self.iterator, key=key, default=marker))  # type: ignore
 
     @wrap_future_option
     async def max_by_await(self, key: AsyncUnary[T, ST]) -> Option[T]:
@@ -1374,15 +1367,15 @@ class AsyncIter(AsyncIterator[T]):
         )
 
     @wrap_future_option
-    async def min_max(self: AsyncIter[ST]) -> Option[Tuple[ST, ST]]:
+    async def min_max(self: AsyncIter[ST]) -> Option[Pair[ST]]:
         return wrap_marked(await async_min_max(self.iterator, default=marker))
 
     @wrap_future_option
-    async def min_max_by(self, key: Unary[T, ST]) -> Option[Tuple[T, T]]:
+    async def min_max_by(self, key: Unary[T, ST]) -> Option[Pair[T]]:
         return wrap_marked(await async_min_max(self.iterator, key=key, default=marker))
 
     @wrap_future_option
-    async def min_max_by_await(self, key: AsyncUnary[T, ST]) -> Option[Tuple[T, T]]:
+    async def min_max_by_await(self, key: AsyncUnary[T, ST]) -> Option[Pair[T]]:
         return wrap_marked(await async_min_max_await(self.iterator, key=key, default=marker))
 
     def map(self, function: Unary[T, U]) -> AsyncIter[U]:
@@ -1794,10 +1787,10 @@ class AsyncIter(AsyncIterator[T]):
     def groups_longest(self, size: int) -> AsyncIter[DynamicTuple[Option[T]]]:
         return self.create(async_groups_longest(size, self.iterator))
 
-    def pairs(self) -> AsyncIter[Tuple[T, T]]:
+    def pairs(self) -> AsyncIter[Pair[T]]:
         return self.create(async_pairs(self.iterator))
 
-    def pairs_longest(self) -> AsyncIter[Tuple[Option[T], Option[T]]]:
+    def pairs_longest(self) -> AsyncIter[Pair[Option[T]]]:
         return self.create(async_pairs_longest(self.iterator))
 
     def iter_windows(self, size: int) -> AsyncIter[AsyncIter[T]]:
@@ -1806,7 +1799,7 @@ class AsyncIter(AsyncIterator[T]):
     def list_windows(self, size: int) -> AsyncIter[List[T]]:
         return self.create(async_list_windows(size, self.iterator))
 
-    def pairs_windows(self) -> AsyncIter[Tuple[T, T]]:
+    def pairs_windows(self) -> AsyncIter[Pair[T]]:
         return self.create(async_pairs_windows(self.iterator))
 
     @overload
@@ -2614,28 +2607,24 @@ class AsyncIter(AsyncIterator[T]):
     def unique_by_await(self, key: AsyncUnary[T, V]) -> AsyncIter[T]:
         return self.create(async_unique_await(self.iterator, key))
 
-    def partition(self, predicate: Optional[Predicate[T]]) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+    def partition(self, predicate: Optional[Predicate[T]]) -> Pair[AsyncIter[T]]:
         true, false = async_partition(predicate, self.iterator)
 
         return (self.create(true), self.create(false))
 
-    def partition_await(self, predicate: AsyncPredicate[T]) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+    def partition_await(self, predicate: AsyncPredicate[T]) -> Pair[AsyncIter[T]]:
         true, false = async_partition_await(predicate, self.iterator)
 
         return (self.create(true), self.create(false))
 
-    def partition_unsafe(
-        self, predicate: Optional[Predicate[T]]
-    ) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+    def partition_unsafe(self, predicate: Optional[Predicate[T]]) -> Pair[AsyncIter[T]]:
         true, false = async_partition_unsafe(predicate, self.iterator)
 
         return (self.create(true), self.create(false))
 
     partition_infinite = partition_unsafe
 
-    def partition_unsafe_await(
-        self, predicate: AsyncPredicate[T]
-    ) -> Tuple[AsyncIter[T], AsyncIter[T]]:
+    def partition_unsafe_await(self, predicate: AsyncPredicate[T]) -> Pair[AsyncIter[T]]:
         true, false = async_partition_unsafe_await(predicate, self.iterator)
 
         return (self.create(true), self.create(false))

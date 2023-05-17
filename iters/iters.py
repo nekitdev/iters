@@ -234,7 +234,7 @@ def groups_longest(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[Op
     return wrap_marked_iterable(standard_groups_longest(size, iterable, marker))
 
 
-def pairs_longest(iterable: Iterable[T]) -> Iterator[Tuple[Option[T], Option[T]]]:
+def pairs_longest(iterable: Iterable[T]) -> Iterator[Pair[Option[T]]]:
     return wrap_marked_iterable(standard_pairs_longest(iterable, marker))  # type: ignore
 
 
@@ -1975,10 +1975,10 @@ class Iter(Iterator[T]):
     def max_by(self, key: Unary[T, ST]) -> Option[T]:
         return wrap_marked(max(self.iterator, key=key, default=marker))  # type: ignore  # weird
 
-    def min_max(self: Iter[ST]) -> Option[Tuple[ST, ST]]:
+    def min_max(self: Iter[ST]) -> Option[Pair[ST]]:
         return wrap_marked(min_max(self.iterator, default=marker))
 
-    def min_max_by(self, key: Unary[T, ST]) -> Option[Tuple[T, T]]:
+    def min_max_by(self, key: Unary[T, ST]) -> Option[Pair[T]]:
         return wrap_marked(min_max(self.iterator, key=key, default=marker))
 
     def map(self, function: Unary[T, U]) -> Iter[U]:
@@ -2304,10 +2304,10 @@ class Iter(Iterator[T]):
     def groups_longest(self, size: int) -> Iter[DynamicTuple[Option[T]]]:
         return self.create(groups_longest(size, self.iterator))
 
-    def pairs(self) -> Iter[Tuple[T, T]]:
+    def pairs(self) -> Iter[Pair[T]]:
         return self.create(pairs(self.iterator))
 
-    def pairs_longest(self) -> Iter[Tuple[Option[T], Option[T]]]:
+    def pairs_longest(self) -> Iter[Pair[Option[T]]]:
         return self.create(pairs_longest(self.iterator))
 
     def iter_windows(self, size: int) -> Iter[Iter[T]]:
@@ -2316,7 +2316,7 @@ class Iter(Iterator[T]):
     def list_windows(self, size: int) -> Iter[List[T]]:
         return self.create(list_windows(size, self.iterator))
 
-    def pairs_windows(self) -> Iter[Tuple[T, T]]:
+    def pairs_windows(self) -> Iter[Pair[T]]:
         return self.create(pairs_windows(self.iterator))
 
     @overload
@@ -3112,7 +3112,7 @@ class Iter(Iterator[T]):
         """
         return self.create(unique(self.iterator, key))
 
-    def partition(self, predicate: Optional[Predicate[T]]) -> Tuple[Iter[T], Iter[T]]:
+    def partition(self, predicate: Optional[Predicate[T]]) -> Pair[Iter[T]]:
         """Partitions the iterator into two iterators *safely* based on the given `predicate`,
         loading **all** items into memory!
 
@@ -3151,7 +3151,7 @@ class Iter(Iterator[T]):
 
         return (self.create(true), self.create(false))
 
-    def partition_unsafe(self, predicate: Optional[Predicate[T]]) -> Tuple[Iter[T], Iter[T]]:
+    def partition_unsafe(self, predicate: Optional[Predicate[T]]) -> Pair[Iter[T]]:
         """Partitions the iterator into two iterators *unsafely* based on the given `predicate`.
 
         See [predicates](/predicates) for more information on the `predicate` argument.
