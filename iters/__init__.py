@@ -11,7 +11,7 @@ __url__ = "https://github.com/nekitdev/iters"
 __title__ = "iters"
 __author__ = "nekitdev"
 __license__ = "MIT"
-__version__ = "0.12.0"
+__version__ = "0.13.0"
 
 from iters.async_iters import (
     AsyncIter,

@@ -23,14 +23,19 @@ from typing import (
     overload,
 )
 
-from funcs.typing import (
+from mixed_methods import mixed_method
+from orderings import LenientOrdered, Ordering, StrictOrdered
+from typing_aliases import (
     AnyErrorType,
     Binary,
     DynamicTuple,
     EmptyTuple,
     Inspect,
     Nullary,
+    Pair,
     Predicate,
+    RecursiveIterable,
+    Selectors,
     Tuple1,
     Tuple2,
     Tuple3,
@@ -41,8 +46,6 @@ from funcs.typing import (
     Tuple8,
     Unary,
 )
-from mixed_methods import mixed_method
-from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec
 from wraps.early import early_option
 from wraps.option import Option, Some
@@ -50,7 +53,7 @@ from wraps.option import Option, Some
 from iters.constants import DEFAULT_START, DEFAULT_STEP, EMPTY_BYTES, EMPTY_STRING
 from iters.ordered_set import OrderedSet, ordered_set
 from iters.types import MarkerOr, marker, wrap_marked
-from iters.typing import Pair, Product, RecursiveIterable, Selectors, Sum
+from iters.typing import Product, Sum
 from iters.utils import (
     accumulate_fold,
     accumulate_product,

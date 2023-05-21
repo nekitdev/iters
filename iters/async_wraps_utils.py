@@ -1,9 +1,7 @@
 from typing import AsyncIterator, TypeVar
 
-from funcs.typing import AsyncBinary, Binary
+from typing_aliases import AnyIterable, AsyncBinary, Binary, Pair
 from wraps.result import Result
-
-from iters.typing import AnyIterable, Pair
 
 __all__ = ("async_coalesce", "async_coalesce_await")
 

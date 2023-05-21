@@ -1,9 +1,7 @@
 from typing import Iterable, Iterator, TypeVar
 
-from funcs.typing import Binary
+from typing_aliases import Binary, Pair
 from wraps.result import Result
-
-from iters.typing import Pair
 
 __all__ = ("coalesce",)
 

@@ -1,5 +1,7 @@
 from typing import Any, Dict, Hashable, Mapping, TypeVar, overload
 
+from typing_aliases import StringDict, StringMapping
+
 __all__ = ("merge",)
 
 Q = TypeVar("Q", bound=Hashable)
@@ -12,7 +14,7 @@ def merge(*mappings: Mapping[Q, T]) -> Dict[Q, T]:
 
 
 @overload
-def merge(*mappings: Mapping[str, T], **keywords: T) -> Dict[str, T]:
+def merge(*mappings: StringMapping[T], **keywords: T) -> StringDict[T]:
     ...
 
 

@@ -26,19 +26,28 @@ from typing import (
     overload,
 )
 
-from funcs.typing import (
+from mixed_methods import mixed_method
+from orderings import LenientOrdered, Ordering, StrictOrdered
+from typing_aliases import (
     AnyErrorType,
+    AnyIterable,
+    AnySelectors,
     AsyncBinary,
+    AsyncForEach,
     AsyncInspect,
     AsyncNullary,
     AsyncPredicate,
     AsyncUnary,
+    AsyncValidate,
     Binary,
     DynamicTuple,
     EmptyTuple,
+    ForEach,
     Inspect,
     Nullary,
+    Pair,
     Predicate,
+    RecursiveAnyIterable,
     Tuple1,
     Tuple2,
     Tuple3,
@@ -48,9 +57,8 @@ from funcs.typing import (
     Tuple7,
     Tuple8,
     Unary,
+    Validate,
 )
-from mixed_methods import mixed_method
-from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_extensions import Literal, Never, ParamSpec
 from wraps.option import Option
 from wraps.wraps import wrap_future, wrap_future_option
@@ -265,18 +273,7 @@ from iters.async_utils import standard_async_iter, standard_async_next
 from iters.constants import DEFAULT_START, DEFAULT_STEP, EMPTY_BYTES, EMPTY_STRING
 from iters.ordered_set import OrderedSet
 from iters.types import MarkerOr, marker, wrap_marked
-from iters.typing import (
-    AnyIterable,
-    AnySelectors,
-    AsyncForEach,
-    AsyncValidate,
-    ForEach,
-    Pair,
-    Product,
-    RecursiveAnyIterable,
-    Sum,
-    Validate,
-)
+from iters.typing import Product, Sum
 
 __all__ = (
     # the async iterator type

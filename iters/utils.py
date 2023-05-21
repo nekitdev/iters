@@ -39,21 +39,27 @@ from typing import (
     List,
     Optional,
     Set,
+    Sized,
     Tuple,
     TypeVar,
     Union,
     overload,
 )
 
-from funcs.typing import (
+from funcs.unpacking import unpack_binary
+from orderings import LenientOrdered, Ordering, StrictOrdered
+from typing_aliases import (
     AnyErrorType,
     Binary,
     Compare,
     DynamicTuple,
     EmptyTuple,
+    ForEach,
     Inspect,
     Nullary,
+    Pair,
     Predicate,
+    RecursiveIterable,
     Tuple1,
     Tuple2,
     Tuple3,
@@ -63,27 +69,19 @@ from funcs.typing import (
     Tuple7,
     Tuple8,
     Unary,
-)
-from funcs.unpacking import unpack_binary
-from orderings import LenientOrdered, Ordering, StrictOrdered
-from typing_extensions import Literal, Never
-
-from iters.types import is_marker, is_no_default, is_not_marker, marker, no_default
-from iters.typing import (
-    ForEach,
-    Pair,
-    Product,
-    RecursiveIterable,
-    Sum,
     Validate,
     is_bytes,
     is_string,
 )
+from typing_extensions import Literal, Never
+
+from iters.types import is_marker, is_no_default, is_not_marker, marker, no_default
+from iters.typing import Product, Sum
 
 __all__ = (
     "accumulate_fold",
-    "accumulate_reduce",
     "accumulate_product",
+    "accumulate_reduce",
     "accumulate_sum",
     "all_equal",
     "all_unique",
@@ -105,6 +103,7 @@ __all__ = (
     "consume",
     "contains",
     "contains_identity",
+    "contains_only_item",
     "copy",
     "copy_infinite",
     "copy_unsafe",
@@ -124,8 +123,8 @@ __all__ = (
     "filter_false",
     "filter_false_map",
     "filter_map",
-    "find_all",
     "find",
+    "find_all",
     "find_or_first",
     "find_or_last",
     "first",
@@ -162,6 +161,7 @@ __all__ = (
     "map_except",
     "min_max",
     "next_of",
+    "next_of_iterable",
     "none",
     "once",
     "once_with",
@@ -175,8 +175,9 @@ __all__ = (
     "partition_unsafe",
     "peek",
     "permutations",
-    "position_all",
+    "permute",
     "position",
+    "position_all",
     "power_set",
     "prepend",
     "product",
@@ -189,17 +190,20 @@ __all__ = (
     "repeat_with",
     "rest",
     "reverse",
+    "set_windows",
     "skip",
     "skip_while",
     "sort",
     "spy",
     "step_by",
     "sum",
+    "tabulate",
     "tail",
     "take",
     "take_while",
     "transpose",
     "tuple_windows",
+    "unary_tuple",
     "unique",
     "unique_fast",
     "zip",
@@ -1199,6 +1203,13 @@ def contains_identity(value: T, iterable: Iterable[T]) -> bool:
     return any(item is value for item in iterable)
 
 
+ONE = 1
+
+
+def contains_only_item(sized: Sized) -> bool:
+    return len(sized) == ONE
+
+
 @overload
 def all_unique_fast(iterable: Iterable[Q], key: None = ...) -> bool:
     ...
@@ -2071,6 +2082,10 @@ def duplicates_by(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[T]:
 
 def duplicates(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> Iterator[T]:
     return duplicates_simple(iterable) if key is None else duplicates_by(iterable, key)
+
+
+def unary_tuple(item: T) -> Tuple[T]:
+    return (item,)
 
 
 def unique_fast_simple(iterable: Iterable[Q]) -> Iterator[Q]:

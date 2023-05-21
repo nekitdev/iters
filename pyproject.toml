@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iters"
-version = "0.12.0"
+version = "0.13.0"
 description = "Composable external iteration."
 authors = ["nekitdev"]
 license = "MIT"
@@ -32,6 +32,7 @@ include = "iters"
 [tool.poetry.dependencies]
 python = ">= 3.7"
 
+typing-aliases = ">= 1.1.1"
 typing-extensions = ">= 4.5.0"
 
 named = ">= 1.1.0"
@@ -75,7 +76,7 @@ optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.4.3"
-mkdocs-material = "9.1.12"
+mkdocs-material = "9.1.14"
 
 [tool.poetry.group.docs.dependencies.mkdocstrings]
 version = "0.21.2"
@@ -85,7 +86,7 @@ extras = ["python"]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-changelogging = "1.2.0"
+changelogging = "1.3.0"
 
 [tool.black]
 line_length = 100
@@ -114,7 +115,7 @@ exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING",
     "@overload",
-    "@abstractmethod",
+    "@required",
     "raise NotImplementedError",
     "raise AssertionError",
     "def __repr__",
@@ -150,7 +151,7 @@ warn_unused_ignores = false  # compatibility
 
 [tool.changelogging]
 name = "iters"
-version = "0.12.0"
+version = "0.13.0"
 url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"

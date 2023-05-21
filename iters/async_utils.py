@@ -32,24 +32,35 @@ from typing import (
 from async_extensions.collect import collect_iterable
 from async_extensions.standard import async_iter as standard_async_iter
 from async_extensions.standard import async_next as standard_async_next
-from funcs.typing import (
+from funcs.unpacking import unpack_binary
+from named import get_type_name
+from orderings import LenientOrdered, Ordering, StrictOrdered
+from typing_aliases import (
     AnyErrorType,
+    AnyIterable,
+    AnyIterator,
+    AnySelectors,
     AsyncBinary,
+    AsyncForEach,
     AsyncInspect,
     AsyncNullary,
     AsyncPredicate,
     AsyncQuaternary,
     AsyncTernary,
     AsyncUnary,
+    AsyncValidate,
     Binary,
     DynamicAsyncCallable,
     DynamicCallable,
     DynamicTuple,
     EmptyTuple,
+    ForEach,
     Inspect,
     Nullary,
+    Pair,
     Predicate,
     Quaternary,
+    RecursiveAnyIterable,
     Ternary,
     Tuple1,
     Tuple2,
@@ -60,25 +71,6 @@ from funcs.typing import (
     Tuple7,
     Tuple8,
     Unary,
-)
-from funcs.unpacking import unpack_binary
-from named import get_type_name
-from orderings import LenientOrdered, Ordering, StrictOrdered
-from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
-
-from iters.ordered_set import OrderedSet, ordered_set
-from iters.types import marker, no_default
-from iters.typing import (
-    AnyIterable,
-    AnyIterator,
-    AnySelectors,
-    AsyncForEach,
-    AsyncValidate,
-    ForEach,
-    Pair,
-    Product,
-    RecursiveAnyIterable,
-    Sum,
     Validate,
     is_async_iterable,
     is_async_iterator,
@@ -87,14 +79,28 @@ from iters.typing import (
     is_iterator,
     is_string,
 )
-from iters.utils import COMPARE, cartesian_power, inclusive, permutations, repeat, repeat_with, take
+from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
+
+from iters.ordered_set import OrderedSet, ordered_set
+from iters.types import marker, no_default
+from iters.typing import Product, Sum
+from iters.utils import (
+    COMPARE,
+    cartesian_power,
+    inclusive,
+    permutations,
+    repeat,
+    repeat_with,
+    take,
+    unary_tuple,
+)
 
 __all__ = (
     "async_accumulate_fold",
     "async_accumulate_fold_await",
+    "async_accumulate_product",
     "async_accumulate_reduce",
     "async_accumulate_reduce_await",
-    "async_accumulate_product",
     "async_accumulate_sum",
     "async_all",
     "async_all_equal",
@@ -107,12 +113,15 @@ __all__ = (
     "async_append",
     "async_at",
     "async_at_or_last",
+    "async_borrow",
     "async_cartesian_power",
     "async_cartesian_product",
     "async_chain",
     "async_chain_from_iterable",
     "async_chunks",
     "async_collapse",
+    "async_combinations",
+    "async_combinations_with_replacement",
     "async_combine",
     "async_compare",
     "async_compare_await",
@@ -156,9 +165,9 @@ __all__ = (
     "async_filter_false_map_await",
     "async_filter_map",
     "async_filter_map_await",
+    "async_find",
     "async_find_all",
     "async_find_all_await",
-    "async_find",
     "async_find_await",
     "async_find_or_first",
     "async_find_or_first_await",
@@ -212,6 +221,8 @@ __all__ = (
     "async_list_windows",
     "async_map",
     "async_map_await",
+    "async_map_concurrent",
+    "async_map_concurrent_bound",
     "async_map_except",
     "async_map_except_await",
     "async_max",
@@ -242,10 +253,13 @@ __all__ = (
     "async_partition_unsafe",
     "async_partition_unsafe_await",
     "async_peek",
+    "async_permutations",
+    "async_permute",
+    "async_position",
     "async_position_all",
     "async_position_all_await",
-    "async_position",
     "async_position_await",
+    "async_power_set",
     "async_prepend",
     "async_product",
     "async_reduce",
@@ -263,6 +277,7 @@ __all__ = (
     "async_reverse",
     "async_reversed",
     "async_set",
+    "async_set_windows",
     "async_skip",
     "async_skip_while",
     "async_skip_while_await",
@@ -277,6 +292,7 @@ __all__ = (
     "async_take",
     "async_take_while",
     "async_take_while_await",
+    "async_transpose",
     "async_tuple",
     "async_tuple_windows",
     "async_unique",
@@ -284,6 +300,8 @@ __all__ = (
     "async_unique_fast",
     "async_unique_fast_await",
     "async_wait",
+    "async_wait_concurrent",
+    "async_wait_concurrent_bound",
     "async_zip",
     "async_zip_equal",
     "async_zip_longest",
@@ -5080,10 +5098,6 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
         stack = async_cartesian_power_step(stack)  # type: ignore
 
     return stack
-
-
-def unary_tuple(item: T) -> Tuple[T]:
-    return (item,)
 
 
 async def async_wait_concurrent(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:

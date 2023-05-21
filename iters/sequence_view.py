@@ -3,9 +3,8 @@ from __future__ import annotations
 from typing import Sequence, TypeVar, Union, final, overload
 
 from attrs import frozen
+from typing_aliases import is_slice
 from wraps.wraps import wrap_option
-
-from iters.typing import is_slice
 
 __all__ = ("SequenceView", "sequence_view")
 

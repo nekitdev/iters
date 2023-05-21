@@ -19,9 +19,8 @@ from typing import (
 
 from mixed_methods import mixed_method
 from named import get_type_name
+from typing_aliases import is_instance, is_slice
 from wraps.wraps import wrap_option
-
-from iters.typing import is_instance
 
 __all__ = ("OrderedSet", "ordered_set", "ordered_set_unchecked")
 
@@ -200,7 +199,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         ...
 
     def __getitem__(self, index: Union[int, slice]) -> Union[Q, OrderedSet[Q]]:
-        if is_instance(index, slice):
+        if is_slice(index):
             if index == SLICE_ALL:
                 return self.copy()
 
