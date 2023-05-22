@@ -206,6 +206,7 @@ __all__ = (
     "unary_tuple",
     "unique",
     "unique_fast",
+    "unpack_unary_tuple",
     "zip",
     "zip_equal",
     "zip_longest",
@@ -2086,6 +2087,12 @@ def duplicates(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> Iter
 
 def unary_tuple(item: T) -> Tuple[T]:
     return (item,)
+
+
+def unpack_unary_tuple(value: Tuple[T]) -> T:
+    (item,) = value
+
+    return item
 
 
 def unique_fast_simple(iterable: Iterable[Q]) -> Iterator[Q]:

@@ -178,6 +178,7 @@ from iters.utils import (
     zip_equal,
 )
 from iters.utils import zip_longest as standard_zip_longest
+from iters.wraps_utils import filter_map_option, scan
 
 __all__ = (
     # the iterator type
@@ -1376,6 +1377,10 @@ class Iter(Iterator[T]):
     @classmethod
     def create_nested(cls, nested: Iterable[Iterable[U]]) -> Iter[Iter[U]]:
         return cls(map(cls, nested))  # type: ignore
+
+    @classmethod
+    def create_option(cls, option: Option[Iterable[U]]) -> Option[Iter[U]]:
+        return option.map(cls)  # type: ignore
 
     def __iter__(self) -> Iter[T]:
         return self
@@ -3411,6 +3416,15 @@ class Iter(Iterator[T]):
             The original iterator.
         """
         return self.create(inspect(function, self.iterator))
+
+    def scan(self, state: V, function: Binary[V, T, Option[U]]) -> Iter[U]:
+        return self.create(scan(state, function, self.iterator))
+
+    def filter_map_option(self, function: Unary[T, Option[U]]) -> Iter[U]:
+        return self.create(filter_map_option(function, self.iterator))
+
+    # def transpose_option(self: Iter[Option[U]]) -> Option[Iter[U]]:
+    #     return self.create_option(transpose_option(self.iterator))
 
     def into_async_iter(self) -> AsyncIter[T]:
         """Converts an [`Iter[T]`][iters.iters.Iter] into

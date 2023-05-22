@@ -25,6 +25,7 @@ from iters.async_iters import (
 from iters.iters import Iter, iter, reversed, standard_iter, standard_reversed, wrap_iter
 from iters.ordered_set import OrderedSet, ordered_set, ordered_set_unchecked
 from iters.sequence_view import SequenceView, sequence_view
+from iters.state import State, stateful
 
 __all__ = (
     # the async iterator type
@@ -57,4 +58,7 @@ __all__ = (
     # sequence view
     "SequenceView",
     "sequence_view",
+    # state
+    "State",
+    "stateful",
 )
