@@ -51,7 +51,7 @@ black = "23.3.0"
 flake8-pyproject = "1.2.3"
 
 [tool.poetry.group.format.dependencies.flake8]
-version = "6.0.0"
+version = "6.1.0"
 python = ">= 3.8.1"
 
 [tool.poetry.group.format.dependencies.isort]
