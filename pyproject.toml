@@ -75,7 +75,7 @@ pytest-cov = "4.0.0"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "1.4.3"
+mkdocs = "1.5.2"
 mkdocs-material = "9.1.14"
 
 [tool.poetry.group.docs.dependencies.mkdocstrings]
