@@ -37,6 +37,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     Optional,
     Set,
     Sized,
@@ -73,7 +74,7 @@ from typing_aliases import (
     is_bytes,
     is_string,
 )
-from typing_extensions import Literal, Never
+from typing_extensions import Never
 
 from iters.types import is_marker, is_no_default, is_not_marker, marker, no_default
 from iters.typing import Product, Sum
@@ -1313,7 +1314,7 @@ def next_of_iterable(iterable: Iterable[T]) -> Nullary[T]:
 
 def combine(*iterables: Iterable[T]) -> Iterator[T]:
     pending = len(iterables)
-    nexts = cycle(map(next_of_iterable, iterables))
+    nexts: Iterable[Nullary[T]] = cycle(map(next_of_iterable, iterables))
 
     while pending:
         try:
@@ -2262,7 +2263,7 @@ def zip(
 
 
 @overload
-def zip(
+def zip(  # type: ignore
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2364,7 +2365,7 @@ def zip_equal(
 
 
 @overload
-def zip_equal(
+def zip_equal(  # type: ignore
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2537,7 +2538,7 @@ def zip_longest(
 
 
 @overload
-def zip_longest(
+def zip_longest(  # type: ignore
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2672,7 +2673,7 @@ def zip_longest(
 
 
 @overload
-def zip_longest(
+def zip_longest(  # type: ignore
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2799,7 +2800,7 @@ def cartesian_product(
 
 
 @overload
-def cartesian_product(
+def cartesian_product(  # type: ignore
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],

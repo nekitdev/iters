@@ -16,6 +16,7 @@ from typing import (
     Hashable,
     Iterator,
     List,
+    Literal,
     Optional,
     Reversible,
     Set,
@@ -59,7 +60,7 @@ from typing_aliases import (
     Unary,
     Validate,
 )
-from typing_extensions import Literal, Never, ParamSpec
+from typing_extensions import Never, ParamSpec
 from wraps.option import Option
 from wraps.wraps import wrap_future, wrap_future_option
 
@@ -568,7 +569,7 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip(
+    def create_zip(  # type: ignore
         cls,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],
@@ -682,7 +683,7 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip_equal(
+    def create_zip_equal(  # type: ignore
         cls,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],
@@ -817,7 +818,7 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip_longest(
+    def create_zip_longest(  # type: ignore
         cls,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],
@@ -933,7 +934,7 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_cartesian_product(
+    def create_cartesian_product(  # type: ignore
         cls,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],
@@ -1929,7 +1930,7 @@ class AsyncIter(AsyncIterator[T]):
         ...
 
     @overload
-    def apply_zip(
+    def apply_zip(  # type: ignore
         self,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],
@@ -2033,7 +2034,7 @@ class AsyncIter(AsyncIterator[T]):
         ...
 
     @overload
-    def apply_zip_equal(
+    def apply_zip_equal(  # type: ignore
         self,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],
@@ -2172,7 +2173,7 @@ class AsyncIter(AsyncIterator[T]):
         ...
 
     @overload
-    def apply_zip_longest(
+    def apply_zip_longest(  # type: ignore
         self,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],
@@ -2281,7 +2282,7 @@ class AsyncIter(AsyncIterator[T]):
         ...
 
     @overload
-    def apply_cartesian_product(
+    def apply_cartesian_product(  # type: ignore
         self,
         __iterable_a: AnyIterable[Any],
         __iterable_b: AnyIterable[Any],

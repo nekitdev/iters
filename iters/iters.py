@@ -14,6 +14,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     Optional,
     Reversible,
     Set,
@@ -46,7 +47,7 @@ from typing_aliases import (
     Tuple8,
     Unary,
 )
-from typing_extensions import Literal, Never, ParamSpec
+from typing_extensions import Never, ParamSpec
 from wraps.early import early_option
 from wraps.option import Option, Some
 
@@ -854,7 +855,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip(
+    def create_zip(  # type: ignore
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -986,7 +987,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip_equal(
+    def create_zip_equal(  # type: ignore
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -1131,7 +1132,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip_longest(
+    def create_zip_longest(  # type: ignore
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -1272,7 +1273,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_cartesian_product(
+    def create_cartesian_product(  # type: ignore
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -1511,7 +1512,7 @@ class Iter(Iterator[T]):
         Returns:
             The last item.
         """
-        return wrap_marked(last(self.iterator))
+        return wrap_marked(last(self.iterator, marker))
 
     def last_with_tail(self) -> Option[T]:
         """Returns the last item in the iterator.
@@ -2454,7 +2455,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_zip(
+    def apply_zip(  # type: ignore
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -2555,7 +2556,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_zip_equal(
+    def apply_zip_equal(  # type: ignore
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -2679,7 +2680,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_zip_longest(
+    def apply_zip_longest(  # type: ignore
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -2783,7 +2784,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_cartesian_product(
+    def apply_cartesian_product(  # type: ignore
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],

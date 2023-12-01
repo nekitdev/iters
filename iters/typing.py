@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod as required
-from typing import TypeVar
-
-from typing_extensions import Protocol, runtime_checkable
+from typing import Protocol, TypeVar, runtime_checkable
 
 __all__ = ("Sum", "Product")
 

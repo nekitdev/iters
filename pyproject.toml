@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iters"
-version = "0.13.1"
+version = "0.14.0"
 description = "Composable external iteration."
 authors = ["nekitdev"]
 license = "MIT"
@@ -23,63 +23,61 @@ classifiers = [
 
 [tool.poetry.urls]
 Discord = "https://nekit.dev/discord"
-Funding = "https://patreon.com/nekitdev"
 Issues = "https://github.com/nekitdev/iters/issues"
 
 [[tool.poetry.packages]]
 include = "iters"
 
 [tool.poetry.dependencies]
-python = ">= 3.7"
+python = ">= 3.8"
 
-typing-aliases = ">= 1.1.2"
-typing-extensions = ">= 4.5.0"
+typing-aliases = ">= 1.2.0"
+typing-extensions = ">= 4.8.0"
 
-named = ">= 1.1.0"
+named = ">= 1.3.0"
 orderings = ">= 1.1.0"
 
 solus = ">= 1.1.0"
 
-async-extensions = ">= 1.2.3"
-mixed-methods = ">= 1.0.1"
+async-extensions = ">= 1.4.1"
+mixed-methods = ">= 1.0.2"
 
 [tool.poetry.group.format]
 optional = true
 
 [tool.poetry.group.format.dependencies]
-black = "23.3.0"
+black = "23.11.0"
 flake8-pyproject = "1.2.3"
 
 [tool.poetry.group.format.dependencies.flake8]
-version = "6.0.0"
+version = "6.1.0"
 python = ">= 3.8.1"
 
 [tool.poetry.group.format.dependencies.isort]
 version = "5.12.0"
-python = ">= 3.8"
 
 [tool.poetry.group.check]
 optional = true
 
 [tool.poetry.group.check.dependencies]
-mypy = "1.3.0"
+mypy = "1.7.1"
 
 [tool.poetry.group.test]
 optional = true
 
 [tool.poetry.group.test.dependencies]
-pytest = "7.3.1"
-pytest-cov = "4.0.0"
+pytest = "7.4.3"
+pytest-cov = "4.1.0"
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "1.4.3"
-mkdocs-material = "9.1.14"
+mkdocs = "1.5.3"
+mkdocs-material = "9.4.11"
 
 [tool.poetry.group.docs.dependencies.mkdocstrings]
-version = "0.21.2"
+version = "0.24.0"
 extras = ["python"]
 
 [tool.poetry.group.dev]
@@ -151,7 +149,7 @@ warn_unused_ignores = false  # compatibility
 
 [tool.changelogging]
 name = "iters"
-version = "0.13.1"
+version = "0.14.0"
 url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"
@@ -168,5 +166,5 @@ wrap_size = 100
 display = ["feature", "change", "fix", "security", "deprecation", "removal", "internal"]
 
 [build-system]
-requires = ["poetry-core >= 1.5.2"]
+requires = ["poetry-core >= 1.8.1"]
 build-backend = "poetry.core.masonry.api"

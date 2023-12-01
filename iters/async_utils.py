@@ -20,6 +20,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     Optional,
     Reversible,
     Set,
@@ -79,7 +80,7 @@ from typing_aliases import (
     is_iterator,
     is_string,
 )
-from typing_extensions import Literal, Never, ParamSpec, TypeVarTuple, Unpack
+from typing_extensions import Never, ParamSpec, TypeVarTuple, Unpack
 
 from iters.ordered_set import OrderedSet, ordered_set
 from iters.types import marker, no_default
@@ -3664,7 +3665,7 @@ def async_zip(
 
 
 @overload
-def async_zip(
+def async_zip(  # type: ignore
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -3801,7 +3802,7 @@ def async_zip_equal(
 
 
 @overload
-def async_zip_equal(
+def async_zip_equal(  # type: ignore
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -3940,7 +3941,7 @@ def async_zip_longest(
 
 
 @overload
-def async_zip_longest(
+def async_zip_longest(  # type: ignore
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -4069,7 +4070,7 @@ def async_zip_longest(
 
 
 @overload
-def async_zip_longest(
+def async_zip_longest(  # type: ignore
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -4476,7 +4477,7 @@ def standard_async_map(
 
 
 @overload
-def standard_async_map(
+def standard_async_map(  # type: ignore
     function: DynamicCallable[R],
     __iterable_t: AnyIterable[Any],
     __iterable_u: AnyIterable[Any],
@@ -4533,7 +4534,7 @@ def standard_async_map_await(
 
 
 @overload
-def standard_async_map_await(
+def standard_async_map_await(  # type: ignore
     function: DynamicAsyncCallable[R],
     __iterable_t: AnyIterable[Any],
     __iterable_u: AnyIterable[Any],
@@ -4990,7 +4991,7 @@ def async_cartesian_product(
 
 
 @overload
-def async_cartesian_product(
+def async_cartesian_product(  # type: ignore
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],

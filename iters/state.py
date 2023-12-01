@@ -1,11 +1,11 @@
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, final
 
 from attrs import define
-from typing_extensions import final
+from typing_extensions import Self
 
 __all__ = ("State", "stateful")
 
-T = TypeVar("T", covariant=True)
+T = TypeVar("T")
 
 
 @final
@@ -19,8 +19,10 @@ class State(Generic[T]):
     def get(self) -> T:
         return self.value
 
-    def set(self, value: T) -> T:  # type: ignore
+    def set(self, value: T) -> Self:
         self.value = value
+
+        return self
 
 
 def stateful(value: T) -> State[T]:

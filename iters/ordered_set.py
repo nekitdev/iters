@@ -49,8 +49,8 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
     and a *hash map* to store the indices of the items in the array along with ensuring uniqueness.
 
     The complexity of the operations assumes that *hash maps*
-    have $O(1)$ *insertion*, *lookup*, *deletion*, and *clearing* as well
-    as that *arrays* have $O(1)$ *by-index lookup*, *length-checking* and *clearing*.
+    have `O(1)` *insertion*, *lookup*, *deletion*, and *clearing* as well
+    as that *arrays* have `O(1)` *by-index lookup*, *length-checking* and *clearing*.
     """
 
     def __init__(self, iterable: Iterable[Q] = ()) -> None:
@@ -64,7 +64,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Creates an ordered set from an iterable.
 
         Complexity:
-            $O(n)$, where $n$ is the length of the iterable.
+            `O(n)`, where `n` is the length of the iterable.
 
         Example:
             ```python
@@ -90,7 +90,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         contain unique items only.
 
         Complexity:
-            $O(n)$, where $n$ is the length of the iterable.
+            `O(n)`, where `n` is the length of the iterable.
 
         Example:
             ```python
@@ -217,7 +217,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         ```
 
         Complexity:
-            $O(n)$, where $n$ is the length of the ordered set.
+            `O(n)`, where `n` is the length of the ordered set.
 
         Example:
             ```python
@@ -240,7 +240,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Adds an item to the ordered set.
 
         Complexity:
-            $O(1)$.
+            `O(1)`.
 
         Example:
             ```python
@@ -280,7 +280,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         ```
 
         Complexity:
-            $O(n)$, where $n$ is the length of the iterable.
+            `O(n)`, where `n` is the length of the iterable.
 
         Example:
             ```python
@@ -304,7 +304,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Gets the index of an item in the ordered set.
 
         Complexity:
-            $O(1)$.
+            `O(1)`.
 
         Example:
             ```python
@@ -353,7 +353,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Returns `1` if an item is in the ordered set, `0` otherwise.
 
         Complexity:
-            $O(1)$.
+            `O(1)`.
 
         Arguments:
             item: The item to count.
@@ -367,7 +367,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Pops an item from the ordered set at `index`.
 
         Complexity:
-            $O(n)$, see [`discard`][iters.ordered_set.OrderedSet.discard].
+            `O(n)`, see [`discard`][iters.ordered_set.OrderedSet.discard].
 
         Example:
             ```python
@@ -408,7 +408,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Discards an item from the ordered set.
 
         Complexity:
-            $O(n)$, where $n$ is the length of the ordered set.
+            `O(n)`, where `n` is the length of the ordered set.
             This is because all indices after the removed index must be decremented.
 
         Example:
@@ -440,7 +440,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
     def remove(self, item: Q) -> None:
         """A checked version of [`discard`][iters.ordered_set.OrderedSet.discard].
 
-        Complexity: $O(n)$, see [`discard`][iters.ordered_set.OrderedSet.discard].
+        Complexity: `O(n)`, see [`discard`][iters.ordered_set.OrderedSet.discard].
 
         Example:
             ```python
@@ -473,7 +473,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Inserts an item into the ordered set at `index`.
 
         Complexity:
-            $O(n)$, where $n$ is the length of the ordered set.
+            `O(n)`, where `n` is the length of the ordered set.
             This is because all indices after the inserted index must be incremented.
 
         Example:
@@ -511,7 +511,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Clears the ordered set.
 
         Complexity:
-            $O(1)$.
+            `O(1)`.
         """
         self._items.clear()
         self._item_to_index.clear()

@@ -18,7 +18,7 @@ Iterators are heavily used in idiomatic Python code, so becoming familiar with t
 
 ## Installing
 
-**Python 3.7 or above is required.**
+**Python 3.8 or above is required.**
 
 ### pip
 
@@ -48,7 +48,7 @@ Or by directly specifying it in the configuration like so:
 
 ```toml
 [tool.poetry.dependencies]
-iters = "^0.13.1"
+iters = "^0.14.1"
 ```
 
 Alternatively, you can add it directly from the source:
