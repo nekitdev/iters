@@ -2,6 +2,18 @@
 
 <!-- changelogging: start -->
 
+## 0.15.0 (2023-12-01)
+
+### Changes
+
+- Changed `reduce` and `reduce_await` on `Iter[T]` and `AsyncIter[T]` to return `Option[T]`
+  instead of erroring on empty iterators.
+
+### Internal
+
+- Changed `variable is marker` and `variable is no_default`
+  to `is_marker(variable)` and `is_no_default(variable)` respectively.
+
 ## 0.14.1 (2023-12-01)
 
 No significant changes.

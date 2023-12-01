@@ -444,11 +444,26 @@ def last(iterable: Iterable[Any], default: Any = no_default) -> Any:
 REDUCE_ON_EMPTY = "reduce() called on an empty iterable"
 
 
+@overload
 def reduce(function: Binary[T, T, T], iterable: Iterable[T]) -> T:
+    ...
+
+
+@overload
+def reduce(function: Binary[T, T, T], iterable: Iterable[T], default: U) -> Union[T, U]:
+    ...
+
+
+def reduce(
+    function: Binary[Any, Any, Any], iterable: Iterable[Any], default: Any = no_default
+) -> Any:
     empty, iterator = is_empty(iterable)
 
     if empty:
-        raise ValueError(REDUCE_ON_EMPTY)
+        if is_no_default(default):
+            raise ValueError(REDUCE_ON_EMPTY)
+
+        return default
 
     return standard_reduce(function, iterator)
 

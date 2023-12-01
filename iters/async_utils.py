@@ -83,7 +83,7 @@ from typing_aliases import (
 from typing_extensions import Never, ParamSpec, TypeVarTuple, Unpack
 
 from iters.ordered_set import OrderedSet, ordered_set
-from iters.types import marker, no_default
+from iters.types import is_marker, is_no_default, marker, no_default
 from iters.typing import Product, Sum
 from iters.utils import (
     COMPARE,
@@ -386,10 +386,10 @@ async def async_compare_simple(
     left_iterable: AnyIterable[ST], right_iterable: AnyIterable[ST]
 ) -> Ordering:
     async for left, right in async_zip_longest(left_iterable, right_iterable, fill=marker):
-        if left is marker:
+        if is_marker(left):
             return Ordering.LESS
 
-        if right is marker:
+        if is_marker(right):
             return Ordering.GREATER
 
         if left < right:  # type: ignore
@@ -510,7 +510,7 @@ async def async_repeat_last(iterable: AnyIterable[T]) -> AsyncIterator[T]:
     async for item in async_iter(iterable):  # type: ignore
         yield item  # type: ignore
 
-    if item is marker:
+    if is_marker(item):
         return
 
     async for last in async_repeat(item):
@@ -641,13 +641,13 @@ async def async_next(iterator: AnyIterator[T], default: U) -> Union[T, U]:
 
 async def async_next(iterator: AnyIterator[Any], default: Any = no_default) -> Any:
     if is_async_iterator(iterator):
-        if default is no_default:
+        if is_no_default(default):
             return await standard_async_next(iterator)
 
         return await standard_async_next(iterator, default)
 
     if is_iterator(iterator):
-        if default is no_default:
+        if is_no_default(default):
             return standard_next(iterator)
 
         return standard_next(iterator, default)
@@ -666,7 +666,7 @@ async def async_next_unchecked(iterator: AsyncIterator[T], default: U) -> Union[
 
 
 async def async_next_unchecked(iterator: AsyncIterator[Any], default: Any = no_default) -> Any:
-    if default is no_default:
+    if is_no_default(default):
         return await standard_async_next(iterator)
 
     return await standard_async_next(iterator, default)
@@ -700,8 +700,8 @@ async def async_first(iterable: AnyIterable[Any], default: Any = no_default) -> 
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_FIRST_ON_EMPTY)
 
         return default
@@ -728,8 +728,8 @@ async def async_last(iterable: AnyIterable[Any], default: Any = no_default) -> A
     async for result in async_iter(iterable):
         pass
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_LAST_ON_EMPTY)
 
         return default
@@ -760,12 +760,26 @@ async def async_fold_await(
 ASYNC_REDUCE_ON_EMPTY = "async_reduce() called on an empty iterable"
 
 
+@overload
 async def async_reduce(function: Binary[T, T, T], iterable: AnyIterable[T]) -> T:
+    ...
+
+
+@overload
+async def async_reduce(
+    function: Binary[T, T, T], iterable: AnyIterable[T], default: U
+) -> Union[T, U]:
+    ...
+
+
+async def async_reduce(
+    function: Binary[Any, Any, Any], iterable: AnyIterable[Any], default: Any = no_default
+) -> Any:
     iterator = async_iter(iterable)
 
     initial = await async_next_unchecked(iterator, marker)
 
-    if initial is marker:
+    if is_marker(initial):
         raise ValueError(ASYNC_REDUCE_ON_EMPTY)
 
     return await async_fold(initial, function, iterator)  # type: ignore
@@ -774,13 +788,30 @@ async def async_reduce(function: Binary[T, T, T], iterable: AnyIterable[T]) -> T
 ASYNC_REDUCE_AWAIT_ON_EMPTY = "async_reduce_await() called on an empty iterable"
 
 
+@overload
 async def async_reduce_await(function: AsyncBinary[T, T, T], iterable: AnyIterable[T]) -> T:
+    ...
+
+
+@overload
+async def async_reduce_await(
+    function: AsyncBinary[T, T, T], iterable: AnyIterable[T], default: U
+) -> Union[T, U]:
+    ...
+
+
+async def async_reduce_await(
+    function: AsyncBinary[Any, Any, Any], iterable: AnyIterable[Any], default: Any = no_default
+) -> Any:
     iterator = async_iter(iterable)
 
     initial = await async_next_unchecked(iterator, marker)
 
-    if initial is marker:
-        raise ValueError(ASYNC_REDUCE_AWAIT_ON_EMPTY)
+    if is_marker(initial):
+        if is_no_default(default):
+            raise ValueError(ASYNC_REDUCE_AWAIT_ON_EMPTY)
+
+        return default
 
     return await async_fold_await(initial, function, iterator)  # type: ignore
 
@@ -821,7 +852,7 @@ async def async_accumulate_reduce(
 
     initial = await async_next_unchecked(iterator, marker)
 
-    if initial is marker:
+    if is_marker(initial):
         raise ValueError(ASYNC_ACCUMULATE_REDUCE_ON_EMPTY)
 
     async for item in async_accumulate_fold(initial, function, iterator):  # type: ignore
@@ -840,7 +871,7 @@ async def async_accumulate_reduce_await(
 
     initial = await async_next_unchecked(iterator, marker)
 
-    if initial is marker:
+    if is_marker(initial):
         raise ValueError(ASYNC_ACCUMULATE_REDUCE_ON_EMPTY)
 
     async for item in async_accumulate_fold_await(initial, function, iterator):  # type: ignore
@@ -860,7 +891,7 @@ def async_accumulate_sum(iterable: AnyIterable[S], initial: S) -> AsyncIterator[
 def async_accumulate_sum(
     iterable: AnyIterable[Any], initial: Any = no_default
 ) -> AsyncIterator[Any]:
-    if initial is no_default:
+    if is_no_default(initial):
         return async_accumulate_reduce(add, iterable)
 
     return async_accumulate_fold(initial, add, iterable)
@@ -879,7 +910,7 @@ def async_accumulate_product(iterable: AnyIterable[P], initial: P) -> AsyncItera
 def async_accumulate_product(
     iterable: AnyIterable[Any], initial: Any = no_default
 ) -> AsyncIterator[Any]:
-    if initial is no_default:
+    if is_no_default(initial):
         return async_accumulate_reduce(add, iterable)
 
     return async_accumulate_fold(initial, add, iterable)
@@ -903,8 +934,8 @@ async def async_at(index: int, iterable: AnyIterable[Any], default: Any = no_def
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_AT_ON_EMPTY)
 
         return default
@@ -932,8 +963,8 @@ async def async_at_or_last(
 
     result = await async_last(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_AT_OR_LAST_ON_EMPTY)
 
         return default
@@ -1006,7 +1037,7 @@ def async_copy_unsafe(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple
             if not this:
                 item = await async_next_unchecked(iterator, marker)
 
-                if item is marker:
+                if is_marker(item):
                     return
 
                 for buffer in buffers:
@@ -1628,7 +1659,7 @@ class StopAsyncGroup(Exception):
 async def async_next_or_stop_async_group(iterator: AsyncIterator[T]) -> T:
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
+    if is_marker(result):
         raise StopAsyncGroup
 
     return result  # type: ignore
@@ -1978,7 +2009,7 @@ async def async_sum(iterable: AnyIterable[S], initial: S) -> S:
 
 
 async def async_sum(iterable: AnyIterable[Any], initial: Any = no_default) -> Any:
-    if initial is no_default:
+    if is_no_default(initial):
         return await async_reduce(add, iterable)
 
     return await async_fold(initial, add, iterable)
@@ -1995,7 +2026,7 @@ async def async_product(iterable: AnyIterable[P], initial: P) -> P:
 
 
 async def async_product(iterable: AnyIterable[Any], initial: Any = no_default) -> Any:
-    if initial is no_default:
+    if is_no_default(initial):
         return await async_reduce(mul, iterable)
 
     return await async_fold(initial, mul, iterable)
@@ -2197,8 +2228,8 @@ async def async_all_equal_await(iterable: AnyIterable[T], key: AsyncUnary[T, U])
 async def length_at_most_one(iterable: AnyIterable[T]) -> bool:
     iterator = async_iter(iterable)
 
-    none = await async_next_unchecked(iterator, marker) is marker
-    only = await async_next_unchecked(iterator, marker) is marker
+    none = is_marker(await async_next_unchecked(iterator, marker))
+    only = is_marker(await async_next_unchecked(iterator, marker))
 
     return none or only
 
@@ -2257,8 +2288,8 @@ async def async_peek(
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_PEEK_ON_EMPTY)
 
         return (default, iterator)
@@ -2271,7 +2302,7 @@ async def async_has_next(iterable: AnyIterable[T]) -> Tuple[bool, AsyncIterator[
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
+    if is_marker(result):
         return (False, iterator)
 
     return (True, async_prepend(result, iterator))  # type: ignore
@@ -2531,7 +2562,7 @@ async def async_position(
     index = await async_next_unchecked(async_position_all(predicate, iterable), None)
 
     if index is None:
-        if default is no_default:
+        if is_no_default(default):
             raise ValueError(ASYNC_POSITION_NO_MATCH)
 
         return default
@@ -2557,7 +2588,7 @@ async def async_position_await(
     index = await async_next_unchecked(async_position_all_await(predicate, iterable), None)
 
     if index is None:
-        if default is no_default:
+        if is_no_default(default):
             raise ValueError(ASYNC_POSITION_NO_MATCH)
 
         return default
@@ -2608,8 +2639,8 @@ async def async_find(
             if predicate(item):
                 return item
 
-    if default is no_default:
-        raise ValueError(ASYNC_FIND_ON_EMPTY if item is marker else ASYNC_FIND_NO_MATCH)
+    if is_no_default(default):
+        raise ValueError(ASYNC_FIND_ON_EMPTY if is_marker(item) else ASYNC_FIND_NO_MATCH)
 
     return default
 
@@ -2639,8 +2670,8 @@ async def async_find_await(
         if await predicate(item):
             return item
 
-    if default is no_default:
-        raise ValueError(ASYNC_FIND_ON_EMPTY if item is marker else ASYNC_FIND_NO_MATCH)
+    if is_no_default(default):
+        raise ValueError(ASYNC_FIND_ON_EMPTY if is_marker(item) else ASYNC_FIND_NO_MATCH)
 
     return default
 
@@ -2667,8 +2698,8 @@ async def async_find_or_first(
 
     first = await async_next_unchecked(iterator, marker)
 
-    if first is marker:
-        if default is no_default:
+    if is_marker(first):
+        if is_no_default(default):
             raise ValueError(ASYNC_FIND_OR_FIRST_ON_EMPTY)
 
         first = default
@@ -2710,8 +2741,8 @@ async def async_find_or_first_await(
 
     first = await async_next_unchecked(iterator, marker)
 
-    if first is marker:
-        if default is no_default:
+    if is_marker(first):
+        if is_no_default(default):
             raise ValueError(ASYNC_FIND_OR_FIRST_ON_EMPTY)
 
         first = default
@@ -2755,8 +2786,8 @@ async def async_find_or_last(
             if predicate(item):
                 return item
 
-    if item is marker:
-        if default is no_default:
+    if is_marker(item):
+        if is_no_default(default):
             raise ValueError(ASYNC_FIND_OR_LAST_ON_EMPTY)
 
         return default
@@ -2788,8 +2819,8 @@ async def async_find_or_last_await(
         if await predicate(item):
             return item
 
-    if item is marker:
-        if default is no_default:
+    if is_marker(item):
+        if is_no_default(default):
             raise ValueError(ASYNC_FIND_OR_LAST_ON_EMPTY)
 
         return default
@@ -2831,8 +2862,8 @@ async def async_min_max(
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_MIN_MAX_ON_EMPTY)
 
         return default
@@ -2896,8 +2927,8 @@ async def async_min_max_await(
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_MIN_MAX_AWAIT_ON_EMPTY)
 
         return default
@@ -3013,8 +3044,8 @@ async def async_last_with_tail(iterable: AnyIterable[Any], default: Any = no_def
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_LAST_WITH_TAIL_ON_EMPTY)
 
         return default
@@ -3574,7 +3605,7 @@ class StopAsyncZip(Exception):
 async def async_next_or_stop_async_zip(iterator: AsyncIterator[T]) -> T:
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
+    if is_marker(result):
         raise StopAsyncZip
 
     return result  # type: ignore
@@ -3824,14 +3855,14 @@ async def async_zip_equal(*iterables: AnyIterable[Any]) -> AsyncIterator[Dynamic
     async for item in async_zip_longest(*iterables, fill=marker):  # check for length
         head, *tail = item
 
-        if head is marker:  # argument longer than previous arguments
+        if is_marker(head):  # argument longer than previous arguments
             for index, value in enumerate(tail, 1):
                 if value is not marker:
                     raise ValueError(format_longer(index))
 
         else:  # argument shorter than previous ones
             for index, value in enumerate(tail, 1):
-                if value is marker:
+                if is_marker(value):
                     raise ValueError(format_shorter(index))
 
         yield item  # simply yield if everything is alright
@@ -4256,8 +4287,8 @@ async def async_max(
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_MAX_ON_EMPTY)
 
         return default
@@ -4311,8 +4342,8 @@ async def async_max_await(
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_MAX_AWAIT_ON_EMPTY)
 
         return default
@@ -4366,8 +4397,8 @@ async def async_min(
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_MIN_ON_EMPTY)
 
         return default
@@ -4421,8 +4452,8 @@ async def async_min_await(
 
     result = await async_next_unchecked(iterator, marker)
 
-    if result is marker:
-        if default is no_default:
+    if is_marker(result):
+        if is_no_default(default):
             raise ValueError(ASYNC_MIN_AWAIT_ON_EMPTY)
 
         return default

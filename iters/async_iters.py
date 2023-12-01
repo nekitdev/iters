@@ -1280,13 +1280,17 @@ class AsyncIter(AsyncIterator[T]):
     async def contains_identity(self: AsyncIter[V], item: V) -> bool:
         return await async_contains_identity(item, self.iterator)
 
-    @wrap_future
-    async def reduce(self, function: Binary[T, T, T]) -> T:
-        return await async_reduce(function, self.iterator)
+    @wrap_future_option
+    async def reduce(self, function: Binary[T, T, T]) -> Option[T]:
+        return wrap_marked(
+            await async_reduce(function, self.iterator, marker)  # type: ignore  # weird
+        )
 
-    @wrap_future
-    async def reduce_await(self, function: AsyncBinary[T, T, T]) -> T:
-        return await async_reduce_await(function, self.iterator)
+    @wrap_future_option
+    async def reduce_await(self, function: AsyncBinary[T, T, T]) -> Option[T]:
+        return wrap_marked(
+            await async_reduce_await(function, self.iterator, marker)  # type: ignore  # weird
+        )
 
     @wrap_future
     async def fold(self, initial: V, function: Binary[V, T, V]) -> V:

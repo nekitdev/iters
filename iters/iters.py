@@ -1934,8 +1934,8 @@ class Iter(Iterator[T]):
     def contains_identity(self: Iter[V], item: V) -> bool:
         return contains_identity(item, self.iterator)
 
-    def reduce(self, function: Binary[T, T, T]) -> T:
-        return reduce(function, self.iterator)
+    def reduce(self, function: Binary[T, T, T]) -> Option[T]:
+        return wrap_marked(reduce(function, self.iterator, marker))  # type: ignore  # weird
 
     def fold(self, initial: V, function: Binary[V, T, V]) -> V:
         return fold(initial, function, self.iterator)
