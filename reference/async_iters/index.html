@@ -3111,7 +3111,11 @@
 <span class="normal">2700</span>
 <span class="normal">2701</span>
 <span class="normal">2702</span>
-<span class="normal">2703</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncIter</span><span class="p">(</span><span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">2703</span>
+<span class="normal">2704</span>
+<span class="normal">2705</span>
+<span class="normal">2706</span>
+<span class="normal">2707</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncIter</span><span class="p">(</span><span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="c1"># internals</span>
 
     <span class="n">_iterator</span><span class="p">:</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
@@ -4050,13 +4054,17 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">contains_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">AsyncIter</span><span class="p">[</span><span class="n">V</span><span class="p">],</span> <span class="n">item</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">async_contains_identity</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
 
-    <span class="nd">@wrap_future</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Binary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">async_reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
+    <span class="nd">@wrap_future_option</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Binary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Option</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">wrap_marked</span><span class="p">(</span>
+            <span class="k">await</span> <span class="n">async_reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>  <span class="c1"># type: ignore  # weird</span>
+        <span class="p">)</span>
 
-    <span class="nd">@wrap_future</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">reduce_await</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">AsyncBinary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">async_reduce_await</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">)</span>
+    <span class="nd">@wrap_future_option</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">reduce_await</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">AsyncBinary</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Option</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">wrap_marked</span><span class="p">(</span>
+            <span class="k">await</span> <span class="n">async_reduce_await</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>  <span class="c1"># type: ignore  # weird</span>
+        <span class="p">)</span>
 
     <span class="nd">@wrap_future</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">fold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Binary</span><span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">V</span><span class="p">:</span>
