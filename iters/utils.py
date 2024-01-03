@@ -2275,7 +2275,7 @@ def zip(
 
 
 @overload
-def zip(  # type: ignore
+def zip(
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2377,7 +2377,7 @@ def zip_equal(
 
 
 @overload
-def zip_equal(  # type: ignore
+def zip_equal(
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2550,7 +2550,7 @@ def zip_longest(
 
 
 @overload
-def zip_longest(  # type: ignore
+def zip_longest(
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2685,7 +2685,7 @@ def zip_longest(
 
 
 @overload
-def zip_longest(  # type: ignore
+def zip_longest(
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],
@@ -2812,7 +2812,7 @@ def cartesian_product(
 
 
 @overload
-def cartesian_product(  # type: ignore
+def cartesian_product(
     __iterable_a: Iterable[Any],
     __iterable_b: Iterable[Any],
     __iterable_c: Iterable[Any],

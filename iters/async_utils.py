@@ -3696,7 +3696,7 @@ def async_zip(
 
 
 @overload
-def async_zip(  # type: ignore
+def async_zip(
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -3833,7 +3833,7 @@ def async_zip_equal(
 
 
 @overload
-def async_zip_equal(  # type: ignore
+def async_zip_equal(
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -3972,7 +3972,7 @@ def async_zip_longest(
 
 
 @overload
-def async_zip_longest(  # type: ignore
+def async_zip_longest(
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -4101,7 +4101,7 @@ def async_zip_longest(
 
 
 @overload
-def async_zip_longest(  # type: ignore
+def async_zip_longest(
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],
@@ -4508,7 +4508,7 @@ def standard_async_map(
 
 
 @overload
-def standard_async_map(  # type: ignore
+def standard_async_map(
     function: DynamicCallable[R],
     __iterable_t: AnyIterable[Any],
     __iterable_u: AnyIterable[Any],
@@ -4565,7 +4565,7 @@ def standard_async_map_await(
 
 
 @overload
-def standard_async_map_await(  # type: ignore
+def standard_async_map_await(
     function: DynamicAsyncCallable[R],
     __iterable_t: AnyIterable[Any],
     __iterable_u: AnyIterable[Any],
@@ -5022,7 +5022,7 @@ def async_cartesian_product(
 
 
 @overload
-def async_cartesian_product(  # type: ignore
+def async_cartesian_product(
     __iterable_a: AnyIterable[Any],
     __iterable_b: AnyIterable[Any],
     __iterable_c: AnyIterable[Any],

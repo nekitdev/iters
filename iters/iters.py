@@ -855,7 +855,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip(  # type: ignore
+    def create_zip(
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -987,7 +987,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip_equal(  # type: ignore
+    def create_zip_equal(
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -1132,7 +1132,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip_longest(  # type: ignore
+    def create_zip_longest(
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -1273,7 +1273,7 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_cartesian_product(  # type: ignore
+    def create_cartesian_product(
         cls,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -2455,7 +2455,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_zip(  # type: ignore
+    def apply_zip(
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -2556,7 +2556,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_zip_equal(  # type: ignore
+    def apply_zip_equal(
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -2680,7 +2680,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_zip_longest(  # type: ignore
+    def apply_zip_longest(
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
@@ -2784,7 +2784,7 @@ class Iter(Iterator[T]):
         ...
 
     @overload
-    def apply_cartesian_product(  # type: ignore
+    def apply_cartesian_product(
         self,
         __iterable_a: Iterable[Any],
         __iterable_b: Iterable[Any],
