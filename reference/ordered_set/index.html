@@ -2754,7 +2754,7 @@ as that <em>arrays</em> have <code>O(1)</code> <em>by-index lookup</em>, <em>len
 <span class="sd">            The intersection of the ordered set and `iterables`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">iterables</span><span class="p">:</span>
-            <span class="n">intersection</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+            <span class="n">intersection</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>
 
             <span class="n">iterator</span> <span class="o">=</span> <span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">intersection</span><span class="p">)</span>
 
@@ -2790,7 +2790,7 @@ as that <em>arrays</em> have <code>O(1)</code> <em>by-index lookup</em>, <em>len
 <span class="sd">            The difference of the ordered set and `iterables`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">iterables</span><span class="p">:</span>
-            <span class="n">union</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+            <span class="n">union</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>
             <span class="n">iterator</span> <span class="o">=</span> <span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">union</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_unchecked</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
@@ -5485,7 +5485,7 @@ This is because all indices after the inserted index must be incremented.</p>
 <span class="sd">        The intersection of the ordered set and `iterables`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">iterables</span><span class="p">:</span>
-        <span class="n">intersection</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+        <span class="n">intersection</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>
 
         <span class="n">iterator</span> <span class="o">=</span> <span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">intersection</span><span class="p">)</span>
 
@@ -5672,7 +5672,7 @@ This is because all indices after the inserted index must be incremented.</p>
 <span class="sd">        The difference of the ordered set and `iterables`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">iterables</span><span class="p">:</span>
-        <span class="n">union</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+        <span class="n">union</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">iterables</span><span class="p">))</span>
         <span class="n">iterator</span> <span class="o">=</span> <span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">union</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_unchecked</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
