@@ -434,7 +434,7 @@ async def async_iter_function_await(function: AsyncNullary[T], sentinel: V) -> A
 
 async def async_empty() -> AsyncIterator[Never]:
     return
-    yield  # type: ignore
+    yield
 
 
 async def async_of(*items: T) -> AsyncIterator[T]:
@@ -782,7 +782,7 @@ async def async_reduce(
     if is_marker(initial):
         raise ValueError(ASYNC_REDUCE_ON_EMPTY)
 
-    return await async_fold(initial, function, iterator)  # type: ignore
+    return await async_fold(initial, function, iterator)
 
 
 ASYNC_REDUCE_AWAIT_ON_EMPTY = "async_reduce_await() called on an empty iterable"
@@ -813,7 +813,7 @@ async def async_reduce_await(
 
         return default
 
-    return await async_fold_await(initial, function, iterator)  # type: ignore
+    return await async_fold_await(initial, function, iterator)
 
 
 async def async_accumulate_fold(
@@ -2074,7 +2074,7 @@ async def async_walk(node: RecursiveAnyIterable[T]) -> AsyncIterator[T]:
 
     else:
         async for child in tree:
-            async for nested in async_walk(child):  # type: ignore
+            async for nested in async_walk(child):
                 yield nested
 
 
@@ -5046,12 +5046,12 @@ def async_cartesian_product(*iterables: AnyIterable[Any]) -> AsyncIterator[Dynam
     return stack
 
 
-Ts = TypeVarTuple("Ts")  # type: ignore
+Ts = TypeVarTuple("Ts")
 
 
 async def async_cartesian_product_step(
-    stack: AnyIterable[Tuple[Unpack[Ts]]], iterable: AnyIterable[T]  # type: ignore
-) -> AsyncIterator[Tuple[Unpack[Ts], T]]:  # type: ignore
+    stack: AnyIterable[Tuple[Unpack[Ts]]], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple[Unpack[Ts], T]]:
     array = await async_list(iterable)
 
     async for items in async_iter(stack):
@@ -5113,8 +5113,8 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
     state = None
 
     async def async_cartesian_power_step(
-        stack: AnyIterable[Tuple[Unpack[Ts]]],  # type: ignore
-    ) -> AsyncIterator[Tuple[Unpack[Ts], T]]:  # type: ignore
+        stack: AnyIterable[Tuple[Unpack[Ts]]],
+    ) -> AsyncIterator[Tuple[Unpack[Ts], T]]:
         nonlocal state
 
         if state is None:

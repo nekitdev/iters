@@ -570,7 +570,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             The intersection of the ordered set and `iterables`.
         """
         if iterables:
-            intersection = set.intersection(*map(set, iterables))  # type: ignore
+            intersection = set.intersection(*map(set, iterables))
 
             iterator = (item for item in self if item in intersection)
 
@@ -606,7 +606,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             The difference of the ordered set and `iterables`.
         """
         if iterables:
-            union = set.union(*map(set, iterables))  # type: ignore
+            union = set.union(*map(set, iterables))
             iterator = (item for item in self if item not in union)
 
             return self.create_unchecked(iterator)

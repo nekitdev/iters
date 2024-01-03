@@ -213,9 +213,6 @@ __all__ = (
     "zip_longest",
 )
 
-PYTHON_3_8 = version_info >= (3, 8, 0)
-PYTHON_3_10 = version_info >= (3, 10, 0)
-
 T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
@@ -309,7 +306,7 @@ def iter_function(function: Nullary[T], sentinel: V) -> Iterator[T]:
 
 def empty() -> Iterator[Never]:
     return
-    yield  # type: ignore
+    yield
 
 
 def once(value: T) -> Iterator[T]:
@@ -477,10 +474,10 @@ def accumulate_reduce(function: Binary[T, T, T], iterable: Iterable[T]) -> Itera
 
 
 def accumulate_fold(initial: U, function: Binary[U, T, U], iterable: Iterable[T]) -> Iterator[U]:
-    if PYTHON_3_8:
-        return standard_accumulate(iterable, function, initial=initial)  # type: ignore
+    if version_info >= (3, 8, 0):
+        return standard_accumulate(iterable, function, initial=initial)
 
-    return standard_accumulate(prepend(initial, iterable), function)  # type: ignore
+    return standard_accumulate(prepend(initial, iterable), function)  # type: ignore[arg-type]
 
 
 @overload
@@ -2396,8 +2393,8 @@ def zip_equal(  # type: ignore
 
 
 def zip_equal(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
-    if PYTHON_3_10:
-        return standard_zip(*iterables, strict=True)  # type: ignore
+    if version_info >= (3, 10, 0):
+        return standard_zip(*iterables, strict=True)
 
     return zip_equal_simple(*iterables)
 
