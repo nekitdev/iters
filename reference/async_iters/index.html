@@ -3343,7 +3343,7 @@
 
     <span class="nd">@overload</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_zip</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">create_zip</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
@@ -3457,7 +3457,7 @@
 
     <span class="nd">@overload</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_zip_equal</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">create_zip_equal</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
@@ -3592,7 +3592,7 @@
 
     <span class="nd">@overload</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_zip_longest</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">create_zip_longest</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
@@ -3708,7 +3708,7 @@
 
     <span class="nd">@overload</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">create_cartesian_product</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
@@ -4708,7 +4708,7 @@
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">apply_zip</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">apply_zip</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
@@ -4812,7 +4812,7 @@
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">apply_zip_equal</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">apply_zip_equal</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
@@ -4951,7 +4951,7 @@
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">apply_zip_longest</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">apply_zip_longest</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
@@ -5060,7 +5060,7 @@
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">apply_cartesian_product</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">apply_cartesian_product</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">__iterable_a</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">__iterable_b</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
