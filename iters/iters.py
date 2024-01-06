@@ -1101,7 +1101,17 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
-    ) -> Iter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E], Option[F], Option[G],]]:
+    ) -> Iter[
+        Tuple[
+            Option[A],
+            Option[B],
+            Option[C],
+            Option[D],
+            Option[E],
+            Option[F],
+            Option[G],
+        ]
+    ]:
         ...
 
     @overload
@@ -2626,7 +2636,17 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D], Option[E], Option[F],]]:
+    ) -> Iter[
+        Tuple[
+            Option[T],
+            Option[A],
+            Option[B],
+            Option[C],
+            Option[D],
+            Option[E],
+            Option[F],
+        ]
+    ]:
         ...
 
     @overload

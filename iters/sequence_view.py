@@ -9,7 +9,6 @@ from wraps.wraps import wrap_option
 __all__ = ("SequenceView", "sequence_view")
 
 T = TypeVar("T")
-U = TypeVar("U")
 
 
 @final
@@ -18,11 +17,7 @@ class SequenceView(Sequence[T]):
     """Represents views over sequences."""
 
     sequence: Sequence[T]
-    """The sequence to view into."""
-
-    @classmethod
-    def create(cls, sequence: Sequence[U]) -> SequenceView[U]:
-        return cls(sequence)  # type: ignore
+    """The sequence to view."""
 
     @overload
     def __getitem__(self, index: int) -> T:
@@ -34,7 +29,7 @@ class SequenceView(Sequence[T]):
 
     def __getitem__(self, index: Union[int, slice]) -> Union[T, SequenceView[T]]:
         if is_slice(index):
-            return self.create(self.sequence[index])
+            return type(self)(self.sequence[index])
 
         return self.sequence[index]  # type: ignore
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iters"
-version = "0.15.0"
+version = "0.16.0"
 description = "Composable external iteration."
 authors = ["nekitdev"]
 license = "MIT"
@@ -31,42 +31,26 @@ include = "iters"
 [tool.poetry.dependencies]
 python = ">= 3.8"
 
-typing-aliases = ">= 1.2.0"
-typing-extensions = ">= 4.8.0"
+typing-aliases = "^1.4.1"
+typing-extensions = "^4.9.0"
 
-named = ">= 1.3.0"
-orderings = ">= 1.1.0"
+named = "^1.3.0"
+orderings = "^1.1.0"
 
-solus = ">= 1.1.0"
+solus = "^1.1.0"
 
-async-extensions = ">= 1.4.1"
-mixed-methods = ">= 1.0.2"
-
-[tool.poetry.group.format]
-optional = true
+async-extensions = "^1.4.1"
+mixed-methods = "^1.0.2"
 
 [tool.poetry.group.format.dependencies]
-black = "23.11.0"
-flake8-pyproject = "1.2.3"
-
-[tool.poetry.group.format.dependencies.flake8]
-version = "6.1.0"
-python = ">= 3.8.1"
-
-[tool.poetry.group.format.dependencies.isort]
-version = "5.12.0"
-
-[tool.poetry.group.check]
-optional = true
+ruff = "0.1.11"
 
 [tool.poetry.group.check.dependencies]
-mypy = "1.7.1"
-
-[tool.poetry.group.test]
-optional = true
+mypy = "1.8.0"
 
 [tool.poetry.group.test.dependencies]
-pytest = "7.4.3"
+coverage = "7.4.0"
+pytest = "7.4.4"
 pytest-cov = "4.1.0"
 
 [tool.poetry.group.docs]
@@ -74,30 +58,25 @@ optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.5.3"
-mkdocs-material = "9.4.11"
+mkdocs-material = "9.5.3"
 
 [tool.poetry.group.docs.dependencies.mkdocstrings]
 version = "0.24.0"
 extras = ["python"]
 
-[tool.poetry.group.dev]
+[tool.poetry.group.release]
 optional = true
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.release.dependencies]
 changelogging = "1.3.0"
 
-[tool.black]
-line_length = 100
+[tool.ruff]
+line-length = 100
 
-[tool.flake8]
-max_line_length = 100
+[tool.ruff.lint]
 ignore = [
     "E402",  # module level import not at top of file (circular import fixes)
 ]
-
-[tool.isort]
-line_length = 100
-profile = "black"
 
 [tool.pytest.ini_options]
 addopts = "--cov iters"
@@ -127,7 +106,7 @@ strict = true
 
 [tool.changelogging]
 name = "iters"
-version = "0.15.0"
+version = "0.16.0"
 url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"
