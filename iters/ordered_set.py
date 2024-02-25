@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import AbstractSet as AnySet
 from typing import (
     Any,
     Dict,
@@ -19,7 +18,7 @@ from typing import (
 
 from mixed_methods import mixed_method
 from named import get_type_name
-from typing_aliases import is_instance, is_slice
+from typing_aliases import AnySet, is_instance, is_slice
 from wraps.wraps import wrap_option
 
 __all__ = ("OrderedSet", "ordered_set", "ordered_set_unchecked")
@@ -49,8 +48,10 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
     and a *hash map* to store the indices of the items in the array along with ensuring uniqueness.
 
     The complexity of the operations assumes that *hash maps*
-    have `O(1)` *insertion*, *lookup*, *deletion*, and *clearing* as well
-    as that *arrays* have `O(1)` *by-index lookup*, *length-checking* and *clearing*.
+    have `O(1)` *insertion*, *lookup* and *deletion* as well
+    as that *arrays* have `O(1)` *by-index lookup* and *length-checking*.
+
+    It is assumed that *clearing* is `O(n)`, where `n` is the number of elements.
     """
 
     def __init__(self, iterable: Iterable[Q] = ()) -> None:
@@ -511,7 +512,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """Clears the ordered set.
 
         Complexity:
-            `O(1)`.
+            `O(n)`.
         """
         self._items.clear()
         self._item_to_index.clear()

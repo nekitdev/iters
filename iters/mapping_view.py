@@ -2,12 +2,14 @@ from typing import Any, Iterator, Mapping, TypeVar, final
 
 from attrs import frozen
 from typing_extensions import Self
-from wraps import wrap_option
+from wraps.wraps import WrapOption
 
 __all__ = ("MappingView", "mapping_view")
 
 K = TypeVar("K")
 V = TypeVar("V")
+
+wrap_key_error = WrapOption(KeyError)
 
 
 @final
@@ -30,7 +32,7 @@ class MappingView(Mapping[K, V]):
     def __len__(self) -> int:
         return len(self.mapping)
 
-    @wrap_option
+    @wrap_key_error
     def get_option(self, key: K) -> V:
         return self[key]
 

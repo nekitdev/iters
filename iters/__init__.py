@@ -23,6 +23,7 @@ from iters.async_iters import (
     wrap_async_iter,
 )
 from iters.iters import Iter, iter, reversed, standard_iter, standard_reversed, wrap_iter
+from iters.mapping_view import MappingView, mapping_view
 from iters.ordered_set import OrderedSet, ordered_set, ordered_set_unchecked
 from iters.sequence_view import SequenceView, sequence_view
 from iters.state import State, stateful
@@ -55,6 +56,9 @@ __all__ = (
     "OrderedSet",
     "ordered_set",
     "ordered_set_unchecked",
+    # mapping view
+    "MappingView",
+    "mapping_view",
     # sequence view
     "SequenceView",
     "sequence_view",

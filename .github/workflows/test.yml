@@ -12,27 +12,33 @@ on:
 jobs:
   test:
     name: Test
+
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.12
-        uses: actions/setup-python@v4
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-
-      - name: Update PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
-        run: curl -sSL https://install.python-poetry.org/ | python -
+        run: pipx install poetry
 
       - name: Configure Poetry
         run: poetry config virtualenvs.in-project true
 
+      - name: Specify the version
+        run: poetry env use python
+
       - name: Install dependencies
-        run: poetry install --with test
+        run: poetry install
 
       - name: Run tests
         run: poetry run pytest --cov-report xml

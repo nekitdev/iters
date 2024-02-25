@@ -86,7 +86,7 @@ No significant changes.
 
 ### Changes
 
-- Functions taking `Predicate[T]` have been updated to accept `Optional[Predicate[T]]`.
+- Functions taking `Predicate[T]` have been updated to accept `OptionalPredicate[T]`.
   Passing `None` as an argument is identical to passing `bool`.
 
   There are three functions which do not accept `None`, though:

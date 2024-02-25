@@ -4,13 +4,12 @@ from builtins import zip as standard_zip
 from collections import Counter as counter_dict
 from collections import deque
 from functools import reduce as standard_reduce
+from heapq import merge
 from itertools import accumulate as standard_accumulate
-from itertools import chain
+from itertools import chain, compress, cycle
 from itertools import combinations as standard_combinations
 from itertools import combinations_with_replacement as standard_combinations_with_replacement
-from itertools import compress
 from itertools import count as standard_count
-from itertools import cycle
 from itertools import dropwhile as standard_drop_while
 from itertools import filterfalse as filter_false
 from itertools import groupby as standard_group
@@ -21,12 +20,11 @@ from itertools import takewhile as standard_take_while
 from itertools import tee as standard_copy
 from itertools import zip_longest as standard_zip_longest
 from math import copysign as copy_sign
-from operator import add
+from operator import add, mul
 from operator import ge as greater_or_equal
 from operator import gt as greater
 from operator import le as less_or_equal
 from operator import lt as less
-from operator import mul
 from sys import version_info
 from typing import (
     Any,
@@ -59,7 +57,6 @@ from typing_aliases import (
     Inspect,
     Nullary,
     Pair,
-    Predicate,
     RecursiveIterable,
     Tuple1,
     Tuple2,
@@ -77,7 +74,7 @@ from typing_aliases import (
 from typing_extensions import Never
 
 from iters.types import is_marker, is_no_default, is_not_marker, marker, no_default
-from iters.typing import Product, Sum
+from iters.typing import OptionalPredicate, Product, Sum
 
 __all__ = (
     "accumulate_fold",
@@ -160,6 +157,7 @@ __all__ = (
     "last_with_tail",
     "list_windows",
     "map_except",
+    "merge",
     "min_max",
     "next_of",
     "next_of_iterable",
@@ -240,11 +238,11 @@ LT = TypeVar("LT", bound=LenientOrdered)
 ST = TypeVar("ST", bound=StrictOrdered)
 
 
-def take_while(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
+def take_while(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[T]:
     return standard_take_while(predicate or bool, iterable)
 
 
-def drop_while(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
+def drop_while(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[T]:
     return standard_drop_while(predicate or bool, iterable)
 
 
@@ -915,7 +913,7 @@ def flat_map(function: Unary[T, Iterable[U]], iterable: Iterable[T]) -> Iterator
 
 
 def filter_map(
-    predicate: Optional[Predicate[T]], function: Unary[T, U], iterable: Iterable[T]
+    predicate: OptionalPredicate[T], function: Unary[T, U], iterable: Iterable[T]
 ) -> Iterator[U]:
     if predicate is None:
         for item in iterable:
@@ -929,7 +927,7 @@ def filter_map(
 
 
 def filter_false_map(
-    predicate: Optional[Predicate[T]], function: Unary[T, U], iterable: Iterable[T]
+    predicate: OptionalPredicate[T], function: Unary[T, U], iterable: Iterable[T]
 ) -> Iterator[U]:
     if predicate is None:
         for item in iterable:
@@ -942,7 +940,7 @@ def filter_false_map(
                 yield function(item)
 
 
-def partition_unsafe(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Pair[Iterator[T]]:
+def partition_unsafe(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Pair[Iterator[T]]:
     for_true, for_false = copy_unsafe(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
@@ -951,7 +949,7 @@ def partition_unsafe(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -
 partition_infinite = partition_unsafe
 
 
-def partition(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Pair[Iterator[T]]:
+def partition(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Pair[Iterator[T]]:
     for_true, for_false = copy(iterable)
 
     return filter(predicate, for_true), filter_false(predicate, for_false)
@@ -1252,7 +1250,7 @@ def all_equal(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> bool:
     return is_marker(next(groups, marker)) or is_marker(next(groups, marker))
 
 
-def remove(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
+def remove(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[T]:
     return filter_false(predicate, iterable)
 
 
@@ -1487,7 +1485,7 @@ def interleave_longest(*iterables: Iterable[T]) -> Iterator[T]:
     return (item for item in iterator if is_not_marker(item))
 
 
-def position_all(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[int]:
+def position_all(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[int]:
     if predicate is None:
         for index, item in enumerate(iterable):
             if item:
@@ -1503,17 +1501,17 @@ POSITION_NO_MATCH = "position() has not found any matches"
 
 
 @overload
-def position(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> int:
+def position(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> int:
     ...
 
 
 @overload
-def position(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[int, U]:
+def position(predicate: OptionalPredicate[T], iterable: Iterable[T], default: U) -> Union[int, U]:
     ...
 
 
 def position(
-    predicate: Optional[Predicate[T]], iterable: Iterable[T], default: Any = no_default
+    predicate: OptionalPredicate[T], iterable: Iterable[T], default: Any = no_default
 ) -> Any:
     index = next(position_all(predicate, iterable), None)
 
@@ -1526,7 +1524,7 @@ def position(
     return index
 
 
-def find_all(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> Iterator[T]:
+def find_all(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[T]:
     return filter(predicate, iterable)
 
 
@@ -1535,17 +1533,17 @@ FIND_ON_EMPTY = "find() called on an empty iterable"
 
 
 @overload
-def find(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T:
+def find(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T:
     ...
 
 
 @overload
-def find(predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U) -> Union[T, U]:
+def find(predicate: OptionalPredicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
     ...
 
 
 def find(
-    predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default
+    predicate: OptionalPredicate[Any], iterable: Iterable[Any], default: Any = no_default
 ) -> Any:
     item = marker
 
@@ -1569,19 +1567,19 @@ FIND_OR_FIRST_ON_EMPTY = "find_or_first() called on an empty iterable"
 
 
 @overload
-def find_or_first(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T:
+def find_or_first(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T:
     ...
 
 
 @overload
 def find_or_first(
-    predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U
+    predicate: OptionalPredicate[T], iterable: Iterable[T], default: U
 ) -> Union[T, U]:
     ...
 
 
 def find_or_first(
-    predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default
+    predicate: OptionalPredicate[Any], iterable: Iterable[Any], default: Any = no_default
 ) -> Any:
     iterator = iter(iterable)
 
@@ -1612,19 +1610,17 @@ FIND_OR_LAST_ON_EMPTY = "find_or_last() called on an empty iterable"
 
 
 @overload
-def find_or_last(predicate: Optional[Predicate[T]], iterable: Iterable[T]) -> T:
+def find_or_last(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T:
     ...
 
 
 @overload
-def find_or_last(
-    predicate: Optional[Predicate[T]], iterable: Iterable[T], default: U
-) -> Union[T, U]:
+def find_or_last(predicate: OptionalPredicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
     ...
 
 
 def find_or_last(
-    predicate: Optional[Predicate[Any]], iterable: Iterable[Any], default: Any = no_default
+    predicate: OptionalPredicate[Any], iterable: Iterable[Any], default: Any = no_default
 ) -> Any:
     item = marker
 

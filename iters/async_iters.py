@@ -22,7 +22,6 @@ from typing import (
     Set,
     Tuple,
     TypeVar,
-    Union,
     no_type_check,
     overload,
 )
@@ -154,9 +153,6 @@ from iters.async_utils import (
     async_group_list,
     async_group_list_await,
     async_groups,
-)
-from iters.async_utils import async_groups_longest as standard_async_groups_longest
-from iters.async_utils import (
     async_has_next,
     async_inspect,
     async_inspect_await,
@@ -168,9 +164,6 @@ from iters.async_utils import (
     async_is_empty,
     async_is_sorted,
     async_is_sorted_await,
-)
-from iters.async_utils import async_iter as async_iter_any_iter
-from iters.async_utils import (
     async_iter_async_with,
     async_iter_chunks,
     async_iter_chunks_unsafe,
@@ -211,9 +204,6 @@ from iters.async_utils import (
     async_pad_with,
     async_pad_with_await,
     async_pairs,
-)
-from iters.async_utils import async_pairs_longest as standard_async_pairs_longest
-from iters.async_utils import (
     async_pairs_windows,
     async_partition,
     async_partition_await,
@@ -268,13 +258,23 @@ from iters.async_utils import (
     async_wait_concurrent_bound,
     async_zip,
     async_zip_equal,
+    standard_async_iter,
+    standard_async_next,
 )
+from iters.async_utils import async_groups_longest as standard_async_groups_longest
+from iters.async_utils import async_iter as async_iter_any_iter
+from iters.async_utils import async_pairs_longest as standard_async_pairs_longest
 from iters.async_utils import async_zip_longest as standard_async_zip_longest
-from iters.async_utils import standard_async_iter, standard_async_next
+from iters.async_wraps import (
+    async_filter_map_option,
+    async_filter_map_option_await,
+    async_scan,
+    async_scan_await,
+)
 from iters.constants import DEFAULT_START, DEFAULT_STEP, EMPTY_BYTES, EMPTY_STRING
 from iters.ordered_set import OrderedSet
 from iters.types import MarkerOr, marker, wrap_marked
-from iters.typing import Product, Sum
+from iters.typing import OptionalPredicate, Product, Sum
 
 __all__ = (
     # the async iterator type
@@ -1182,7 +1182,7 @@ class AsyncIter(AsyncIterator[T]):
     async def all_unique_fast_by_await(self, key: AsyncUnary[T, Q]) -> bool:
         return await async_all_unique_fast_await(self.iterator, key)
 
-    def remove(self, predicate: Optional[Predicate[T]]) -> AsyncIter[T]:
+    def remove(self, predicate: OptionalPredicate[T]) -> AsyncIter[T]:
         return self.create(async_remove(predicate, self.iterator))
 
     def remove_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
@@ -1197,13 +1197,13 @@ class AsyncIter(AsyncIterator[T]):
     def remove_duplicates_by_await(self, key: AsyncUnary[T, U]) -> AsyncIter[T]:
         return self.create(async_remove_duplicates_await(self.iterator, key))
 
-    def filter(self, predicate: Optional[Predicate[T]]) -> AsyncIter[T]:
+    def filter(self, predicate: OptionalPredicate[T]) -> AsyncIter[T]:
         return self.create(async_filter(predicate, self.iterator))
 
     def filter_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
         return self.create(async_filter_await(predicate, self.iterator))
 
-    def filter_false(self, predicate: Optional[Predicate[T]]) -> AsyncIter[T]:
+    def filter_false(self, predicate: OptionalPredicate[T]) -> AsyncIter[T]:
         return self.create(async_filter_false(predicate, self.iterator))
 
     def filter_false_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
@@ -1220,28 +1220,28 @@ class AsyncIter(AsyncIterator[T]):
     def compress(self, selectors: AnySelectors) -> AsyncIter[T]:
         return self.create(async_compress(self.iterator, selectors))
 
-    def position_all(self, predicate: Optional[Predicate[T]]) -> AsyncIter[int]:
+    def position_all(self, predicate: OptionalPredicate[T]) -> AsyncIter[int]:
         return self.create(async_position_all(predicate, self.iterator))
 
     def position_all_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[int]:
         return self.create(async_position_all_await(predicate, self.iterator))
 
     @wrap_future_option
-    async def position(self, predicate: Optional[Predicate[T]]) -> Option[int]:
+    async def position(self, predicate: OptionalPredicate[T]) -> Option[int]:
         return wrap_marked(await async_position(predicate, self.iterator, marker))
 
     @wrap_future_option
     async def position_await(self, predicate: AsyncPredicate[T]) -> Option[int]:
         return wrap_marked(await async_position_await(predicate, self.iterator, marker))
 
-    def find_all(self, predicate: Optional[Predicate[T]]) -> AsyncIter[T]:
+    def find_all(self, predicate: OptionalPredicate[T]) -> AsyncIter[T]:
         return self.create(async_find_all(predicate, self.iterator))
 
     def find_all_await(self, predicate: AsyncPredicate[T]) -> AsyncIter[T]:
         return self.create(async_find_all_await(predicate, self.iterator))
 
     @wrap_future_option
-    async def find(self, predicate: Optional[Predicate[T]]) -> Option[T]:
+    async def find(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(await async_find(predicate, self.iterator, marker))  # type: ignore
 
     @wrap_future_option
@@ -1249,7 +1249,7 @@ class AsyncIter(AsyncIterator[T]):
         return wrap_marked(await async_find_await(predicate, self.iterator, marker))  # type: ignore
 
     @wrap_future_option
-    async def find_or_first(self, predicate: Optional[Predicate[T]]) -> Option[T]:
+    async def find_or_first(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(
             await async_find_or_first(predicate, self.iterator, marker)  # type: ignore
         )
@@ -1261,7 +1261,7 @@ class AsyncIter(AsyncIterator[T]):
         )
 
     @wrap_future_option
-    async def find_or_last(self, predicate: Optional[Predicate[T]]) -> Option[T]:
+    async def find_or_last(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(
             await async_find_or_last(predicate, self.iterator, marker)  # type: ignore
         )
@@ -1404,14 +1404,14 @@ class AsyncIter(AsyncIterator[T]):
     def flat_map_await(self, function: AsyncUnary[T, AnyIterable[U]]) -> AsyncIter[U]:
         return self.create(async_flat_map_await(function, self.iterator))
 
-    def filter_map(self, predicate: Optional[Predicate[T]], function: Unary[T, U]) -> AsyncIter[U]:
+    def filter_map(self, predicate: OptionalPredicate[T], function: Unary[T, U]) -> AsyncIter[U]:
         return self.create(async_filter_map(predicate, function, self.iterator))
 
     def filter_await_map(self, predicate: AsyncPredicate[T], function: Unary[T, U]) -> AsyncIter[U]:
         return self.create(async_filter_await_map(predicate, function, self.iterator))
 
     def filter_map_await(
-        self, predicate: Optional[Predicate[T]], function: AsyncUnary[T, U]
+        self, predicate: OptionalPredicate[T], function: AsyncUnary[T, U]
     ) -> AsyncIter[U]:
         return self.create(async_filter_map_await(predicate, function, self.iterator))
 
@@ -1421,7 +1421,7 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_filter_await_map_await(predicate, function, self.iterator))
 
     def filter_false_map(
-        self, predicate: Optional[Predicate[T]], function: Unary[T, U]
+        self, predicate: OptionalPredicate[T], function: Unary[T, U]
     ) -> AsyncIter[U]:
         return self.create(async_filter_false_map(predicate, function, self.iterator))
 
@@ -1431,7 +1431,7 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_filter_false_await_map(predicate, function, self.iterator))
 
     def filter_false_map_await(
-        self, predicate: Optional[Predicate[T]], function: AsyncUnary[T, U]
+        self, predicate: OptionalPredicate[T], function: AsyncUnary[T, U]
     ) -> AsyncIter[U]:
         return self.create(async_filter_false_map_await(predicate, function, self.iterator))
 
@@ -1652,44 +1652,35 @@ class AsyncIter(AsyncIterator[T]):
     def divide(self, count: int) -> AsyncIter[AsyncIter[T]]:
         return self.create_nested(async_divide(count, self.iterator))
 
-    def pad(self, value: V) -> AsyncIter[Union[T, V]]:
+    def pad(self: AsyncIter[V], value: V) -> AsyncIter[V]:
         return self.create(async_pad(value, self.iterator))
 
-    def pad_exactly(self, value: V, size: int) -> AsyncIter[Union[T, V]]:
+    def pad_exactly(self: AsyncIter[V], value: V, size: int) -> AsyncIter[V]:
         return self.create(async_pad(value, self.iterator, size))
 
-    def pad_multiple(self, value: V, size: int) -> AsyncIter[Union[T, V]]:
+    def pad_multiple(self: AsyncIter[V], value: V, size: int) -> AsyncIter[V]:
         return self.create(async_pad(value, self.iterator, size, multiple=True))
 
-    def pad_none(self) -> AsyncIter[Optional[T]]:
-        return self.pad(None)
-
-    def pad_none_exactly(self, size: int) -> AsyncIter[Optional[T]]:
-        return self.pad_exactly(None, size)
-
-    def pad_none_multiple(self, size: int) -> AsyncIter[Optional[T]]:
-        return self.pad_multiple(None, size)
-
-    def pad_with(self, function: Unary[int, V]) -> AsyncIter[Union[T, V]]:
+    def pad_with(self: AsyncIter[V], function: Unary[int, V]) -> AsyncIter[V]:
         return self.create(async_pad_with(function, self.iterator))
 
-    def pad_exactly_with(self, function: Unary[int, V], size: int) -> AsyncIter[Union[T, V]]:
+    def pad_exactly_with(self: AsyncIter[V], function: Unary[int, V], size: int) -> AsyncIter[V]:
         return self.create(async_pad_with(function, self.iterator, size))
 
-    def pad_multiple_with(self, function: Unary[int, V], size: int) -> AsyncIter[Union[T, V]]:
+    def pad_multiple_with(self: AsyncIter[V], function: Unary[int, V], size: int) -> AsyncIter[V]:
         return self.create(async_pad_with(function, self.iterator, size, multiple=True))
 
-    def pad_with_await(self, function: AsyncUnary[int, V]) -> AsyncIter[Union[T, V]]:
+    def pad_with_await(self: AsyncIter[V], function: AsyncUnary[int, V]) -> AsyncIter[V]:
         return self.create(async_pad_with_await(function, self.iterator))
 
     def pad_exactly_with_await(
-        self, function: AsyncUnary[int, V], size: int
-    ) -> AsyncIter[Union[T, V]]:
+        self: AsyncIter[V], function: AsyncUnary[int, V], size: int
+    ) -> AsyncIter[V]:
         return self.create(async_pad_with_await(function, self.iterator, size))
 
     def pad_multiple_with_await(
-        self, function: AsyncUnary[int, V], size: int
-    ) -> AsyncIter[Union[T, V]]:
+        self: AsyncIter[V], function: AsyncUnary[int, V], size: int
+    ) -> AsyncIter[V]:
         return self.create(async_pad_with_await(function, self.iterator, size, multiple=True))
 
     def chunks(self, size: int) -> AsyncIter[List[T]]:
@@ -2609,7 +2600,7 @@ class AsyncIter(AsyncIterator[T]):
     def unique_by_await(self, key: AsyncUnary[T, V]) -> AsyncIter[T]:
         return self.create(async_unique_await(self.iterator, key))
 
-    def partition(self, predicate: Optional[Predicate[T]]) -> Pair[AsyncIter[T]]:
+    def partition(self, predicate: OptionalPredicate[T]) -> Pair[AsyncIter[T]]:
         true, false = async_partition(predicate, self.iterator)
 
         return (self.create(true), self.create(false))
@@ -2619,7 +2610,7 @@ class AsyncIter(AsyncIterator[T]):
 
         return (self.create(true), self.create(false))
 
-    def partition_unsafe(self, predicate: Optional[Predicate[T]]) -> Pair[AsyncIter[T]]:
+    def partition_unsafe(self, predicate: OptionalPredicate[T]) -> Pair[AsyncIter[T]]:
         true, false = async_partition_unsafe(predicate, self.iterator)
 
         return (self.create(true), self.create(false))
@@ -2692,6 +2683,18 @@ class AsyncIter(AsyncIterator[T]):
 
     def inspect_await(self, function: AsyncInspect[T]) -> AsyncIter[T]:
         return self.create(async_inspect_await(function, self.iterator))
+
+    def scan(self, state: V, function: Binary[V, T, Option[U]]) -> AsyncIter[U]:
+        return self.create(async_scan(state, function, self.iterator))
+
+    def scan_await(self, state: V, function: AsyncBinary[V, T, Option[U]]) -> AsyncIter[U]:
+        return self.create(async_scan_await(state, function, self.iterator))
+
+    def filter_map_option(self, function: Unary[T, Option[U]]) -> AsyncIter[U]:
+        return self.create(async_filter_map_option(function, self.iterator))
+
+    def filter_map_option_await(self, function: AsyncUnary[T, Option[U]]) -> AsyncIter[U]:
+        return self.create(async_filter_map_option_await(function, self.iterator))
 
     def wait(self: AsyncIter[Awaitable[U]]) -> AsyncIter[U]:
         return self.create(async_wait(self.iterator))

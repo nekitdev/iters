@@ -4,11 +4,13 @@ from typing import Sequence, TypeVar, Union, final, overload
 
 from attrs import frozen
 from typing_aliases import is_slice
-from wraps.wraps import wrap_option
+from wraps.wraps import WrapOption
 
 __all__ = ("SequenceView", "sequence_view")
 
 T = TypeVar("T")
+
+wrap_index_error = WrapOption(IndexError)
 
 
 @final
@@ -36,7 +38,7 @@ class SequenceView(Sequence[T]):
     def __len__(self) -> int:
         return len(self.sequence)
 
-    @wrap_option
+    @wrap_index_error
     def get(self, index: int) -> T:
         return self.sequence[index]
 

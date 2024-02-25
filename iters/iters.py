@@ -54,7 +54,7 @@ from wraps.option import Option, Some
 from iters.constants import DEFAULT_START, DEFAULT_STEP, EMPTY_BYTES, EMPTY_STRING
 from iters.ordered_set import OrderedSet, ordered_set
 from iters.types import MarkerOr, marker, wrap_marked
-from iters.typing import Product, Sum
+from iters.typing import OptionalPredicate, Product, Sum
 from iters.utils import (
     accumulate_fold,
     accumulate_product,
@@ -110,9 +110,6 @@ from iters.utils import (
     group_dict,
     group_list,
     groups,
-)
-from iters.utils import groups_longest as standard_groups_longest
-from iters.utils import (
     has_next,
     inspect,
     interleave,
@@ -140,9 +137,6 @@ from iters.utils import (
     pad,
     pad_with,
     pairs,
-)
-from iters.utils import pairs_longest as standard_pairs_longest
-from iters.utils import (
     pairs_windows,
     partition,
     partition_unsafe,
@@ -178,8 +172,10 @@ from iters.utils import (
     zip,
     zip_equal,
 )
+from iters.utils import groups_longest as standard_groups_longest
+from iters.utils import pairs_longest as standard_pairs_longest
 from iters.utils import zip_longest as standard_zip_longest
-from iters.wraps_utils import filter_map_option, scan
+from iters.wraps import filter_map_option, scan
 
 __all__ = (
     # the iterator type
@@ -1899,7 +1895,7 @@ class Iter(Iterator[T]):
     def all_unique_fast_by(self, key: Unary[T, Q]) -> bool:
         return all_unique_fast(self.iterator, key)
 
-    def remove(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
+    def remove(self, predicate: OptionalPredicate[T]) -> Iter[T]:
         return self.create(remove(predicate, self.iterator))
 
     def remove_duplicates(self) -> Iter[T]:
@@ -1908,10 +1904,10 @@ class Iter(Iterator[T]):
     def remove_duplicates_by(self, key: Unary[T, U]) -> Iter[T]:
         return self.create(remove_duplicates(self.iterator, key))
 
-    def filter(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
+    def filter(self, predicate: OptionalPredicate[T]) -> Iter[T]:
         return self.create(filter(predicate, self.iterator))
 
-    def filter_false(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
+    def filter_false(self, predicate: OptionalPredicate[T]) -> Iter[T]:
         return self.create(filter_false(predicate, self.iterator))
 
     def filter_except(self, validate: Unary[T, Any], *errors: AnyErrorType) -> Iter[T]:
@@ -1920,22 +1916,22 @@ class Iter(Iterator[T]):
     def compress(self, selectors: Selectors) -> Iter[T]:
         return self.create(compress(self.iterator, selectors))
 
-    def position_all(self, predicate: Optional[Predicate[T]]) -> Iter[int]:
+    def position_all(self, predicate: OptionalPredicate[T]) -> Iter[int]:
         return self.create(position_all(predicate, self.iterator))
 
-    def position(self, predicate: Optional[Predicate[T]]) -> Option[int]:
+    def position(self, predicate: OptionalPredicate[T]) -> Option[int]:
         return wrap_marked(position(predicate, self.iterator, marker))
 
-    def find_all(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
+    def find_all(self, predicate: OptionalPredicate[T]) -> Iter[T]:
         return self.create(find_all(predicate, self.iterator))
 
-    def find(self, predicate: Optional[Predicate[T]]) -> Option[T]:
+    def find(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(find(predicate, self.iterator, marker))  # type: ignore  # weird
 
-    def find_or_first(self, predicate: Optional[Predicate[T]]) -> Option[T]:
+    def find_or_first(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(find_or_first(predicate, self.iterator, marker))  # type: ignore  # weird
 
-    def find_or_last(self, predicate: Optional[Predicate[T]]) -> Option[T]:
+    def find_or_last(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(find_or_last(predicate, self.iterator, marker))  # type: ignore  # weird
 
     def contains(self, item: V) -> bool:
@@ -2009,10 +2005,10 @@ class Iter(Iterator[T]):
     def flat_map(self, function: Unary[T, Iterable[U]]) -> Iter[U]:
         return self.create(flat_map(function, self.iterator))
 
-    def filter_map(self, predicate: Optional[Predicate[T]], function: Unary[T, U]) -> Iter[U]:
+    def filter_map(self, predicate: OptionalPredicate[T], function: Unary[T, U]) -> Iter[U]:
         return self.create(filter_map(predicate, function, self.iterator))
 
-    def filter_false_map(self, predicate: Optional[Predicate[T]], function: Unary[T, U]) -> Iter[U]:
+    def filter_false_map(self, predicate: OptionalPredicate[T], function: Unary[T, U]) -> Iter[U]:
         return self.create(filter_false_map(predicate, function, self.iterator))
 
     def flatten(self: Iter[Iterable[U]]) -> Iter[U]:
@@ -2066,7 +2062,7 @@ class Iter(Iterator[T]):
     def rest(self) -> Iter[T]:
         return self.create(rest(self.iterator))
 
-    def drop_while(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
+    def drop_while(self, predicate: OptionalPredicate[T]) -> Iter[T]:
         return self.create(drop_while(predicate, self.iterator))
 
     skip_while = drop_while
@@ -2074,7 +2070,7 @@ class Iter(Iterator[T]):
     def take(self, size: int) -> Iter[T]:
         return self.create(take(size, self.iterator))
 
-    def take_while(self, predicate: Optional[Predicate[T]]) -> Iter[T]:
+    def take_while(self, predicate: OptionalPredicate[T]) -> Iter[T]:
         return self.create(take_while(predicate, self.iterator))
 
     def step_by(self, step: int) -> Iter[T]:
@@ -3141,7 +3137,7 @@ class Iter(Iterator[T]):
         """
         return self.create(unique(self.iterator, key))
 
-    def partition(self, predicate: Optional[Predicate[T]]) -> Pair[Iter[T]]:
+    def partition(self, predicate: OptionalPredicate[T]) -> Pair[Iter[T]]:
         """Partitions the iterator into two iterators *safely* based on the given `predicate`,
         loading **all** items into memory!
 
@@ -3180,7 +3176,7 @@ class Iter(Iterator[T]):
 
         return (self.create(true), self.create(false))
 
-    def partition_unsafe(self, predicate: Optional[Predicate[T]]) -> Pair[Iter[T]]:
+    def partition_unsafe(self, predicate: OptionalPredicate[T]) -> Pair[Iter[T]]:
         """Partitions the iterator into two iterators *unsafely* based on the given `predicate`.
 
         See [predicates](/predicates) for more information on the `predicate` argument.

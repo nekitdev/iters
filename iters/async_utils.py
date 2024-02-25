@@ -30,7 +30,7 @@ from typing import (
     overload,
 )
 
-from async_extensions.collect import collect_iterable
+from async_extensions.collecting import collect_iterable
 from async_extensions.standard import async_iter as standard_async_iter
 from async_extensions.standard import async_next as standard_async_next
 from funcs.unpacking import unpack_binary
@@ -59,7 +59,6 @@ from typing_aliases import (
     Inspect,
     Nullary,
     Pair,
-    Predicate,
     Quaternary,
     RecursiveAnyIterable,
     Ternary,
@@ -84,7 +83,7 @@ from typing_extensions import Never, ParamSpec, TypeVarTuple, Unpack
 
 from iters.ordered_set import OrderedSet, ordered_set
 from iters.types import is_marker, is_no_default, marker, no_default
-from iters.typing import Product, Sum
+from iters.typing import OptionalPredicate, Product, Sum
 from iters.utils import (
     COMPARE,
     cartesian_power,
@@ -1519,7 +1518,7 @@ def async_flat_map_await(
 
 
 async def async_filter_map(
-    predicate: Optional[Predicate[T]], function: Unary[T, U], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], function: Unary[T, U], iterable: AnyIterable[T]
 ) -> AsyncIterator[U]:
     if predicate is None:
         async for item in async_iter(iterable):
@@ -1541,7 +1540,7 @@ async def async_filter_await_map(
 
 
 async def async_filter_map_await(
-    predicate: Optional[Predicate[T]], function: AsyncUnary[T, U], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], function: AsyncUnary[T, U], iterable: AnyIterable[T]
 ) -> AsyncIterator[U]:
     if predicate is None:
         async for item in async_iter(iterable):
@@ -1563,7 +1562,7 @@ async def async_filter_await_map_await(
 
 
 async def async_filter_false_map(
-    predicate: Optional[Predicate[T]], function: Unary[T, U], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], function: Unary[T, U], iterable: AnyIterable[T]
 ) -> AsyncIterator[U]:
     if predicate is None:
         async for item in async_iter(iterable):
@@ -1585,7 +1584,7 @@ async def async_filter_false_await_map(
 
 
 async def async_filter_false_map_await(
-    predicate: Optional[Predicate[T]], function: AsyncUnary[T, U], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], function: AsyncUnary[T, U], iterable: AnyIterable[T]
 ) -> AsyncIterator[U]:
     if predicate is None:
         async for item in async_iter(iterable):
@@ -1607,7 +1606,7 @@ async def async_filter_false_await_map_await(
 
 
 def async_partition_unsafe(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T]
 ) -> Pair[AsyncIterator[T]]:
     for_true, for_false = async_copy_unsafe(iterable)
 
@@ -1629,7 +1628,7 @@ async_partition_infinite_await = async_partition_unsafe_await
 
 
 def async_partition(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T]
 ) -> Pair[AsyncIterator[T]]:
     for_true, for_false = async_copy(iterable)
 
@@ -2234,7 +2233,7 @@ async def length_at_most_one(iterable: AnyIterable[T]) -> bool:
     return none or only
 
 
-def async_remove(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> AsyncIterator[T]:
+def async_remove(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> AsyncIterator[T]:
     return async_filter_false(predicate, iterable)
 
 
@@ -2520,7 +2519,7 @@ def async_interleave_longest(*iterables: AnyIterable[T]) -> AsyncIterator[T]:
 
 
 async def async_position_all(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[int]:
     if predicate is None:
         async for index, item in async_enumerate(iterable):
@@ -2545,19 +2544,19 @@ ASYNC_POSITION_NO_MATCH = "async_position() has not found any matches"
 
 
 @overload
-async def async_position(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> int:
+async def async_position(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> int:
     ...
 
 
 @overload
 async def async_position(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[int, U]:
     ...
 
 
 async def async_position(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: Any = no_default
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: Any = no_default
 ) -> Any:
     index = await async_next_unchecked(async_position_all(predicate, iterable), None)
 
@@ -2596,7 +2595,7 @@ async def async_position_await(
     return index
 
 
-def async_find_all(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> AsyncIterator[T]:
+def async_find_all(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> AsyncIterator[T]:
     return async_filter(predicate, iterable)
 
 
@@ -2611,19 +2610,19 @@ ASYNC_FIND_ON_EMPTY = "async_find() called on an empty iterable"
 
 
 @overload
-async def async_find(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> T:
+async def async_find(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T:
     ...
 
 
 @overload
 async def async_find(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
     ...
 
 
 async def async_find(
-    predicate: Optional[Predicate[Any]], iterable: AnyIterable[Any], default: Any = no_default
+    predicate: OptionalPredicate[Any], iterable: AnyIterable[Any], default: Any = no_default
 ) -> Any:
     item = marker
 
@@ -2680,19 +2679,19 @@ ASYNC_FIND_OR_FIRST_ON_EMPTY = "async_find_or_first() called on an empty iterabl
 
 
 @overload
-async def async_find_or_first(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> T:
+async def async_find_or_first(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T:
     ...
 
 
 @overload
 async def async_find_or_first(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
     ...
 
 
 async def async_find_or_first(
-    predicate: Optional[Predicate[Any]], iterable: AnyIterable[Any], default: Any = no_default
+    predicate: OptionalPredicate[Any], iterable: AnyIterable[Any], default: Any = no_default
 ) -> Any:
     iterator = async_iter(iterable)
 
@@ -2758,19 +2757,19 @@ ASYNC_FIND_OR_LAST_ON_EMPTY = "async_find_or_last() called on an empty iterable"
 
 
 @overload
-async def async_find_or_last(predicate: Optional[Predicate[T]], iterable: AnyIterable[T]) -> T:
+async def async_find_or_last(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T:
     ...
 
 
 @overload
 async def async_find_or_last(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T], default: U
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
 ) -> Union[T, U]:
     ...
 
 
 async def async_find_or_last(
-    predicate: Optional[Predicate[Any]], iterable: AnyIterable[Any], default: Any = no_default
+    predicate: OptionalPredicate[Any], iterable: AnyIterable[Any], default: Any = no_default
 ) -> Any:
     item = marker
 
@@ -4207,7 +4206,7 @@ async def async_enumerate(iterable: AnyIterable[T], start: int = 0) -> AsyncIter
 
 
 async def async_filter(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     iterator = async_iter(iterable)
 
@@ -4231,7 +4230,7 @@ async def async_filter_await(
 
 
 async def async_filter_false(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     iterator = async_iter(iterable)
 
@@ -4616,7 +4615,7 @@ async def async_cycle(iterable: AnyIterable[T]) -> AsyncIterator[T]:
 
 
 async def async_drop_while(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     iterator = async_iter(iterable)
 
@@ -4657,7 +4656,7 @@ async_skip_while_await = async_drop_while_await
 
 
 async def async_take_while(
-    predicate: Optional[Predicate[T]], iterable: AnyIterable[T]
+    predicate: OptionalPredicate[T], iterable: AnyIterable[T]
 ) -> AsyncIterator[T]:
     if predicate is None:
         async for item in async_iter(iterable):
