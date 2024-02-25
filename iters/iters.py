@@ -3141,8 +3141,6 @@ class Iter(Iterator[T]):
         """Partitions the iterator into two iterators *safely* based on the given `predicate`,
         loading **all** items into memory!
 
-        See [predicates](/predicates) for more information on the `predicate` argument.
-
         Example:
             Suppose we have the following function:
 
@@ -3178,9 +3176,6 @@ class Iter(Iterator[T]):
 
     def partition_unsafe(self, predicate: OptionalPredicate[T]) -> Pair[Iter[T]]:
         """Partitions the iterator into two iterators *unsafely* based on the given `predicate`.
-
-        See [predicates](/predicates) for more information on the `predicate` argument.
-
         Example:
             Suppose we have the following function:
 
