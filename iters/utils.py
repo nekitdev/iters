@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from builtins import zip as standard_zip
 from collections import Counter as counter_dict
 from collections import deque
@@ -25,7 +26,6 @@ from operator import ge as greater_or_equal
 from operator import gt as greater
 from operator import le as less_or_equal
 from operator import lt as less
-from sys import version_info
 from typing import (
     Any,
     ContextManager,
@@ -472,10 +472,7 @@ def accumulate_reduce(function: Binary[T, T, T], iterable: Iterable[T]) -> Itera
 
 
 def accumulate_fold(initial: U, function: Binary[U, T, U], iterable: Iterable[T]) -> Iterator[U]:
-    if version_info >= (3, 8, 0):
-        return standard_accumulate(iterable, function, initial=initial)
-
-    return standard_accumulate(prepend(initial, iterable), function)  # type: ignore[arg-type]
+    return standard_accumulate(iterable, function, initial=initial)
 
 
 @overload
@@ -2389,7 +2386,7 @@ def zip_equal(
 
 
 def zip_equal(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
-    if version_info >= (3, 10, 0):
+    if sys.version_info >= (3, 10):
         return standard_zip(*iterables, strict=True)
 
     return zip_equal_simple(*iterables)
