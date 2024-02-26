@@ -2,6 +2,16 @@
 
 <!-- changelogging: start -->
 
+## 0.16.1 (2024-02-26)
+
+No significant changes.
+
+## 0.16.0 (2024-02-25)
+
+### Internal
+
+- Improved typing.
+
 ## 0.15.0 (2023-12-01)
 
 ### Changes
