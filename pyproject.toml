@@ -48,11 +48,8 @@ wraps = ">= 0.9.2"
 [tool.poetry.group.format.dependencies]
 ruff = "0.3.3"
 
-# [tool.poetry.group.check]
-# mypy = "1.9.0"
-
-[tool.poetry.group.check.dependencies.mypy]
-git = "https://github.com/python/mypy.git"
+[tool.poetry.group.check.dependencies]
+mypy = "1.9.0"
 
 [tool.poetry.group.check.dependencies.pre-commit]
 version = "3.6.2"
@@ -78,7 +75,7 @@ extras = ["python"]
 optional = true
 
 [tool.poetry.group.release.dependencies]
-changelogging = "1.4.1"
+changelogging = "1.4.2"
 
 [tool.ruff]
 line-length = 100
