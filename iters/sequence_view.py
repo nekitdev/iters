@@ -22,18 +22,16 @@ class SequenceView(Sequence[T]):
     """The sequence to view."""
 
     @overload
-    def __getitem__(self, index: int) -> T:
-        ...
+    def __getitem__(self, index: int) -> T: ...
 
     @overload
-    def __getitem__(self, index: slice) -> SequenceView[T]:
-        ...
+    def __getitem__(self, index: slice) -> SequenceView[T]: ...
 
     def __getitem__(self, index: Union[int, slice]) -> Union[T, SequenceView[T]]:
         if is_slice(index):
             return type(self)(self.sequence[index])
 
-        return self.sequence[index]  # type: ignore
+        return self.sequence[index]
 
     def __len__(self) -> int:
         return len(self.sequence)

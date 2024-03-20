@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from builtins import next as standard_next
 from collections import Counter as counter_dict
 from collections import deque
 from itertools import cycle
 from operator import add, mul
 from typing import (
     Any,
+    AnyStr,
     AsyncContextManager,
     AsyncGenerator,
     AsyncIterator,
@@ -32,9 +32,11 @@ from typing import (
 
 from async_extensions.collecting import collect_iterable
 from async_extensions.standard import async_iter as standard_async_iter
+from async_extensions.standard import async_iter_any_iter as async_iter
+from async_extensions.standard import async_iter_unchecked, async_next_unchecked, iter_to_async_iter
 from async_extensions.standard import async_next as standard_async_next
+from async_extensions.standard import async_next_any_iter as async_next
 from funcs.unpacking import unpack_binary
-from named import get_type_name
 from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_aliases import (
     AnyErrorType,
@@ -72,11 +74,7 @@ from typing_aliases import (
     Tuple8,
     Unary,
     Validate,
-    is_async_iterable,
-    is_async_iterator,
     is_bytes,
-    is_iterable,
-    is_iterator,
     is_string,
 )
 from typing_extensions import Never, ParamSpec, TypeVarTuple, Unpack
@@ -211,6 +209,7 @@ __all__ = (
     "async_iter_function_await",
     "async_iter_length",
     "async_iter_slice",
+    "async_iter_unchecked",
     "async_iter_windows",
     "async_iter_with",
     "async_iterate",
@@ -220,9 +219,9 @@ __all__ = (
     "async_list",
     "async_list_windows",
     "async_map",
-    "async_map_await",
     "async_map_concurrent",
     "async_map_concurrent_bound",
+    "async_map_await",
     "async_map_except",
     "async_map_except_await",
     "async_max",
@@ -345,15 +344,13 @@ ST = TypeVar("ST", bound=StrictOrdered)
 @overload
 async def async_compare(
     left_iterable: AnyIterable[ST], right_iterable: AnyIterable[ST], key: None = ...
-) -> Ordering:
-    ...
+) -> Ordering: ...
 
 
 @overload
 async def async_compare(
     left_iterable: AnyIterable[T], right_iterable: AnyIterable[T], key: Unary[T, ST]
-) -> Ordering:
-    ...
+) -> Ordering: ...
 
 
 async def async_compare(
@@ -391,10 +388,10 @@ async def async_compare_simple(
         if is_marker(right):
             return Ordering.GREATER
 
-        if left < right:  # type: ignore
+        if left < right:
             return Ordering.LESS
 
-        if left > right:  # type: ignore
+        if left > right:
             return Ordering.GREATER
 
     return Ordering.EQUAL
@@ -506,43 +503,19 @@ def async_repeat_each(count: int, iterable: AnyIterable[T]) -> AsyncIterator[T]:
 async def async_repeat_last(iterable: AnyIterable[T]) -> AsyncIterator[T]:
     item = marker
 
-    async for item in async_iter(iterable):  # type: ignore
-        yield item  # type: ignore
+    async for item in async_iter(iterable):  # type: ignore[assignment]
+        yield item  # type: ignore[misc]
 
     if is_marker(item):
         return
 
     async for last in async_repeat(item):
-        yield last  # type: ignore
+        yield last
 
 
 async def async_consume(iterable: AnyIterable[T]) -> None:
     async for _ in async_iter(iterable):
         pass
-
-
-NOT_ASYNC_ITERABLE = "{!r} is not an async iterable"
-NOT_ASYNC_ITERATOR = "{!r} is not an async iterator"
-
-
-def not_async_iterable(item: Any) -> TypeError:
-    return TypeError(NOT_ASYNC_ITERABLE.format(get_type_name(item)))
-
-
-def not_async_iterator(item: Any) -> TypeError:
-    return TypeError(NOT_ASYNC_ITERATOR.format(get_type_name(item)))
-
-
-NOT_ANY_ITERABLE = "{!r} is not an (async) iterable"
-NOT_ANY_ITERATOR = "{!r} is not an (async) iterator"
-
-
-def not_any_iterable(item: Any) -> TypeError:
-    return TypeError(NOT_ANY_ITERABLE.format(get_type_name(item)))
-
-
-def not_any_iterator(item: Any) -> TypeError:
-    return TypeError(NOT_ANY_ITERATOR.format(get_type_name(item)))
 
 
 async def async_list(iterable: AnyIterable[T]) -> List[T]:
@@ -576,15 +549,13 @@ async def async_counter_dict(iterable: AnyIterable[Q]) -> Counter[Q]:
 @overload
 async def async_sorted(
     iterable: AnyIterable[ST], *, key: None = ..., reverse: bool = ...
-) -> List[ST]:
-    ...
+) -> List[ST]: ...
 
 
 @overload
 async def async_sorted(
     iterable: AnyIterable[T], *, key: Unary[T, ST], reverse: bool = ...
-) -> List[T]:
-    ...
+) -> List[T]: ...
 
 
 async def async_sorted(
@@ -613,64 +584,6 @@ async def async_sorted_await(
     return [item for _, item in array]
 
 
-async def iter_to_async_iter(iterable: Iterable[T]) -> AsyncIterator[T]:
-    for item in iterable:
-        yield item
-
-
-def async_iter(iterable: AnyIterable[T]) -> AsyncIterator[T]:
-    if is_async_iterable(iterable):
-        return standard_async_iter(iterable)
-
-    if is_iterable(iterable):
-        return iter_to_async_iter(iterable)
-
-    raise not_any_iterable(iterable)
-
-
-@overload
-async def async_next(iterator: AnyIterator[T]) -> T:
-    ...
-
-
-@overload
-async def async_next(iterator: AnyIterator[T], default: U) -> Union[T, U]:
-    ...
-
-
-async def async_next(iterator: AnyIterator[Any], default: Any = no_default) -> Any:
-    if is_async_iterator(iterator):
-        if is_no_default(default):
-            return await standard_async_next(iterator)
-
-        return await standard_async_next(iterator, default)
-
-    if is_iterator(iterator):
-        if is_no_default(default):
-            return standard_next(iterator)
-
-        return standard_next(iterator, default)
-
-    raise not_any_iterator(iterator)
-
-
-@overload
-async def async_next_unchecked(iterator: AsyncIterator[T]) -> T:
-    ...
-
-
-@overload
-async def async_next_unchecked(iterator: AsyncIterator[T], default: U) -> Union[T, U]:
-    ...
-
-
-async def async_next_unchecked(iterator: AsyncIterator[Any], default: Any = no_default) -> Any:
-    if is_no_default(default):
-        return await standard_async_next(iterator)
-
-    return await standard_async_next(iterator, default)
-
-
 async def async_for_each(function: ForEach[T], iterable: AnyIterable[T]) -> None:
     async for item in async_iter(iterable):
         function(item)
@@ -685,13 +598,11 @@ ASYNC_FIRST_ON_EMPTY = "async_first() called on an empty iterable"
 
 
 @overload
-async def async_first(iterable: AnyIterable[T]) -> T:
-    ...
+async def async_first(iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
-async def async_first(iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...
+async def async_first(iterable: AnyIterable[T], default: U) -> Union[T, U]: ...
 
 
 async def async_first(iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -712,13 +623,11 @@ ASYNC_LAST_ON_EMPTY = "async_last() called on an empty iterable"
 
 
 @overload
-async def async_last(iterable: AnyIterable[T]) -> T:
-    ...
+async def async_last(iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
-async def async_last(iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...
+async def async_last(iterable: AnyIterable[T], default: U) -> Union[T, U]: ...
 
 
 async def async_last(iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -760,15 +669,13 @@ ASYNC_REDUCE_ON_EMPTY = "async_reduce() called on an empty iterable"
 
 
 @overload
-async def async_reduce(function: Binary[T, T, T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_reduce(function: Binary[T, T, T], iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
 async def async_reduce(
     function: Binary[T, T, T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_reduce(
@@ -788,15 +695,13 @@ ASYNC_REDUCE_AWAIT_ON_EMPTY = "async_reduce_await() called on an empty iterable"
 
 
 @overload
-async def async_reduce_await(function: AsyncBinary[T, T, T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_reduce_await(function: AsyncBinary[T, T, T], iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
 async def async_reduce_await(
     function: AsyncBinary[T, T, T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_reduce_await(
@@ -854,8 +759,8 @@ async def async_accumulate_reduce(
     if is_marker(initial):
         raise ValueError(ASYNC_ACCUMULATE_REDUCE_ON_EMPTY)
 
-    async for item in async_accumulate_fold(initial, function, iterator):  # type: ignore
-        yield item  # type: ignore
+    async for item in async_accumulate_fold(initial, function, iterator):
+        yield item
 
 
 ASYNC_ACCUMULATE_REDUCE_AWAIT_ON_EMPTY = (
@@ -873,18 +778,16 @@ async def async_accumulate_reduce_await(
     if is_marker(initial):
         raise ValueError(ASYNC_ACCUMULATE_REDUCE_ON_EMPTY)
 
-    async for item in async_accumulate_fold_await(initial, function, iterator):  # type: ignore
-        yield item  # type: ignore
+    async for item in async_accumulate_fold_await(initial, function, iterator):
+        yield item
 
 
 @overload
-def async_accumulate_sum(iterable: AnyIterable[S]) -> AsyncIterator[S]:
-    ...
+def async_accumulate_sum(iterable: AnyIterable[S]) -> AsyncIterator[S]: ...
 
 
 @overload
-def async_accumulate_sum(iterable: AnyIterable[S], initial: S) -> AsyncIterator[S]:
-    ...
+def async_accumulate_sum(iterable: AnyIterable[S], initial: S) -> AsyncIterator[S]: ...
 
 
 def async_accumulate_sum(
@@ -897,13 +800,11 @@ def async_accumulate_sum(
 
 
 @overload
-def async_accumulate_product(iterable: AnyIterable[P]) -> AsyncIterator[P]:
-    ...
+def async_accumulate_product(iterable: AnyIterable[P]) -> AsyncIterator[P]: ...
 
 
 @overload
-def async_accumulate_product(iterable: AnyIterable[P], initial: P) -> AsyncIterator[P]:
-    ...
+def async_accumulate_product(iterable: AnyIterable[P], initial: P) -> AsyncIterator[P]: ...
 
 
 def async_accumulate_product(
@@ -919,13 +820,11 @@ ASYNC_AT_ON_EMPTY = "async_at() called on an empty iterable"
 
 
 @overload
-async def async_at(index: int, iterable: AnyIterable[T]) -> T:
-    ...
+async def async_at(index: int, iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
-async def async_at(index: int, iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...
+async def async_at(index: int, iterable: AnyIterable[T], default: U) -> Union[T, U]: ...
 
 
 async def async_at(index: int, iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -946,13 +845,11 @@ ASYNC_AT_OR_LAST_ON_EMPTY = "async_at_or_last() called on an empty iterable"
 
 
 @overload
-async def async_at_or_last(index: int, iterable: AnyIterable[T]) -> T:
-    ...
+async def async_at_or_last(index: int, iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
-async def async_at_or_last(index: int, iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...
+async def async_at_or_last(index: int, iterable: AnyIterable[T], default: U) -> Union[T, U]: ...
 
 
 async def async_at_or_last(
@@ -972,58 +869,47 @@ async def async_at_or_last(
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T]) -> Pair[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T]) -> Pair[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[0]) -> EmptyTuple:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[0]) -> EmptyTuple: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[1]) -> Tuple1[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[1]) -> Tuple1[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[2]) -> Tuple2[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[2]) -> Tuple2[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[3]) -> Tuple3[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[3]) -> Tuple3[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[4]) -> Tuple4[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[4]) -> Tuple4[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[5]) -> Tuple5[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[5]) -> Tuple5[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[6]) -> Tuple6[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[6]) -> Tuple6[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[7]) -> Tuple7[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[7]) -> Tuple7[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[8]) -> Tuple8[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: Literal[8]) -> Tuple8[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy_unsafe(iterable: AnyIterable[T], copies: int) -> DynamicTuple[AsyncIterator[T]]:
-    ...
+def async_copy_unsafe(iterable: AnyIterable[T], copies: int) -> DynamicTuple[AsyncIterator[T]]: ...
 
 
 def async_copy_unsafe(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple[AsyncIterator[T]]:
@@ -1040,7 +926,7 @@ def async_copy_unsafe(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple
                     return
 
                 for buffer in buffers:
-                    buffer.append(item)  # type: ignore
+                    buffer.append(item)
 
             yield this.popleft()
 
@@ -1051,58 +937,47 @@ async_copy_infinite = async_copy_unsafe
 
 
 @overload
-def async_copy(iterable: AnyIterable[T]) -> Pair[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T]) -> Pair[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[0]) -> EmptyTuple:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[0]) -> EmptyTuple: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[1]) -> Tuple1[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[1]) -> Tuple1[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[2]) -> Tuple2[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[2]) -> Tuple2[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[3]) -> Tuple3[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[3]) -> Tuple3[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[4]) -> Tuple4[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[4]) -> Tuple4[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[5]) -> Tuple5[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[5]) -> Tuple5[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[6]) -> Tuple6[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[6]) -> Tuple6[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[7]) -> Tuple7[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[7]) -> Tuple7[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: Literal[8]) -> Tuple8[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: Literal[8]) -> Tuple8[AsyncIterator[T]]: ...
 
 
 @overload
-def async_copy(iterable: AnyIterable[T], copies: int) -> DynamicTuple[AsyncIterator[T]]:
-    ...
+def async_copy(iterable: AnyIterable[T], copies: int) -> DynamicTuple[AsyncIterator[T]]: ...
 
 
 def async_copy(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple[AsyncIterator[T]]:
@@ -1121,8 +996,7 @@ def async_copy(iterable: AnyIterable[T], copies: int = 2) -> DynamicTuple[AsyncI
 
 
 @overload
-def async_iter_slice(iterable: AnyIterable[T], __stop: Optional[int]) -> AsyncIterator[T]:
-    ...
+def async_iter_slice(iterable: AnyIterable[T], __stop: Optional[int]) -> AsyncIterator[T]: ...
 
 
 @overload
@@ -1131,8 +1005,7 @@ def async_iter_slice(
     __start: Optional[int],
     __stop: Optional[int],
     __step: Optional[int] = ...,
-) -> AsyncIterator[T]:
-    ...
+) -> AsyncIterator[T]: ...
 
 
 async def async_iter_slice(
@@ -1283,53 +1156,43 @@ async def async_step_by_unchecked(step: int, iterable: AnyIterable[T]) -> AsyncI
 
 
 @overload
-def async_groups(size: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...
+def async_groups(size: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
-def async_groups(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...
+def async_groups(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
-def async_groups(size: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...
+def async_groups(size: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]: ...
 
 
 @overload
-def async_groups(size: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...
+def async_groups(size: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]: ...
 
 
 @overload
-def async_groups(size: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...
+def async_groups(size: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]: ...
 
 
 @overload
-def async_groups(size: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...
+def async_groups(size: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]: ...
 
 
 @overload
-def async_groups(size: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...
+def async_groups(size: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]: ...
 
 
 @overload
-def async_groups(size: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...
+def async_groups(size: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]: ...
 
 
 @overload
-def async_groups(size: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...
+def async_groups(size: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]: ...
 
 
 @overload
-def async_groups(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...
+def async_groups(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]: ...
 
 
 def async_groups(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
@@ -1337,139 +1200,123 @@ def async_groups(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTu
 
 
 @overload
-def async_groups_longest(size: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...
+def async_groups_longest(
+    size: Literal[0], iterable: AnyIterable[T]
+) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
-def async_groups_longest(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...
+def async_groups_longest(
+    size: Literal[1], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[2], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple2[Optional[T]]]:
-    ...
+) -> AsyncIterator[Tuple2[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[3], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple3[Optional[T]]]:
-    ...
+) -> AsyncIterator[Tuple3[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[4], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple4[Optional[T]]]:
-    ...
+) -> AsyncIterator[Tuple4[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[5], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple5[Optional[T]]]:
-    ...
+) -> AsyncIterator[Tuple5[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[6], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple6[Optional[T]]]:
-    ...
+) -> AsyncIterator[Tuple6[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[7], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple7[Optional[T]]]:
-    ...
+) -> AsyncIterator[Tuple7[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[8], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple8[Optional[T]]]:
-    ...
+) -> AsyncIterator[Tuple8[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: int, iterable: AnyIterable[T]
-) -> AsyncIterator[DynamicTuple[Optional[T]]]:
-    ...
+) -> AsyncIterator[DynamicTuple[Optional[T]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[0], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[EmptyTuple]:
-    ...
+) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[1], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple1[T]]:
-    ...
+) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[2], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple2[Union[T, U]]]:
-    ...
+) -> AsyncIterator[Tuple2[Union[T, U]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[3], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple3[Union[T, U]]]:
-    ...
+) -> AsyncIterator[Tuple3[Union[T, U]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[4], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple4[Union[T, U]]]:
-    ...
+) -> AsyncIterator[Tuple4[Union[T, U]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[5], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple5[Union[T, U]]]:
-    ...
+) -> AsyncIterator[Tuple5[Union[T, U]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[6], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple6[Union[T, U]]]:
-    ...
+) -> AsyncIterator[Tuple6[Union[T, U]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[7], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple7[Union[T, U]]]:
-    ...
+) -> AsyncIterator[Tuple7[Union[T, U]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: Literal[8], iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[Tuple8[Union[T, U]]]:
-    ...
+) -> AsyncIterator[Tuple8[Union[T, U]]]: ...
 
 
 @overload
 def async_groups_longest(
     size: int, iterable: AnyIterable[T], fill: U
-) -> AsyncIterator[DynamicTuple[Union[T, U]]]:
-    ...
+) -> AsyncIterator[DynamicTuple[Union[T, U]]]: ...
 
 
 def async_groups_longest(
@@ -1479,13 +1326,11 @@ def async_groups_longest(
 
 
 @overload
-def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Pair[Optional[T]]]:
-    ...
+def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Pair[Optional[T]]]: ...
 
 
 @overload
-def async_pairs_longest(iterable: AnyIterable[T], fill: U) -> AsyncIterator[Pair[Union[T, U]]]:
-    ...
+def async_pairs_longest(iterable: AnyIterable[T], fill: U) -> AsyncIterator[Pair[Union[T, U]]]: ...
 
 
 def async_pairs_longest(
@@ -1661,7 +1506,7 @@ async def async_next_or_stop_async_group(iterator: AsyncIterator[T]) -> T:
     if is_marker(result):
         raise StopAsyncGroup
 
-    return result  # type: ignore
+    return result
 
 
 async def async_group_simple(
@@ -1838,15 +1683,13 @@ async def async_group_by_await(
 @overload
 def async_group(
     iterable: AnyIterable[T], key: None = ...
-) -> AsyncIterator[Tuple[T, AsyncIterator[T]]]:
-    ...
+) -> AsyncIterator[Tuple[T, AsyncIterator[T]]]: ...
 
 
 @overload
 def async_group(
     iterable: AnyIterable[T], key: Unary[T, U]
-) -> AsyncIterator[Tuple[U, AsyncIterator[T]]]:
-    ...
+) -> AsyncIterator[Tuple[U, AsyncIterator[T]]]: ...
 
 
 def async_group(
@@ -1862,15 +1705,15 @@ def async_group_await(
 
 
 @overload
-def async_group_list(iterable: AnyIterable[T], key: None = ...) -> AsyncIterator[Tuple[T, List[T]]]:
-    ...
+def async_group_list(
+    iterable: AnyIterable[T], key: None = ...
+) -> AsyncIterator[Tuple[T, List[T]]]: ...
 
 
 @overload
 def async_group_list(
     iterable: AnyIterable[T], key: Unary[T, U]
-) -> AsyncIterator[Tuple[U, List[T]]]:
-    ...
+) -> AsyncIterator[Tuple[U, List[T]]]: ...
 
 
 async def async_group_list(
@@ -1888,13 +1731,11 @@ async def async_group_list_await(
 
 
 @overload
-async def async_group_dict(iterable: AnyIterable[Q], key: None = ...) -> Dict[Q, List[Q]]:
-    ...
+async def async_group_dict(iterable: AnyIterable[Q], key: None = ...) -> Dict[Q, List[Q]]: ...
 
 
 @overload
-async def async_group_dict(iterable: AnyIterable[T], key: Unary[T, Q]) -> Dict[Q, List[T]]:
-    ...
+async def async_group_dict(iterable: AnyIterable[T], key: Unary[T, Q]) -> Dict[Q, List[T]]: ...
 
 
 async def async_group_dict(
@@ -1920,13 +1761,11 @@ async def async_group_dict_await(
 
 
 @overload
-async def async_count_dict(iterable: AnyIterable[Q], key: None = ...) -> Counter[Q]:
-    ...
+async def async_count_dict(iterable: AnyIterable[Q], key: None = ...) -> Counter[Q]: ...
 
 
 @overload
-async def async_count_dict(iterable: AnyIterable[T], key: Unary[T, Q]) -> Counter[Q]:
-    ...
+async def async_count_dict(iterable: AnyIterable[T], key: Unary[T, Q]) -> Counter[Q]: ...
 
 
 async def async_count_dict(
@@ -1998,13 +1837,11 @@ async def async_iter_length(iterable: AnyIterable[T]) -> int:
 
 
 @overload
-async def async_sum(iterable: AnyIterable[S]) -> S:
-    ...
+async def async_sum(iterable: AnyIterable[S]) -> S: ...
 
 
 @overload
-async def async_sum(iterable: AnyIterable[S], initial: S) -> S:
-    ...
+async def async_sum(iterable: AnyIterable[S], initial: S) -> S: ...
 
 
 async def async_sum(iterable: AnyIterable[Any], initial: Any = no_default) -> Any:
@@ -2015,13 +1852,11 @@ async def async_sum(iterable: AnyIterable[Any], initial: Any = no_default) -> An
 
 
 @overload
-async def async_product(iterable: AnyIterable[P]) -> P:
-    ...
+async def async_product(iterable: AnyIterable[P]) -> P: ...
 
 
 @overload
-async def async_product(iterable: AnyIterable[P], initial: P) -> P:
-    ...
+async def async_product(iterable: AnyIterable[P], initial: P) -> P: ...
 
 
 async def async_product(iterable: AnyIterable[Any], initial: Any = no_default) -> Any:
@@ -2059,26 +1894,29 @@ async def async_iterate_await(
             value = await function(value)
 
 
-async def async_walk(node: RecursiveAnyIterable[T]) -> AsyncIterator[T]:
+@overload
+def async_collapse(node: RecursiveAnyIterable[AnyStr]) -> AsyncIterator[AnyStr]: ...
+
+
+@overload
+def async_collapse(node: RecursiveAnyIterable[T]) -> AsyncIterator[T]: ...
+
+
+async def async_collapse(node: RecursiveAnyIterable[Any]) -> AsyncIterator[Any]:
     if is_string(node) or is_bytes(node):
-        yield node  # type: ignore
-        return
-
-    try:
-        tree = async_iter(node)  # type: ignore
-
-    except TypeError:
-        yield node  # type: ignore
-        return
+        yield node
 
     else:
-        async for child in tree:
-            async for nested in async_walk(child):
-                yield nested
+        try:
+            tree = async_iter(node)
 
+        except TypeError:
+            yield node
 
-def async_collapse(iterable: AnyIterable[RecursiveAnyIterable[T]]) -> AsyncIterator[T]:
-    return async_walk(iterable)
+        else:
+            async for child in tree:
+                async for nested in async_collapse(child):
+                    yield nested
 
 
 async def async_iter_with(context_manager: ContextManager[AnyIterable[T]]) -> AsyncIterator[T]:
@@ -2181,13 +2019,11 @@ async def async_contains_identity(value: T, iterable: AnyIterable[T]) -> bool:
 
 
 @overload
-async def async_all_unique_fast(iterable: AnyIterable[Q], key: None = ...) -> bool:
-    ...
+async def async_all_unique_fast(iterable: AnyIterable[Q], key: None = ...) -> bool: ...
 
 
 @overload
-async def async_all_unique_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> bool:
-    ...
+async def async_all_unique_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> bool: ...
 
 
 async def async_all_unique_fast(
@@ -2271,13 +2107,13 @@ ASYNC_PEEK_ON_EMPTY = "async_peek() called on an empty iterable"
 
 
 @overload
-async def async_peek(iterable: AnyIterable[T]) -> Tuple[T, AsyncIterator[T]]:
-    ...
+async def async_peek(iterable: AnyIterable[T]) -> Tuple[T, AsyncIterator[T]]: ...
 
 
 @overload
-async def async_peek(iterable: AnyIterable[T], default: U) -> Tuple[Union[T, U], AsyncIterator[T]]:
-    ...
+async def async_peek(
+    iterable: AnyIterable[T], default: U
+) -> Tuple[Union[T, U], AsyncIterator[T]]: ...
 
 
 async def async_peek(
@@ -2304,7 +2140,7 @@ async def async_has_next(iterable: AnyIterable[T]) -> Tuple[bool, AsyncIterator[
     if is_marker(result):
         return (False, iterator)
 
-    return (True, async_prepend(result, iterator))  # type: ignore
+    return (True, async_prepend(result, iterator))
 
 
 async def async_is_empty(iterable: AnyIterable[T]) -> Tuple[bool, AsyncIterator[T]]:
@@ -2342,69 +2178,61 @@ async def async_combine(*iterables: AnyIterable[T]) -> AsyncIterator[T]:
 
 
 @overload
-def async_distribute_unsafe(count: Literal[0], iterable: AnyIterable[T]) -> EmptyTuple:
-    ...
+def async_distribute_unsafe(count: Literal[0], iterable: AnyIterable[T]) -> EmptyTuple: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[1], iterable: AnyIterable[T]
-) -> Tuple1[AsyncIterator[T]]:
-    ...
+) -> Tuple1[AsyncIterator[T]]: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[2], iterable: AnyIterable[T]
-) -> Tuple2[AsyncIterator[T]]:
-    ...
+) -> Tuple2[AsyncIterator[T]]: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[3], iterable: AnyIterable[T]
-) -> Tuple3[AsyncIterator[T]]:
-    ...
+) -> Tuple3[AsyncIterator[T]]: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[4], iterable: AnyIterable[T]
-) -> Tuple4[AsyncIterator[T]]:
-    ...
+) -> Tuple4[AsyncIterator[T]]: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[5], iterable: AnyIterable[T]
-) -> Tuple5[AsyncIterator[T]]:
-    ...
+) -> Tuple5[AsyncIterator[T]]: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[6], iterable: AnyIterable[T]
-) -> Tuple6[AsyncIterator[T]]:
-    ...
+) -> Tuple6[AsyncIterator[T]]: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[7], iterable: AnyIterable[T]
-) -> Tuple7[AsyncIterator[T]]:
-    ...
+) -> Tuple7[AsyncIterator[T]]: ...
 
 
 @overload
 def async_distribute_unsafe(
     count: Literal[8], iterable: AnyIterable[T]
-) -> Tuple8[AsyncIterator[T]]:
-    ...
+) -> Tuple8[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute_unsafe(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
-    ...
+def async_distribute_unsafe(
+    count: int, iterable: AnyIterable[T]
+) -> DynamicTuple[AsyncIterator[T]]: ...
 
 
 def async_distribute_unsafe(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
@@ -2420,53 +2248,43 @@ async_distribute_infinite = async_distribute_unsafe
 
 
 @overload
-def async_distribute(count: Literal[0], iterable: AnyIterable[T]) -> EmptyTuple:
-    ...
+def async_distribute(count: Literal[0], iterable: AnyIterable[T]) -> EmptyTuple: ...
 
 
 @overload
-def async_distribute(count: Literal[1], iterable: AnyIterable[T]) -> Tuple1[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[1], iterable: AnyIterable[T]) -> Tuple1[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: Literal[2], iterable: AnyIterable[T]) -> Tuple2[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[2], iterable: AnyIterable[T]) -> Tuple2[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: Literal[3], iterable: AnyIterable[T]) -> Tuple3[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[3], iterable: AnyIterable[T]) -> Tuple3[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: Literal[4], iterable: AnyIterable[T]) -> Tuple4[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[4], iterable: AnyIterable[T]) -> Tuple4[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: Literal[5], iterable: AnyIterable[T]) -> Tuple5[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[5], iterable: AnyIterable[T]) -> Tuple5[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: Literal[6], iterable: AnyIterable[T]) -> Tuple6[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[6], iterable: AnyIterable[T]) -> Tuple6[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: Literal[7], iterable: AnyIterable[T]) -> Tuple7[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[7], iterable: AnyIterable[T]) -> Tuple7[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: Literal[8], iterable: AnyIterable[T]) -> Tuple8[AsyncIterator[T]]:
-    ...
+def async_distribute(count: Literal[8], iterable: AnyIterable[T]) -> Tuple8[AsyncIterator[T]]: ...
 
 
 @overload
-def async_distribute(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
-    ...
+def async_distribute(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]: ...
 
 
 def async_distribute(count: int, iterable: AnyIterable[T]) -> DynamicTuple[AsyncIterator[T]]:
@@ -2515,7 +2333,7 @@ def async_interleave(*iterables: AnyIterable[T]) -> AsyncIterator[T]:
 
 def async_interleave_longest(*iterables: AnyIterable[T]) -> AsyncIterator[T]:
     iterator = async_flatten(async_zip_longest(*iterables, fill=marker))
-    return (item async for item in iterator if item is not marker)  # type: ignore
+    return (item async for item in iterator if not is_marker(item))
 
 
 async def async_position_all(
@@ -2544,15 +2362,13 @@ ASYNC_POSITION_NO_MATCH = "async_position() has not found any matches"
 
 
 @overload
-async def async_position(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> int:
-    ...
+async def async_position(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> int: ...
 
 
 @overload
 async def async_position(
     predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[int, U]:
-    ...
+) -> Union[int, U]: ...
 
 
 async def async_position(
@@ -2570,15 +2386,13 @@ async def async_position(
 
 
 @overload
-async def async_position_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> int:
-    ...
+async def async_position_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> int: ...
 
 
 @overload
 async def async_position_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[int, U]:
-    ...
+) -> Union[int, U]: ...
 
 
 async def async_position_await(
@@ -2610,15 +2424,13 @@ ASYNC_FIND_ON_EMPTY = "async_find() called on an empty iterable"
 
 
 @overload
-async def async_find(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_find(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
 async def async_find(
     predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_find(
@@ -2649,15 +2461,13 @@ ASYNC_FIND_AWAIT_ON_EMPTY = "async_find_await() called on an empty iterable"
 
 
 @overload
-async def async_find_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_find_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
 async def async_find_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_find_await(
@@ -2679,15 +2489,13 @@ ASYNC_FIND_OR_FIRST_ON_EMPTY = "async_find_or_first() called on an empty iterabl
 
 
 @overload
-async def async_find_or_first(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_find_or_first(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
 async def async_find_or_first(
     predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_find_or_first(
@@ -2722,15 +2530,15 @@ ASYNC_FIND_OR_FIRST_AWAIT_ON_EMPTY = "async_find_or_first_await() called on an e
 
 
 @overload
-async def async_find_or_first_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_find_or_first_await(
+    predicate: AsyncPredicate[T], iterable: AnyIterable[T]
+) -> T: ...
 
 
 @overload
 async def async_find_or_first_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_find_or_first_await(
@@ -2757,15 +2565,13 @@ ASYNC_FIND_OR_LAST_ON_EMPTY = "async_find_or_last() called on an empty iterable"
 
 
 @overload
-async def async_find_or_last(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_find_or_last(predicate: OptionalPredicate[T], iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
 async def async_find_or_last(
     predicate: OptionalPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_find_or_last(
@@ -2798,15 +2604,13 @@ ASYNC_FIND_OR_LAST_AWAIT_ON_EMPTY = "async_find_or_last_await() called on an emp
 
 
 @overload
-async def async_find_or_last_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T:
-    ...
+async def async_find_or_last_await(predicate: AsyncPredicate[T], iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
 async def async_find_or_last_await(
     predicate: AsyncPredicate[T], iterable: AnyIterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_find_or_last_await(
@@ -2831,27 +2635,23 @@ ASYNC_MIN_MAX_ON_EMPTY = "async_min_max() called on an empty iterable"
 
 
 @overload
-async def async_min_max(iterable: AnyIterable[ST], *, key: None = ...) -> Pair[ST]:
-    ...
+async def async_min_max(iterable: AnyIterable[ST], *, key: None = ...) -> Pair[ST]: ...
 
 
 @overload
-async def async_min_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> Pair[T]:
-    ...
+async def async_min_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> Pair[T]: ...
 
 
 @overload
 async def async_min_max(
     iterable: AnyIterable[ST], *, key: None = ..., default: U
-) -> Union[Pair[ST], U]:
-    ...
+) -> Union[Pair[ST], U]: ...
 
 
 @overload
 async def async_min_max(
     iterable: AnyIterable[T], *, key: Unary[T, ST], default: U
-) -> Union[Pair[T], U]:
-    ...
+) -> Union[Pair[T], U]: ...
 
 
 async def async_min_max(
@@ -2908,15 +2708,13 @@ ASYNC_MIN_MAX_AWAIT_ON_EMPTY = "async_min_max_await() called on an empty iterabl
 
 
 @overload
-async def async_min_max_await(iterable: AnyIterable[T], *, key: AsyncUnary[T, ST]) -> Pair[T]:
-    ...
+async def async_min_max_await(iterable: AnyIterable[T], *, key: AsyncUnary[T, ST]) -> Pair[T]: ...
 
 
 @overload
 async def async_min_max_await(
     iterable: AnyIterable[T], *, key: AsyncUnary[T, ST], default: U
-) -> Union[Pair[T], U]:
-    ...
+) -> Union[Pair[T], U]: ...
 
 
 async def async_min_max_await(
@@ -3029,13 +2827,11 @@ ASYNC_LAST_WITH_TAIL_ON_EMPTY = "async_last_with_tail() called on an empty itera
 
 
 @overload
-async def async_last_with_tail(iterable: AnyIterable[T]) -> T:
-    ...
+async def async_last_with_tail(iterable: AnyIterable[T]) -> T: ...
 
 
 @overload
-async def async_last_with_tail(iterable: AnyIterable[T], default: U) -> Union[T, U]:
-    ...
+async def async_last_with_tail(iterable: AnyIterable[T], default: U) -> Union[T, U]: ...
 
 
 async def async_last_with_tail(iterable: AnyIterable[Any], default: Any = no_default) -> Any:
@@ -3071,8 +2867,7 @@ async def async_is_sorted(
     *,
     strict: Literal[False] = ...,
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 @overload
@@ -3082,8 +2877,7 @@ async def async_is_sorted(
     *,
     strict: Literal[True],
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 @overload
@@ -3093,8 +2887,7 @@ async def async_is_sorted(
     *,
     strict: Literal[False] = ...,
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 @overload
@@ -3104,8 +2897,7 @@ async def async_is_sorted(
     *,
     strict: Literal[True],
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 async def async_is_sorted(
@@ -3128,8 +2920,7 @@ async def async_is_sorted_await(
     *,
     strict: Literal[False] = ...,
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 @overload
@@ -3139,8 +2930,7 @@ async def async_is_sorted_await(
     *,
     strict: Literal[True],
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 async def async_is_sorted_await(
@@ -3185,15 +2975,13 @@ async def async_is_sorted_by_await(
 @overload
 def async_sort(
     iterable: AnyIterable[ST], *, key: None = ..., reverse: bool = ...
-) -> AsyncIterator[ST]:
-    ...
+) -> AsyncIterator[ST]: ...
 
 
 @overload
 def async_sort(
     iterable: AnyIterable[T], *, key: Unary[T, ST], reverse: bool = ...
-) -> AsyncIterator[T]:
-    ...
+) -> AsyncIterator[T]: ...
 
 
 async def async_sort(
@@ -3230,53 +3018,45 @@ def async_list_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[Lis
 
 
 @overload
-def async_tuple_windows(size: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...
+def async_tuple_windows(
+    size: Literal[0], iterable: AnyIterable[T]
+) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...
+def async_tuple_windows(size: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...
+def async_tuple_windows(size: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...
+def async_tuple_windows(size: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...
+def async_tuple_windows(size: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...
+def async_tuple_windows(size: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...
+def async_tuple_windows(size: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...
+def async_tuple_windows(size: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...
+def async_tuple_windows(size: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]: ...
 
 
 @overload
-def async_tuple_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...
+def async_tuple_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]: ...
 
 
 def async_tuple_windows(size: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
@@ -3355,13 +3135,11 @@ async def async_duplicates_fast_by_await(
 
 
 @overload
-def async_duplicates_fast(iterable: AnyIterable[Q], key: None = ...) -> AsyncIterator[Q]:
-    ...
+def async_duplicates_fast(iterable: AnyIterable[Q], key: None = ...) -> AsyncIterator[Q]: ...
 
 
 @overload
-def async_duplicates_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> AsyncIterator[T]:
-    ...
+def async_duplicates_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> AsyncIterator[T]: ...
 
 
 def async_duplicates_fast(
@@ -3502,13 +3280,11 @@ async def async_unique_fast_by_await(
 
 
 @overload
-def async_unique_fast(iterable: AnyIterable[Q], key: None = ...) -> AsyncIterator[Q]:
-    ...
+def async_unique_fast(iterable: AnyIterable[Q], key: None = ...) -> AsyncIterator[Q]: ...
 
 
 @overload
-def async_unique_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> AsyncIterator[T]:
-    ...
+def async_unique_fast(iterable: AnyIterable[T], key: Unary[T, Q]) -> AsyncIterator[T]: ...
 
 
 def async_unique_fast(
@@ -3607,31 +3383,27 @@ async def async_next_or_stop_async_zip(iterator: AsyncIterator[T]) -> T:
     if is_marker(result):
         raise StopAsyncZip
 
-    return result  # type: ignore
+    return result
 
 
 @overload
-def async_zip() -> AsyncIterator[Never]:
-    ...
+def async_zip() -> AsyncIterator[Never]: ...
 
 
 @overload
-def async_zip(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...
+def async_zip(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]: ...
 
 
 @overload
 def async_zip(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-) -> AsyncIterator[Tuple[A, B]]:
-    ...
+) -> AsyncIterator[Tuple[A, B]]: ...
 
 
 @overload
 def async_zip(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
-) -> AsyncIterator[Tuple[A, B, C]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C]]: ...
 
 
 @overload
@@ -3640,8 +3412,7 @@ def async_zip(
     __iterable_b: AnyIterable[B],
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
-) -> AsyncIterator[Tuple[A, B, C, D]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D]]: ...
 
 
 @overload
@@ -3651,8 +3422,7 @@ def async_zip(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
-) -> AsyncIterator[Tuple[A, B, C, D, E]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E]]: ...
 
 
 @overload
@@ -3663,8 +3433,7 @@ def async_zip(
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F]]: ...
 
 
 @overload
@@ -3676,8 +3445,7 @@ def async_zip(
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]: ...
 
 
 @overload
@@ -3690,8 +3458,7 @@ def async_zip(
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
     __iterable_h: AnyIterable[H],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]: ...
 
 
 @overload
@@ -3706,8 +3473,7 @@ def async_zip(
     __iterable_h: AnyIterable[Any],
     __iterable_n: AnyIterable[Any],
     *iterables: AnyIterable[Any],
-) -> AsyncIterator[DynamicTuple[Any]]:
-    ...
+) -> AsyncIterator[DynamicTuple[Any]]: ...
 
 
 async def async_zip(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[Any]]:
@@ -3748,27 +3514,23 @@ def format_longer(index: int) -> str:
 
 
 @overload
-def async_zip_equal() -> AsyncIterator[Never]:
-    ...
+def async_zip_equal() -> AsyncIterator[Never]: ...
 
 
 @overload
-def async_zip_equal(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...
+def async_zip_equal(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]: ...
 
 
 @overload
 def async_zip_equal(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-) -> AsyncIterator[Tuple[A, B]]:
-    ...
+) -> AsyncIterator[Tuple[A, B]]: ...
 
 
 @overload
 def async_zip_equal(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
-) -> AsyncIterator[Tuple[A, B, C]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C]]: ...
 
 
 @overload
@@ -3777,8 +3539,7 @@ def async_zip_equal(
     __iterable_b: AnyIterable[B],
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
-) -> AsyncIterator[Tuple[A, B, C, D]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D]]: ...
 
 
 @overload
@@ -3788,8 +3549,7 @@ def async_zip_equal(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
-) -> AsyncIterator[Tuple[A, B, C, D, E]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E]]: ...
 
 
 @overload
@@ -3800,8 +3560,7 @@ def async_zip_equal(
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F]]: ...
 
 
 @overload
@@ -3813,8 +3572,7 @@ def async_zip_equal(
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]: ...
 
 
 @overload
@@ -3827,8 +3585,7 @@ def async_zip_equal(
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
     __iterable_h: AnyIterable[H],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]: ...
 
 
 @overload
@@ -3843,8 +3600,7 @@ def async_zip_equal(
     __iterable_h: AnyIterable[Any],
     __iterable_n: AnyIterable[Any],
     *iterables: AnyIterable[Any],
-) -> AsyncIterator[DynamicTuple[Any]]:
-    ...
+) -> AsyncIterator[DynamicTuple[Any]]: ...
 
 
 async def async_zip_equal(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[Any]]:
@@ -3872,27 +3628,23 @@ class StopAsyncZipLongest(Exception):
 
 
 @overload
-def async_zip_longest() -> AsyncIterator[Never]:
-    ...
+def async_zip_longest() -> AsyncIterator[Never]: ...
 
 
 @overload
-def async_zip_longest(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...
+def async_zip_longest(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]: ...
 
 
 @overload
 def async_zip_longest(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-) -> AsyncIterator[Tuple[Optional[A], Optional[B]]]:
-    ...
+) -> AsyncIterator[Tuple[Optional[A], Optional[B]]]: ...
 
 
 @overload
 def async_zip_longest(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
-) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C]]]:
-    ...
+) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C]]]: ...
 
 
 @overload
@@ -3901,8 +3653,7 @@ def async_zip_longest(
     __iterable_b: AnyIterable[B],
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
-) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]:
-    ...
+) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]: ...
 
 
 @overload
@@ -3912,8 +3663,7 @@ def async_zip_longest(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
-) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]:
-    ...
+) -> AsyncIterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]: ...
 
 
 @overload
@@ -3926,8 +3676,7 @@ def async_zip_longest(
     __iterable_f: AnyIterable[F],
 ) -> AsyncIterator[
     Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -3941,8 +3690,7 @@ def async_zip_longest(
     __iterable_g: AnyIterable[G],
 ) -> AsyncIterator[
     Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F], Optional[G]]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -3966,8 +3714,7 @@ def async_zip_longest(
         Optional[G],
         Optional[H],
     ]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -3982,25 +3729,21 @@ def async_zip_longest(
     __iterable_h: AnyIterable[Any],
     __iterable_n: AnyIterable[Any],
     *iterables: AnyIterable[Any],
-) -> AsyncIterator[DynamicTuple[Optional[Any]]]:
-    ...
+) -> AsyncIterator[DynamicTuple[Optional[Any]]]: ...
 
 
 @overload
-def async_zip_longest(*, fill: T) -> AsyncIterator[Never]:
-    ...
+def async_zip_longest(*, fill: T) -> AsyncIterator[Never]: ...
 
 
 @overload
-def async_zip_longest(__iterable_a: AnyIterable[A], *, fill: T) -> AsyncIterator[Tuple[A]]:
-    ...
+def async_zip_longest(__iterable_a: AnyIterable[A], *, fill: T) -> AsyncIterator[Tuple[A]]: ...
 
 
 @overload
 def async_zip_longest(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], *, fill: T
-) -> AsyncIterator[Tuple[Union[A, T], Union[B, T]]]:
-    ...
+) -> AsyncIterator[Tuple[Union[A, T], Union[B, T]]]: ...
 
 
 @overload
@@ -4010,8 +3753,7 @@ def async_zip_longest(
     __iterable_c: AnyIterable[C],
     *,
     fill: T,
-) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T]]]:
-    ...
+) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T]]]: ...
 
 
 @overload
@@ -4022,8 +3764,7 @@ def async_zip_longest(
     __iterable_d: AnyIterable[D],
     *,
     fill: T,
-) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T]]]:
-    ...
+) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T]]]: ...
 
 
 @overload
@@ -4035,8 +3776,7 @@ def async_zip_longest(
     __iterable_e: AnyIterable[E],
     *,
     fill: T,
-) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T]]]:
-    ...
+) -> AsyncIterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T]]]: ...
 
 
 @overload
@@ -4051,8 +3791,7 @@ def async_zip_longest(
     fill: T,
 ) -> AsyncIterator[
     Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T], Union[F, T]]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -4068,8 +3807,7 @@ def async_zip_longest(
     fill: T,
 ) -> AsyncIterator[
     Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T], Union[F, T], Union[G, T]]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -4095,8 +3833,7 @@ def async_zip_longest(
         Union[G, T],
         Union[H, T],
     ]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -4112,8 +3849,7 @@ def async_zip_longest(
     __iterable_n: AnyIterable[Any],
     *iterables: AnyIterable[Any],
     fill: T,
-) -> AsyncIterator[DynamicTuple[Union[Any, T]]]:
-    ...
+) -> AsyncIterator[DynamicTuple[Union[Any, T]]]: ...
 
 
 async def async_zip_longest(
@@ -4159,16 +3895,8 @@ async def async_chain_from_iterable(nested: AnyIterable[AnyIterable[T]]) -> Asyn
 
 
 async def async_wait(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:
-    if is_async_iterable(iterable):
-        async for awaitable in iterable:
-            yield await awaitable
-
-    elif is_iterable(iterable):
-        for awaitable in iterable:
-            yield await awaitable
-
-    else:
-        raise not_any_iterable(iterable)
+    async for awaitable in async_iter(iterable):
+        yield await awaitable
 
 
 async def async_all(iterable: AnyIterable[T]) -> bool:
@@ -4257,23 +3985,19 @@ ASYNC_MAX_ON_EMPTY = "async_max() called on an empty iterable"
 
 
 @overload
-async def async_max(iterable: AnyIterable[ST], *, key: None = ...) -> ST:
-    ...
+async def async_max(iterable: AnyIterable[ST], *, key: None = ...) -> ST: ...
 
 
 @overload
-async def async_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> T:
-    ...
+async def async_max(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> T: ...
 
 
 @overload
-async def async_max(iterable: AnyIterable[ST], *, key: None = ..., default: U) -> Union[ST, U]:
-    ...
+async def async_max(iterable: AnyIterable[ST], *, key: None = ..., default: U) -> Union[ST, U]: ...
 
 
 @overload
-async def async_max(iterable: AnyIterable[T], *, key: Unary[T, ST], default: U) -> Union[T, U]:
-    ...
+async def async_max(iterable: AnyIterable[T], *, key: Unary[T, ST], default: U) -> Union[T, U]: ...
 
 
 async def async_max(
@@ -4323,15 +4047,13 @@ ASYNC_MAX_AWAIT_ON_EMPTY = "async_max_await() called on an empty iterable"
 
 
 @overload
-async def async_max_await(iterable: AnyIterable[T], key: AsyncUnary[T, ST]) -> T:
-    ...
+async def async_max_await(iterable: AnyIterable[T], key: AsyncUnary[T, ST]) -> T: ...
 
 
 @overload
 async def async_max_await(
     iterable: AnyIterable[T], key: AsyncUnary[T, ST], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_max_await(
@@ -4367,23 +4089,19 @@ ASYNC_MIN_ON_EMPTY = "async_min() called on an empty iterable"
 
 
 @overload
-async def async_min(iterable: AnyIterable[ST], *, key: None = ...) -> ST:
-    ...
+async def async_min(iterable: AnyIterable[ST], *, key: None = ...) -> ST: ...
 
 
 @overload
-async def async_min(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> T:
-    ...
+async def async_min(iterable: AnyIterable[T], *, key: Unary[T, ST]) -> T: ...
 
 
 @overload
-async def async_min(iterable: AnyIterable[ST], *, key: None = ..., default: U) -> Union[ST, U]:
-    ...
+async def async_min(iterable: AnyIterable[ST], *, key: None = ..., default: U) -> Union[ST, U]: ...
 
 
 @overload
-async def async_min(iterable: AnyIterable[T], *, key: Unary[T, ST], default: U) -> Union[T, U]:
-    ...
+async def async_min(iterable: AnyIterable[T], *, key: Unary[T, ST], default: U) -> Union[T, U]: ...
 
 
 async def async_min(
@@ -4433,15 +4151,13 @@ ASYNC_MIN_AWAIT_ON_EMPTY = "async_min_await() called on an empty iterable"
 
 
 @overload
-async def async_min_await(iterable: AnyIterable[T], key: AsyncUnary[T, ST]) -> T:
-    ...
+async def async_min_await(iterable: AnyIterable[T], key: AsyncUnary[T, ST]) -> T: ...
 
 
 @overload
 async def async_min_await(
     iterable: AnyIterable[T], key: AsyncUnary[T, ST], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 async def async_min_await(
@@ -4474,15 +4190,13 @@ async def async_min_by_await(iterable: AnyIterable[T], value: T, key: AsyncUnary
 
 
 @overload
-def standard_async_map(function: Unary[T, R], __iterable_t: AnyIterable[T]) -> AsyncIterator[R]:
-    ...
+def standard_async_map(function: Unary[T, R], __iterable_t: AnyIterable[T]) -> AsyncIterator[R]: ...
 
 
 @overload
 def standard_async_map(
     function: Binary[T, U, R], __iterable_t: AnyIterable[T], __iterable_u: AnyIterable[U]
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 @overload
@@ -4491,8 +4205,7 @@ def standard_async_map(
     __iterable_t: AnyIterable[T],
     __iterable_u: AnyIterable[U],
     __iterable_v: AnyIterable[V],
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 @overload
@@ -4502,8 +4215,7 @@ def standard_async_map(
     __iterable_u: AnyIterable[U],
     __iterable_v: AnyIterable[V],
     __iterable_w: AnyIterable[W],
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 @overload
@@ -4515,8 +4227,7 @@ def standard_async_map(
     __iterable_w: AnyIterable[Any],
     __iterable_n: AnyIterable[Any],
     *iterables: AnyIterable[Any],
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 async def standard_async_map(
@@ -4529,8 +4240,7 @@ async def standard_async_map(
 @overload
 def standard_async_map_await(
     function: AsyncUnary[T, R], __iterable_t: AnyIterable[T]
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 @overload
@@ -4538,8 +4248,7 @@ def standard_async_map_await(
     function: AsyncBinary[T, U, R],
     __iterable_t: AnyIterable[T],
     __iterable_u: AnyIterable[U],
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 @overload
@@ -4548,8 +4257,7 @@ def standard_async_map_await(
     __iterable_t: AnyIterable[T],
     __iterable_u: AnyIterable[U],
     __iterable_v: AnyIterable[V],
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 @overload
@@ -4559,8 +4267,7 @@ def standard_async_map_await(
     __iterable_u: AnyIterable[U],
     __iterable_v: AnyIterable[V],
     __iterable_w: AnyIterable[W],
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 @overload
@@ -4572,8 +4279,7 @@ def standard_async_map_await(
     __iterable_w: AnyIterable[Any],
     __iterable_n: AnyIterable[Any],
     *iterables: AnyIterable[Any],
-) -> AsyncIterator[R]:
-    ...
+) -> AsyncIterator[R]: ...
 
 
 async def standard_async_map_await(
@@ -4688,7 +4394,7 @@ async def async_take_while_await(
 
 def async_reverse(iterable: AnyIterable[T]) -> AsyncIterator[T]:
     try:
-        return async_reversed(iterable)  # type: ignore
+        return async_reversed(iterable)  # type: ignore[arg-type]
 
     except TypeError:
         return async_reverse_with_list(iterable)
@@ -4731,53 +4437,45 @@ async def async_permute(iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[
 
 
 @overload
-def async_permutations(count: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...
+def async_permutations(
+    count: Literal[0], iterable: AnyIterable[T]
+) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
-def async_permutations(count: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...
+def async_permutations(count: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
-def async_permutations(count: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...
+def async_permutations(count: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]: ...
 
 
 @overload
-def async_permutations(count: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...
+def async_permutations(count: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]: ...
 
 
 @overload
-def async_permutations(count: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...
+def async_permutations(count: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]: ...
 
 
 @overload
-def async_permutations(count: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...
+def async_permutations(count: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]: ...
 
 
 @overload
-def async_permutations(count: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...
+def async_permutations(count: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]: ...
 
 
 @overload
-def async_permutations(count: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...
+def async_permutations(count: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]: ...
 
 
 @overload
-def async_permutations(count: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...
+def async_permutations(count: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]: ...
 
 
 @overload
-def async_permutations(count: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...
+def async_permutations(count: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]: ...
 
 
 async def async_permutations(
@@ -4793,53 +4491,45 @@ async def async_permutations(
 
 
 @overload
-def async_combinations(count: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...
+def async_combinations(
+    count: Literal[0], iterable: AnyIterable[T]
+) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
-def async_combinations(count: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...
+def async_combinations(count: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
-def async_combinations(count: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...
+def async_combinations(count: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]: ...
 
 
 @overload
-def async_combinations(count: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...
+def async_combinations(count: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]: ...
 
 
 @overload
-def async_combinations(count: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...
+def async_combinations(count: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]: ...
 
 
 @overload
-def async_combinations(count: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...
+def async_combinations(count: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]: ...
 
 
 @overload
-def async_combinations(count: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...
+def async_combinations(count: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]: ...
 
 
 @overload
-def async_combinations(count: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...
+def async_combinations(count: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]: ...
 
 
 @overload
-def async_combinations(count: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...
+def async_combinations(count: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]: ...
 
 
 @overload
-def async_combinations(count: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...
+def async_combinations(count: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]: ...
 
 
 async def async_combinations(
@@ -4857,71 +4547,61 @@ async def async_combinations(
 @overload
 def async_combinations_with_replacement(
     count: Literal[0], iterable: AnyIterable[T]
-) -> AsyncIterator[EmptyTuple]:
-    ...
+) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[1], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple1[T]]:
-    ...
+) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[2], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple2[T]]:
-    ...
+) -> AsyncIterator[Tuple2[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[3], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple3[T]]:
-    ...
+) -> AsyncIterator[Tuple3[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[4], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple4[T]]:
-    ...
+) -> AsyncIterator[Tuple4[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[5], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple5[T]]:
-    ...
+) -> AsyncIterator[Tuple5[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[6], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple6[T]]:
-    ...
+) -> AsyncIterator[Tuple6[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[7], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple7[T]]:
-    ...
+) -> AsyncIterator[Tuple7[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: Literal[8], iterable: AnyIterable[T]
-) -> AsyncIterator[Tuple8[T]]:
-    ...
+) -> AsyncIterator[Tuple8[T]]: ...
 
 
 @overload
 def async_combinations_with_replacement(
     count: int, iterable: AnyIterable[T]
-) -> AsyncIterator[DynamicTuple[T]]:
-    ...
+) -> AsyncIterator[DynamicTuple[T]]: ...
 
 
 async def async_combinations_with_replacement(
@@ -4937,27 +4617,23 @@ async def async_combinations_with_replacement(
 
 
 @overload
-def async_cartesian_product() -> AsyncIterator[EmptyTuple]:
-    ...
+def async_cartesian_product() -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
-def async_cartesian_product(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]:
-    ...
+def async_cartesian_product(__iterable_a: AnyIterable[A]) -> AsyncIterator[Tuple[A]]: ...
 
 
 @overload
 def async_cartesian_product(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-) -> AsyncIterator[Tuple[A, B]]:
-    ...
+) -> AsyncIterator[Tuple[A, B]]: ...
 
 
 @overload
 def async_cartesian_product(
     __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B], __iterable_c: AnyIterable[C]
-) -> AsyncIterator[Tuple[A, B, C]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C]]: ...
 
 
 @overload
@@ -4966,8 +4642,7 @@ def async_cartesian_product(
     __iterable_b: AnyIterable[B],
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
-) -> AsyncIterator[Tuple[A, B, C, D]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D]]: ...
 
 
 @overload
@@ -4977,8 +4652,7 @@ def async_cartesian_product(
     __iterable_c: AnyIterable[C],
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
-) -> AsyncIterator[Tuple[A, B, C, D, E]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E]]: ...
 
 
 @overload
@@ -4989,8 +4663,7 @@ def async_cartesian_product(
     __iterable_d: AnyIterable[D],
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F]]: ...
 
 
 @overload
@@ -5002,8 +4675,7 @@ def async_cartesian_product(
     __iterable_e: AnyIterable[E],
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G]]: ...
 
 
 @overload
@@ -5016,8 +4688,7 @@ def async_cartesian_product(
     __iterable_f: AnyIterable[F],
     __iterable_g: AnyIterable[G],
     __iterable_h: AnyIterable[H],
-) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...
+) -> AsyncIterator[Tuple[A, B, C, D, E, F, G, H]]: ...
 
 
 @overload
@@ -5032,15 +4703,14 @@ def async_cartesian_product(
     __iterable_h: AnyIterable[Any],
     __iterable_n: AnyIterable[Any],
     *iterables: AnyIterable[Any],
-) -> AsyncIterator[DynamicTuple[Any]]:
-    ...
+) -> AsyncIterator[DynamicTuple[Any]]: ...
 
 
 def async_cartesian_product(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[Any]]:
     stack = async_once(())
 
     for iterable in iterables:
-        stack = async_cartesian_product_step(stack, iterable)  # type: ignore
+        stack = async_cartesian_product_step(stack, iterable)  # type: ignore[assignment]
 
     return stack
 
@@ -5059,53 +4729,63 @@ async def async_cartesian_product_step(
 
 
 @overload
-def async_cartesian_power(power: Literal[0], iterable: AnyIterable[T]) -> AsyncIterator[EmptyTuple]:
-    ...
+def async_cartesian_power(
+    power: Literal[0], iterable: AnyIterable[T]
+) -> AsyncIterator[EmptyTuple]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[1], iterable: AnyIterable[T]) -> AsyncIterator[Tuple1[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[1], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple1[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[2], iterable: AnyIterable[T]) -> AsyncIterator[Tuple2[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[2], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple2[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[3], iterable: AnyIterable[T]) -> AsyncIterator[Tuple3[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[3], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple3[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[4], iterable: AnyIterable[T]) -> AsyncIterator[Tuple4[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[4], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple4[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[5], iterable: AnyIterable[T]) -> AsyncIterator[Tuple5[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[5], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple5[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[6], iterable: AnyIterable[T]) -> AsyncIterator[Tuple6[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[6], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple6[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[7], iterable: AnyIterable[T]) -> AsyncIterator[Tuple7[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[7], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple7[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: Literal[8], iterable: AnyIterable[T]) -> AsyncIterator[Tuple8[T]]:
-    ...
+def async_cartesian_power(
+    power: Literal[8], iterable: AnyIterable[T]
+) -> AsyncIterator[Tuple8[T]]: ...
 
 
 @overload
-def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
-    ...
+def async_cartesian_power(
+    power: int, iterable: AnyIterable[T]
+) -> AsyncIterator[DynamicTuple[T]]: ...
 
 
 def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator[DynamicTuple[T]]:
@@ -5126,16 +4806,16 @@ def async_cartesian_power(power: int, iterable: AnyIterable[T]) -> AsyncIterator
     stack = async_once(())
 
     for _ in range(power):
-        stack = async_cartesian_power_step(stack)  # type: ignore
+        stack = async_cartesian_power_step(stack)  # type: ignore[assignment]
 
     return stack
 
 
 async def async_wait_concurrent(iterable: AnyIterable[Awaitable[T]]) -> AsyncIterator[T]:
-    results = await collect_iterable(iterable)
+    items = await collect_iterable(iterable)
 
-    for result in results:
-        yield result
+    for item in items:
+        yield item
 
 
 def async_wait_concurrent_bound(

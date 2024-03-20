@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iters"
-version = "0.16.1"
+version = "0.16.2"
 description = "Composable external iteration."
 authors = ["nekitdev"]
 license = "MIT"
@@ -31,22 +31,28 @@ include = "iters"
 [tool.poetry.dependencies]
 python = ">= 3.8"
 
-typing-aliases = ">= 1.7.1"
+typing-aliases = ">= 1.10.0"
 typing-extensions = ">= 4.10.0"
 
-named = ">= 1.4.1"
-orderings = ">= 1.3.1"
+named = ">= 1.4.2"
+orderings = ">= 1.3.2"
 
 solus = ">= 1.2.2"
 
-async-extensions = ">= 2.0.2"
+async-extensions = ">= 3.1.1"
 mixed-methods = ">= 1.1.1"
 
-[tool.poetry.group.format.dependencies]
-ruff = "0.3.2"
+funcs = ">= 0.9.2"
+wraps = ">= 0.9.2"
 
-[tool.poetry.group.check.dependencies]
-mypy = "1.9.0"
+[tool.poetry.group.format.dependencies]
+ruff = "0.3.3"
+
+# [tool.poetry.group.check]
+# mypy = "1.9.0"
+
+[tool.poetry.group.check.dependencies.mypy]
+git = "https://github.com/python/mypy.git"
 
 [tool.poetry.group.check.dependencies.pre-commit]
 version = "3.6.2"
@@ -62,10 +68,10 @@ optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.5.3"
-mkdocs-material = "9.5.13"
+mkdocs-material = "9.5.14"
 
 [tool.poetry.group.docs.dependencies.mkdocstrings]
-version = "0.24.0"
+version = "0.24.1"
 extras = ["python"]
 
 [tool.poetry.group.release]
@@ -110,7 +116,7 @@ strict = true
 
 [tool.changelogging]
 name = "iters"
-version = "0.16.1"
+version = "0.16.2"
 url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"

@@ -338,7 +338,9 @@ def async_groups_longest(
 
 
 def async_pairs_longest(iterable: AnyIterable[T]) -> AsyncIterator[Pair[Option[T]]]:
-    return wrap_marked_iterable(standard_async_pairs_longest(iterable, marker))  # type: ignore
+    return wrap_marked_iterable(  # type: ignore[return-value]
+        standard_async_pairs_longest(iterable, marker)
+    )
 
 
 class AsyncIter(AsyncIterator[T]):
@@ -477,20 +479,17 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip(cls) -> AsyncIter[T]:
-        ...
+    def create_zip(cls) -> AsyncIter[T]: ...
 
     @overload
     @classmethod
-    def create_zip(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]:
-        ...
+    def create_zip(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]: ...
 
     @overload
     @classmethod
     def create_zip(
         cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[A, B]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B]]: ...
 
     @overload
     @classmethod
@@ -499,8 +498,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[A, B, C]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C]]: ...
 
     @overload
     @classmethod
@@ -510,8 +508,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[A, B, C, D]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D]]: ...
 
     @overload
     @classmethod
@@ -522,8 +519,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[A, B, C, D, E]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E]]: ...
 
     @overload
     @classmethod
@@ -535,8 +531,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]: ...
 
     @overload
     @classmethod
@@ -549,8 +544,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]: ...
 
     @overload
     @classmethod
@@ -564,8 +558,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
         __iterable_h: AnyIterable[H],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]: ...
 
     @overload
     @classmethod
@@ -581,8 +574,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Any]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]: ...
 
     @no_type_check
     @classmethod
@@ -591,20 +583,17 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip_equal(cls) -> AsyncIter[T]:
-        ...
+    def create_zip_equal(cls) -> AsyncIter[T]: ...
 
     @overload
     @classmethod
-    def create_zip_equal(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]:
-        ...
+    def create_zip_equal(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]: ...
 
     @overload
     @classmethod
     def create_zip_equal(
         cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[A, B]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B]]: ...
 
     @overload
     @classmethod
@@ -613,8 +602,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[A, B, C]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C]]: ...
 
     @overload
     @classmethod
@@ -624,8 +612,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[A, B, C, D]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D]]: ...
 
     @overload
     @classmethod
@@ -636,8 +623,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[A, B, C, D, E]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E]]: ...
 
     @overload
     @classmethod
@@ -649,8 +635,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]: ...
 
     @overload
     @classmethod
@@ -663,8 +648,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]: ...
 
     @overload
     @classmethod
@@ -678,8 +662,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
         __iterable_h: AnyIterable[H],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]: ...
 
     @overload
     @classmethod
@@ -695,8 +678,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Any]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]: ...
 
     @no_type_check
     @classmethod
@@ -705,20 +687,17 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_zip_longest(cls) -> AsyncIter[T]:
-        ...
+    def create_zip_longest(cls) -> AsyncIter[T]: ...
 
     @overload
     @classmethod
-    def create_zip_longest(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[Option[A]]]:
-        ...
+    def create_zip_longest(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[Option[A]]]: ...
 
     @overload
     @classmethod
     def create_zip_longest(
         cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[Option[A], Option[B]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[A], Option[B]]]: ...
 
     @overload
     @classmethod
@@ -727,8 +706,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C]]]: ...
 
     @overload
     @classmethod
@@ -738,8 +716,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C], Option[D]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C], Option[D]]]: ...
 
     @overload
     @classmethod
@@ -750,8 +727,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E]]]: ...
 
     @overload
     @classmethod
@@ -763,8 +739,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E], Option[F]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E], Option[F]]]: ...
 
     @overload
     @classmethod
@@ -787,8 +762,7 @@ class AsyncIter(AsyncIterator[T]):
             Option[F],
             Option[G],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     @classmethod
@@ -813,8 +787,7 @@ class AsyncIter(AsyncIterator[T]):
             Option[G],
             Option[H],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     @classmethod
@@ -830,8 +803,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Option[Any]]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Option[Any]]]: ...
 
     @no_type_check
     @classmethod
@@ -842,20 +814,17 @@ class AsyncIter(AsyncIterator[T]):
 
     @overload
     @classmethod
-    def create_cartesian_product(cls) -> AsyncIter[EmptyTuple]:
-        ...
+    def create_cartesian_product(cls) -> AsyncIter[EmptyTuple]: ...
 
     @overload
     @classmethod
-    def create_cartesian_product(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]:
-        ...
+    def create_cartesian_product(cls, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[A]]: ...
 
     @overload
     @classmethod
     def create_cartesian_product(
         cls, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[A, B]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B]]: ...
 
     @overload
     @classmethod
@@ -864,8 +833,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[A, B, C]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C]]: ...
 
     @overload
     @classmethod
@@ -875,8 +843,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[A, B, C, D]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D]]: ...
 
     @overload
     @classmethod
@@ -887,8 +854,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[A, B, C, D, E]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E]]: ...
 
     @overload
     @classmethod
@@ -900,8 +866,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F]]: ...
 
     @overload
     @classmethod
@@ -914,8 +879,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G]]: ...
 
     @overload
     @classmethod
@@ -929,8 +893,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
         __iterable_h: AnyIterable[H],
-    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> AsyncIter[Tuple[A, B, C, D, E, F, G, H]]: ...
 
     @overload
     @classmethod
@@ -946,8 +909,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Any]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]: ...
 
     @no_type_check
     @classmethod
@@ -968,15 +930,15 @@ class AsyncIter(AsyncIterator[T]):
 
     @classmethod
     def create(cls, iterable: AnyIterable[U]) -> AsyncIter[U]:
-        return cls(iterable)  # type: ignore
+        return cls(iterable)  # type: ignore[arg-type, return-value]
 
     @classmethod
     def create_tuple(cls, iterables: DynamicTuple[AnyIterable[U]]) -> DynamicTuple[AsyncIter[U]]:
-        return tuple(map(cls, iterables))  # type: ignore
+        return tuple(map(cls, iterables))  # type: ignore[arg-type]
 
     @classmethod
     def create_nested(cls, nested: AnyIterable[AnyIterable[U]]) -> AsyncIter[AsyncIter[U]]:
-        return cls(map(cls, nested))  # type: ignore
+        return cls(map(cls, nested))  # type: ignore[arg-type, return-value]
 
     def __aiter__(self) -> AsyncIter[T]:
         return self
@@ -1242,34 +1204,46 @@ class AsyncIter(AsyncIterator[T]):
 
     @wrap_future_option
     async def find(self, predicate: OptionalPredicate[T]) -> Option[T]:
-        return wrap_marked(await async_find(predicate, self.iterator, marker))  # type: ignore
+        return wrap_marked(
+            await async_find(predicate, self.iterator, marker)  # type: ignore[arg-type]
+        )
 
     @wrap_future_option
     async def find_await(self, predicate: AsyncPredicate[T]) -> Option[T]:
-        return wrap_marked(await async_find_await(predicate, self.iterator, marker))  # type: ignore
+        return wrap_marked(
+            await async_find_await(predicate, self.iterator, marker)  # type: ignore[arg-type]
+        )
 
     @wrap_future_option
     async def find_or_first(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(
-            await async_find_or_first(predicate, self.iterator, marker)  # type: ignore
+            await async_find_or_first(predicate, self.iterator, marker)  # type: ignore[arg-type]
         )
 
     @wrap_future_option
     async def find_or_first_await(self, predicate: AsyncPredicate[T]) -> Option[T]:
         return wrap_marked(
-            await async_find_or_first_await(predicate, self.iterator, marker)  # type: ignore
+            await async_find_or_first_await(
+                predicate,
+                self.iterator,
+                marker,  # type: ignore[arg-type]
+            )
         )
 
     @wrap_future_option
     async def find_or_last(self, predicate: OptionalPredicate[T]) -> Option[T]:
         return wrap_marked(
-            await async_find_or_last(predicate, self.iterator, marker)  # type: ignore
+            await async_find_or_last(predicate, self.iterator, marker)  # type: ignore[arg-type]
         )
 
     @wrap_future_option
     async def find_or_last_await(self, predicate: AsyncPredicate[T]) -> Option[T]:
         return wrap_marked(
-            await async_find_or_last_await(predicate, self.iterator, marker)  # type: ignore
+            await async_find_or_last_await(
+                predicate,
+                self.iterator,
+                marker,  # type: ignore[arg-type]
+            )
         )
 
     @wrap_future
@@ -1283,13 +1257,13 @@ class AsyncIter(AsyncIterator[T]):
     @wrap_future_option
     async def reduce(self, function: Binary[T, T, T]) -> Option[T]:
         return wrap_marked(
-            await async_reduce(function, self.iterator, marker)  # type: ignore  # weird
+            await async_reduce(function, self.iterator, marker)  # type: ignore[arg-type]
         )
 
     @wrap_future_option
     async def reduce_await(self, function: AsyncBinary[T, T, T]) -> Option[T]:
         return wrap_marked(
-            await async_reduce_await(function, self.iterator, marker)  # type: ignore  # weird
+            await async_reduce_await(function, self.iterator, marker)  # type: ignore[arg-type]
         )
 
     @wrap_future
@@ -1346,12 +1320,14 @@ class AsyncIter(AsyncIterator[T]):
 
     @wrap_future_option
     async def min_by(self, key: Unary[T, ST]) -> Option[T]:
-        return wrap_marked(await async_min(self.iterator, key=key, default=marker))  # type: ignore
+        return wrap_marked(
+            await async_min(self.iterator, key=key, default=marker)  # type: ignore[arg-type]
+        )
 
     @wrap_future_option
     async def min_by_await(self, key: AsyncUnary[T, ST]) -> Option[T]:
         return wrap_marked(
-            await async_min_await(self.iterator, key=key, default=marker)  # type: ignore
+            await async_min_await(self.iterator, key=key, default=marker)  # type: ignore[arg-type]
         )
 
     @wrap_future_option
@@ -1360,12 +1336,14 @@ class AsyncIter(AsyncIterator[T]):
 
     @wrap_future_option
     async def max_by(self, key: Unary[T, ST]) -> Option[T]:
-        return wrap_marked(await async_max(self.iterator, key=key, default=marker))  # type: ignore
+        return wrap_marked(
+            await async_max(self.iterator, key=key, default=marker)  # type: ignore[arg-type]
+        )
 
     @wrap_future_option
     async def max_by_await(self, key: AsyncUnary[T, ST]) -> Option[T]:
         return wrap_marked(
-            await async_max_await(self.iterator, key=key, default=marker)  # type: ignore
+            await async_max_await(self.iterator, key=key, default=marker)  # type: ignore[arg-type]
         )
 
     @wrap_future_option
@@ -1443,7 +1421,13 @@ class AsyncIter(AsyncIterator[T]):
     def flatten(self: AsyncIter[AnyIterable[U]]) -> AsyncIter[U]:
         return self.create(async_flatten(self.iterator))
 
-    def collapse(self: AsyncIter[RecursiveAnyIterable[U]]) -> AsyncIter[U]:
+    @overload
+    def collapse(self: AsyncIter[RecursiveAnyIterable[AnyStr]]) -> AsyncIter[AnyStr]: ...
+
+    @overload
+    def collapse(self: AsyncIter[RecursiveAnyIterable[U]]) -> AsyncIter[U]: ...
+
+    def collapse(self: AsyncIter[RecursiveAnyIterable[Any]]) -> AsyncIter[Any]:
         return self.create(async_collapse(self.iterator))
 
     def enumerate(self) -> AsyncIter[Tuple[int, T]]:
@@ -1479,14 +1463,12 @@ class AsyncIter(AsyncIterator[T]):
         return wrap_marked(await async_at_or_last(index, self.iterator, marker))
 
     @overload
-    def slice(self, __stop: Optional[int]) -> AsyncIter[T]:
-        ...
+    def slice(self, __stop: Optional[int]) -> AsyncIter[T]: ...
 
     @overload
     def slice(
         self, __start: Optional[int], __stop: Optional[int], __step: Optional[int] = ...
-    ) -> AsyncIter[T]:
-        ...
+    ) -> AsyncIter[T]: ...
 
     def slice(self, *slice_args: Optional[int]) -> AsyncIter[T]:
         return self.create(async_iter_slice(self.iterator, *slice_args))
@@ -1562,44 +1544,34 @@ class AsyncIter(AsyncIterator[T]):
     combine = mixed_method(create_combine, apply_combine)
 
     @overload
-    def distribute_unsafe(self, count: Literal[0]) -> EmptyTuple:
-        ...
+    def distribute_unsafe(self, count: Literal[0]) -> EmptyTuple: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[1]) -> Tuple1[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[1]) -> Tuple1[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[2]) -> Tuple2[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[2]) -> Tuple2[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[3]) -> Tuple3[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[3]) -> Tuple3[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[4]) -> Tuple4[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[4]) -> Tuple4[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[5]) -> Tuple5[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[5]) -> Tuple5[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[6]) -> Tuple6[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[6]) -> Tuple6[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[7]) -> Tuple7[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[7]) -> Tuple7[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[8]) -> Tuple8[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[8]) -> Tuple8[AsyncIter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: int) -> DynamicTuple[AsyncIter[T]]:
-        ...
+    def distribute_unsafe(self, count: int) -> DynamicTuple[AsyncIter[T]]: ...
 
     def distribute_unsafe(self, count: int) -> DynamicTuple[AsyncIter[T]]:
         return self.create_tuple(async_distribute_unsafe(count, self.iterator))
@@ -1607,44 +1579,34 @@ class AsyncIter(AsyncIterator[T]):
     distribute_infinite = distribute_unsafe
 
     @overload
-    def distribute(self, count: Literal[0]) -> EmptyTuple:
-        ...
+    def distribute(self, count: Literal[0]) -> EmptyTuple: ...
 
     @overload
-    def distribute(self, count: Literal[1]) -> Tuple1[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[1]) -> Tuple1[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[2]) -> Tuple2[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[2]) -> Tuple2[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[3]) -> Tuple3[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[3]) -> Tuple3[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[4]) -> Tuple4[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[4]) -> Tuple4[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[5]) -> Tuple5[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[5]) -> Tuple5[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[6]) -> Tuple6[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[6]) -> Tuple6[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[7]) -> Tuple7[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[7]) -> Tuple7[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[8]) -> Tuple8[AsyncIter[T]]:
-        ...
+    def distribute(self, count: Literal[8]) -> Tuple8[AsyncIter[T]]: ...
 
     @overload
-    def distribute(self, count: int) -> DynamicTuple[AsyncIter[T]]:
-        ...
+    def distribute(self, count: int) -> DynamicTuple[AsyncIter[T]]: ...
 
     def distribute(self, count: int) -> DynamicTuple[AsyncIter[T]]:
         return self.create_tuple(async_distribute(count, self.iterator))
@@ -1695,87 +1657,67 @@ class AsyncIter(AsyncIterator[T]):
     iter_chunks_infinite = iter_chunks_unsafe
 
     @overload
-    def groups(self, size: Literal[0]) -> AsyncIter[Never]:
-        ...
+    def groups(self, size: Literal[0]) -> AsyncIter[Never]: ...
 
     @overload
-    def groups(self, size: Literal[1]) -> AsyncIter[Tuple1[T]]:
-        ...
+    def groups(self, size: Literal[1]) -> AsyncIter[Tuple1[T]]: ...
 
     @overload
-    def groups(self, size: Literal[2]) -> AsyncIter[Tuple2[T]]:
-        ...
+    def groups(self, size: Literal[2]) -> AsyncIter[Tuple2[T]]: ...
 
     @overload
-    def groups(self, size: Literal[3]) -> AsyncIter[Tuple3[T]]:
-        ...
+    def groups(self, size: Literal[3]) -> AsyncIter[Tuple3[T]]: ...
 
     @overload
-    def groups(self, size: Literal[4]) -> AsyncIter[Tuple4[T]]:
-        ...
+    def groups(self, size: Literal[4]) -> AsyncIter[Tuple4[T]]: ...
 
     @overload
-    def groups(self, size: Literal[5]) -> AsyncIter[Tuple5[T]]:
-        ...
+    def groups(self, size: Literal[5]) -> AsyncIter[Tuple5[T]]: ...
 
     @overload
-    def groups(self, size: Literal[6]) -> AsyncIter[Tuple6[T]]:
-        ...
+    def groups(self, size: Literal[6]) -> AsyncIter[Tuple6[T]]: ...
 
     @overload
-    def groups(self, size: Literal[7]) -> AsyncIter[Tuple7[T]]:
-        ...
+    def groups(self, size: Literal[7]) -> AsyncIter[Tuple7[T]]: ...
 
     @overload
-    def groups(self, size: Literal[8]) -> AsyncIter[Tuple8[T]]:
-        ...
+    def groups(self, size: Literal[8]) -> AsyncIter[Tuple8[T]]: ...
 
     @overload
-    def groups(self, size: int) -> AsyncIter[DynamicTuple[T]]:
-        ...
+    def groups(self, size: int) -> AsyncIter[DynamicTuple[T]]: ...
 
     def groups(self, size: int) -> AsyncIter[DynamicTuple[T]]:
         return self.create(async_groups(size, self.iterator))
 
     @overload
-    def groups_longest(self, size: Literal[0]) -> AsyncIter[Never]:
-        ...
+    def groups_longest(self, size: Literal[0]) -> AsyncIter[Never]: ...
 
     @overload
-    def groups_longest(self, size: Literal[1]) -> AsyncIter[Tuple1[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[1]) -> AsyncIter[Tuple1[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[2]) -> AsyncIter[Tuple2[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[2]) -> AsyncIter[Tuple2[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[3]) -> AsyncIter[Tuple3[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[3]) -> AsyncIter[Tuple3[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[4]) -> AsyncIter[Tuple4[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[4]) -> AsyncIter[Tuple4[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[5]) -> AsyncIter[Tuple5[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[5]) -> AsyncIter[Tuple5[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[6]) -> AsyncIter[Tuple6[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[6]) -> AsyncIter[Tuple6[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[7]) -> AsyncIter[Tuple7[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[7]) -> AsyncIter[Tuple7[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[8]) -> AsyncIter[Tuple8[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[8]) -> AsyncIter[Tuple8[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: int) -> AsyncIter[DynamicTuple[Option[T]]]:
-        ...
+    def groups_longest(self, size: int) -> AsyncIter[DynamicTuple[Option[T]]]: ...
 
     def groups_longest(self, size: int) -> AsyncIter[DynamicTuple[Option[T]]]:
         return self.create(async_groups_longest(size, self.iterator))
@@ -1796,44 +1738,34 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_pairs_windows(self.iterator))
 
     @overload
-    def tuple_windows(self, size: Literal[0]) -> AsyncIter[EmptyTuple]:
-        ...
+    def tuple_windows(self, size: Literal[0]) -> AsyncIter[EmptyTuple]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[1]) -> AsyncIter[Tuple1[T]]:
-        ...
+    def tuple_windows(self, size: Literal[1]) -> AsyncIter[Tuple1[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[2]) -> AsyncIter[Tuple2[T]]:
-        ...
+    def tuple_windows(self, size: Literal[2]) -> AsyncIter[Tuple2[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[3]) -> AsyncIter[Tuple3[T]]:
-        ...
+    def tuple_windows(self, size: Literal[3]) -> AsyncIter[Tuple3[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[4]) -> AsyncIter[Tuple4[T]]:
-        ...
+    def tuple_windows(self, size: Literal[4]) -> AsyncIter[Tuple4[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[5]) -> AsyncIter[Tuple5[T]]:
-        ...
+    def tuple_windows(self, size: Literal[5]) -> AsyncIter[Tuple5[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[6]) -> AsyncIter[Tuple6[T]]:
-        ...
+    def tuple_windows(self, size: Literal[6]) -> AsyncIter[Tuple6[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[7]) -> AsyncIter[Tuple7[T]]:
-        ...
+    def tuple_windows(self, size: Literal[7]) -> AsyncIter[Tuple7[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[8]) -> AsyncIter[Tuple8[T]]:
-        ...
+    def tuple_windows(self, size: Literal[8]) -> AsyncIter[Tuple8[T]]: ...
 
     @overload
-    def tuple_windows(self, size: int) -> AsyncIter[DynamicTuple[T]]:
-        ...
+    def tuple_windows(self, size: int) -> AsyncIter[DynamicTuple[T]]: ...
 
     def tuple_windows(self, size: int) -> AsyncIter[DynamicTuple[T]]:
         return self.create(async_tuple_windows(size, self.iterator))
@@ -1842,18 +1774,15 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_set_windows(size, self.iterator))
 
     @overload
-    def apply_zip(self) -> AsyncIter[Tuple[T]]:
-        ...
+    def apply_zip(self) -> AsyncIter[Tuple[T]]: ...
 
     @overload
-    def apply_zip(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]:
-        ...
+    def apply_zip(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]: ...
 
     @overload
     def apply_zip(
         self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[T, A, B]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B]]: ...
 
     @overload
     def apply_zip(
@@ -1861,8 +1790,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[T, A, B, C]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C]]: ...
 
     @overload
     def apply_zip(
@@ -1871,8 +1799,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[T, A, B, C, D]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D]]: ...
 
     @overload
     def apply_zip(
@@ -1882,8 +1809,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]: ...
 
     @overload
     def apply_zip(
@@ -1894,8 +1820,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]: ...
 
     @overload
     def apply_zip(
@@ -1907,8 +1832,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]: ...
 
     @overload
     def apply_zip(
@@ -1921,8 +1845,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
         __iterable_h: AnyIterable[H],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]: ...
 
     @overload
     def apply_zip(
@@ -1937,8 +1860,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Any]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]: ...
 
     def apply_zip(self, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
         return self.create(async_zip(self.iterator, *iterables))
@@ -1946,18 +1868,15 @@ class AsyncIter(AsyncIterator[T]):
     zip = mixed_method(create_zip, apply_zip)
 
     @overload
-    def apply_zip_equal(self) -> AsyncIter[Tuple[T]]:
-        ...
+    def apply_zip_equal(self) -> AsyncIter[Tuple[T]]: ...
 
     @overload
-    def apply_zip_equal(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]:
-        ...
+    def apply_zip_equal(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]: ...
 
     @overload
     def apply_zip_equal(
         self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[T, A, B]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B]]: ...
 
     @overload
     def apply_zip_equal(
@@ -1965,8 +1884,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[T, A, B, C]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C]]: ...
 
     @overload
     def apply_zip_equal(
@@ -1975,8 +1893,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[T, A, B, C, D]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D]]: ...
 
     @overload
     def apply_zip_equal(
@@ -1986,8 +1903,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]: ...
 
     @overload
     def apply_zip_equal(
@@ -1998,8 +1914,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2011,8 +1926,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2025,8 +1939,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
         __iterable_h: AnyIterable[H],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2041,8 +1954,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Any]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]: ...
 
     def apply_zip_equal(self, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
         return self.create(async_zip_equal(self.iterator, *iterables))
@@ -2050,20 +1962,17 @@ class AsyncIter(AsyncIterator[T]):
     zip_equal = mixed_method(create_zip_equal, apply_zip_equal)
 
     @overload
-    def apply_zip_longest(self) -> AsyncIter[Tuple[Option[T]]]:
-        ...
+    def apply_zip_longest(self) -> AsyncIter[Tuple[Option[T]]]: ...
 
     @overload
     def apply_zip_longest(
         self, __iterable_a: AnyIterable[A]
-    ) -> AsyncIter[Tuple[Option[T], Option[A]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[T], Option[A]]]: ...
 
     @overload
     def apply_zip_longest(
         self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B]]]: ...
 
     @overload
     def apply_zip_longest(
@@ -2071,8 +1980,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B], Option[C]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B], Option[C]]]: ...
 
     @overload
     def apply_zip_longest(
@@ -2081,8 +1989,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D]]]: ...
 
     @overload
     def apply_zip_longest(
@@ -2092,8 +1999,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D], Option[E]]]:
-        ...
+    ) -> AsyncIter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D], Option[E]]]: ...
 
     @overload
     def apply_zip_longest(
@@ -2114,8 +2020,7 @@ class AsyncIter(AsyncIterator[T]):
             Option[E],
             Option[F],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     def apply_zip_longest(
@@ -2138,8 +2043,7 @@ class AsyncIter(AsyncIterator[T]):
             Option[F],
             Option[G],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     def apply_zip_longest(
@@ -2164,8 +2068,7 @@ class AsyncIter(AsyncIterator[T]):
             Option[G],
             Option[H],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     def apply_zip_longest(
@@ -2180,8 +2083,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Option[Any]]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Option[Any]]]: ...
 
     def apply_zip_longest(
         self, *iterables: AnyIterable[Any]
@@ -2194,18 +2096,15 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_transpose(self.iterator))
 
     @overload
-    def apply_cartesian_product(self) -> AsyncIter[Tuple[T]]:
-        ...
+    def apply_cartesian_product(self) -> AsyncIter[Tuple[T]]: ...
 
     @overload
-    def apply_cartesian_product(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]:
-        ...
+    def apply_cartesian_product(self, __iterable_a: AnyIterable[A]) -> AsyncIter[Tuple[T, A]]: ...
 
     @overload
     def apply_cartesian_product(
         self, __iterable_a: AnyIterable[A], __iterable_b: AnyIterable[B]
-    ) -> AsyncIter[Tuple[T, A, B]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2213,8 +2112,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_a: AnyIterable[A],
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
-    ) -> AsyncIter[Tuple[T, A, B, C]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2223,8 +2121,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_b: AnyIterable[B],
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
-    ) -> AsyncIter[Tuple[T, A, B, C, D]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2234,8 +2131,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_c: AnyIterable[C],
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2246,8 +2142,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_d: AnyIterable[D],
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2259,8 +2154,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_e: AnyIterable[E],
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2273,8 +2167,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_f: AnyIterable[F],
         __iterable_g: AnyIterable[G],
         __iterable_h: AnyIterable[H],
-    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> AsyncIter[Tuple[T, A, B, C, D, E, F, G, H]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2289,8 +2182,7 @@ class AsyncIter(AsyncIterator[T]):
         __iterable_h: AnyIterable[Any],
         __iterable_n: AnyIterable[Any],
         *iterables: AnyIterable[Any],
-    ) -> AsyncIter[DynamicTuple[Any]]:
-        ...
+    ) -> AsyncIter[DynamicTuple[Any]]: ...
 
     def apply_cartesian_product(self, *iterables: AnyIterable[Any]) -> AsyncIter[DynamicTuple[Any]]:
         return self.create(async_cartesian_product(self.iterator, *iterables))
@@ -2298,126 +2190,97 @@ class AsyncIter(AsyncIterator[T]):
     cartesian_product = mixed_method(create_cartesian_product, apply_cartesian_product)
 
     @overload
-    def cartesian_power(self, power: Literal[0]) -> AsyncIter[EmptyTuple]:
-        ...
+    def cartesian_power(self, power: Literal[0]) -> AsyncIter[EmptyTuple]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[1]) -> AsyncIter[Tuple1[T]]:
-        ...
+    def cartesian_power(self, power: Literal[1]) -> AsyncIter[Tuple1[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[2]) -> AsyncIter[Tuple2[T]]:
-        ...
+    def cartesian_power(self, power: Literal[2]) -> AsyncIter[Tuple2[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[3]) -> AsyncIter[Tuple3[T]]:
-        ...
+    def cartesian_power(self, power: Literal[3]) -> AsyncIter[Tuple3[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[4]) -> AsyncIter[Tuple4[T]]:
-        ...
+    def cartesian_power(self, power: Literal[4]) -> AsyncIter[Tuple4[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[5]) -> AsyncIter[Tuple5[T]]:
-        ...
+    def cartesian_power(self, power: Literal[5]) -> AsyncIter[Tuple5[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[6]) -> AsyncIter[Tuple6[T]]:
-        ...
+    def cartesian_power(self, power: Literal[6]) -> AsyncIter[Tuple6[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[7]) -> AsyncIter[Tuple7[T]]:
-        ...
+    def cartesian_power(self, power: Literal[7]) -> AsyncIter[Tuple7[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[8]) -> AsyncIter[Tuple8[T]]:
-        ...
+    def cartesian_power(self, power: Literal[8]) -> AsyncIter[Tuple8[T]]: ...
 
     def cartesian_power(self, power: int) -> AsyncIter[DynamicTuple[T]]:
         return self.create(async_cartesian_power(power, self.iterator))
 
     @overload
-    def combinations(self, count: Literal[0]) -> AsyncIter[EmptyTuple]:
-        ...
+    def combinations(self, count: Literal[0]) -> AsyncIter[EmptyTuple]: ...
 
     @overload
-    def combinations(self, count: Literal[1]) -> AsyncIter[Tuple1[T]]:
-        ...
+    def combinations(self, count: Literal[1]) -> AsyncIter[Tuple1[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[2]) -> AsyncIter[Tuple2[T]]:
-        ...
+    def combinations(self, count: Literal[2]) -> AsyncIter[Tuple2[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[3]) -> AsyncIter[Tuple3[T]]:
-        ...
+    def combinations(self, count: Literal[3]) -> AsyncIter[Tuple3[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[4]) -> AsyncIter[Tuple4[T]]:
-        ...
+    def combinations(self, count: Literal[4]) -> AsyncIter[Tuple4[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[5]) -> AsyncIter[Tuple5[T]]:
-        ...
+    def combinations(self, count: Literal[5]) -> AsyncIter[Tuple5[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[6]) -> AsyncIter[Tuple6[T]]:
-        ...
+    def combinations(self, count: Literal[6]) -> AsyncIter[Tuple6[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[7]) -> AsyncIter[Tuple7[T]]:
-        ...
+    def combinations(self, count: Literal[7]) -> AsyncIter[Tuple7[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[8]) -> AsyncIter[Tuple8[T]]:
-        ...
+    def combinations(self, count: Literal[8]) -> AsyncIter[Tuple8[T]]: ...
 
     @overload
-    def combinations(self, count: int) -> AsyncIter[DynamicTuple[T]]:
-        ...
+    def combinations(self, count: int) -> AsyncIter[DynamicTuple[T]]: ...
 
     def combinations(self, count: int) -> AsyncIter[DynamicTuple[T]]:
         return self.create(async_combinations(count, self.iterator))
 
     @overload
-    def combinations_with_replacement(self, count: Literal[0]) -> AsyncIter[EmptyTuple]:
-        ...
+    def combinations_with_replacement(self, count: Literal[0]) -> AsyncIter[EmptyTuple]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[1]) -> AsyncIter[Tuple1[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[1]) -> AsyncIter[Tuple1[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[2]) -> AsyncIter[Tuple2[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[2]) -> AsyncIter[Tuple2[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[3]) -> AsyncIter[Tuple3[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[3]) -> AsyncIter[Tuple3[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[4]) -> AsyncIter[Tuple4[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[4]) -> AsyncIter[Tuple4[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[5]) -> AsyncIter[Tuple5[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[5]) -> AsyncIter[Tuple5[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[6]) -> AsyncIter[Tuple6[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[6]) -> AsyncIter[Tuple6[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[7]) -> AsyncIter[Tuple7[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[7]) -> AsyncIter[Tuple7[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[8]) -> AsyncIter[Tuple8[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[8]) -> AsyncIter[Tuple8[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: int) -> AsyncIter[DynamicTuple[T]]:
-        ...
+    def combinations_with_replacement(self, count: int) -> AsyncIter[DynamicTuple[T]]: ...
 
     def combinations_with_replacement(self, count: int) -> AsyncIter[DynamicTuple[T]]:
         return self.create(async_combinations_with_replacement(count, self.iterator))
@@ -2426,44 +2289,34 @@ class AsyncIter(AsyncIterator[T]):
         return self.create(async_permute(self.iterator))
 
     @overload
-    def permutations(self, count: Literal[0]) -> AsyncIter[EmptyTuple]:
-        ...
+    def permutations(self, count: Literal[0]) -> AsyncIter[EmptyTuple]: ...
 
     @overload
-    def permutations(self, count: Literal[1]) -> AsyncIter[Tuple1[T]]:
-        ...
+    def permutations(self, count: Literal[1]) -> AsyncIter[Tuple1[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[2]) -> AsyncIter[Tuple2[T]]:
-        ...
+    def permutations(self, count: Literal[2]) -> AsyncIter[Tuple2[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[3]) -> AsyncIter[Tuple3[T]]:
-        ...
+    def permutations(self, count: Literal[3]) -> AsyncIter[Tuple3[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[4]) -> AsyncIter[Tuple4[T]]:
-        ...
+    def permutations(self, count: Literal[4]) -> AsyncIter[Tuple4[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[5]) -> AsyncIter[Tuple5[T]]:
-        ...
+    def permutations(self, count: Literal[5]) -> AsyncIter[Tuple5[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[6]) -> AsyncIter[Tuple6[T]]:
-        ...
+    def permutations(self, count: Literal[6]) -> AsyncIter[Tuple6[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[7]) -> AsyncIter[Tuple7[T]]:
-        ...
+    def permutations(self, count: Literal[7]) -> AsyncIter[Tuple7[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[8]) -> AsyncIter[Tuple8[T]]:
-        ...
+    def permutations(self, count: Literal[8]) -> AsyncIter[Tuple8[T]]: ...
 
     @overload
-    def permutations(self, count: int) -> AsyncIter[DynamicTuple[T]]:
-        ...
+    def permutations(self, count: int) -> AsyncIter[DynamicTuple[T]]: ...
 
     def permutations(self, count: int) -> AsyncIter[DynamicTuple[T]]:
         return self.create(async_permutations(count, self.iterator))

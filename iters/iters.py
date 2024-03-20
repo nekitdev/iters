@@ -236,7 +236,9 @@ def groups_longest(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[Op
 
 
 def pairs_longest(iterable: Iterable[T]) -> Iterator[Pair[Option[T]]]:
-    return wrap_marked_iterable(standard_pairs_longest(iterable, marker))  # type: ignore
+    return wrap_marked_iterable(  # type: ignore[return-value]
+        standard_pairs_longest(iterable, marker)
+    )
 
 
 class Iter(Iterator[T]):
@@ -764,25 +766,23 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip(cls) -> Iter[T]:
-        ...
+    def create_zip(cls) -> Iter[T]: ...
 
     @overload
     @classmethod
-    def create_zip(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
-        ...
+    def create_zip(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]: ...
 
     @overload
     @classmethod
-    def create_zip(cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iter[Tuple[A, B]]:
-        ...
+    def create_zip(
+        cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
+    ) -> Iter[Tuple[A, B]]: ...
 
     @overload
     @classmethod
     def create_zip(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[A, B, C]]:
-        ...
+    ) -> Iter[Tuple[A, B, C]]: ...
 
     @overload
     @classmethod
@@ -792,8 +792,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[A, B, C, D]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D]]: ...
 
     @overload
     @classmethod
@@ -804,8 +803,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[A, B, C, D, E]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E]]: ...
 
     @overload
     @classmethod
@@ -817,8 +815,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[A, B, C, D, E, F]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F]]: ...
 
     @overload
     @classmethod
@@ -831,8 +828,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
-    ) -> Iter[Tuple[A, B, C, D, E, F, G]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F, G]]: ...
 
     @overload
     @classmethod
@@ -846,8 +842,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
-    ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]: ...
 
     @overload
     @classmethod
@@ -863,8 +858,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Any]]:
-        ...
+    ) -> Iter[DynamicTuple[Any]]: ...
 
     @no_type_check
     @classmethod
@@ -894,27 +888,23 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip_equal(cls) -> Iter[T]:
-        ...
+    def create_zip_equal(cls) -> Iter[T]: ...
 
     @overload
     @classmethod
-    def create_zip_equal(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
-        ...
+    def create_zip_equal(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]: ...
 
     @overload
     @classmethod
     def create_zip_equal(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-    ) -> Iter[Tuple[A, B]]:
-        ...
+    ) -> Iter[Tuple[A, B]]: ...
 
     @overload
     @classmethod
     def create_zip_equal(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[A, B, C]]:
-        ...
+    ) -> Iter[Tuple[A, B, C]]: ...
 
     @overload
     @classmethod
@@ -924,8 +914,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[A, B, C, D]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D]]: ...
 
     @overload
     @classmethod
@@ -936,8 +925,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[A, B, C, D, E]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E]]: ...
 
     @overload
     @classmethod
@@ -949,8 +937,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[A, B, C, D, E, F]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F]]: ...
 
     @overload
     @classmethod
@@ -963,8 +950,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
-    ) -> Iter[Tuple[A, B, C, D, E, F, G]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F, G]]: ...
 
     @overload
     @classmethod
@@ -978,8 +964,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
-    ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]: ...
 
     @overload
     @classmethod
@@ -995,8 +980,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Any]]:
-        ...
+    ) -> Iter[DynamicTuple[Any]]: ...
 
     @no_type_check
     @classmethod
@@ -1028,27 +1012,23 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_zip_longest(cls) -> Iter[T]:
-        ...
+    def create_zip_longest(cls) -> Iter[T]: ...
 
     @overload
     @classmethod
-    def create_zip_longest(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[Option[A]]]:
-        ...
+    def create_zip_longest(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[Option[A]]]: ...
 
     @overload
     @classmethod
     def create_zip_longest(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-    ) -> Iter[Tuple[Option[A], Option[B]]]:
-        ...
+    ) -> Iter[Tuple[Option[A], Option[B]]]: ...
 
     @overload
     @classmethod
     def create_zip_longest(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[Option[A], Option[B], Option[C]]]:
-        ...
+    ) -> Iter[Tuple[Option[A], Option[B], Option[C]]]: ...
 
     @overload
     @classmethod
@@ -1058,8 +1038,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[Option[A], Option[B], Option[C], Option[D]]]:
-        ...
+    ) -> Iter[Tuple[Option[A], Option[B], Option[C], Option[D]]]: ...
 
     @overload
     @classmethod
@@ -1070,8 +1049,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E]]]:
-        ...
+    ) -> Iter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E]]]: ...
 
     @overload
     @classmethod
@@ -1083,8 +1061,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E], Option[F]]]:
-        ...
+    ) -> Iter[Tuple[Option[A], Option[B], Option[C], Option[D], Option[E], Option[F]]]: ...
 
     @overload
     @classmethod
@@ -1107,8 +1084,7 @@ class Iter(Iterator[T]):
             Option[F],
             Option[G],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     @classmethod
@@ -1133,8 +1109,7 @@ class Iter(Iterator[T]):
             Option[G],
             Option[H],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     @classmethod
@@ -1150,8 +1125,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Option[Any]]]:
-        ...
+    ) -> Iter[DynamicTuple[Option[Any]]]: ...
 
     @no_type_check
     @classmethod
@@ -1190,27 +1164,23 @@ class Iter(Iterator[T]):
 
     @overload
     @classmethod
-    def create_cartesian_product(cls) -> Iter[EmptyTuple]:
-        ...
+    def create_cartesian_product(cls) -> Iter[EmptyTuple]: ...
 
     @overload
     @classmethod
-    def create_cartesian_product(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]:
-        ...
+    def create_cartesian_product(cls, __iterable_a: Iterable[A]) -> Iter[Tuple[A]]: ...
 
     @overload
     @classmethod
     def create_cartesian_product(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-    ) -> Iter[Tuple[A, B]]:
-        ...
+    ) -> Iter[Tuple[A, B]]: ...
 
     @overload
     @classmethod
     def create_cartesian_product(
         cls, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[A, B, C]]:
-        ...
+    ) -> Iter[Tuple[A, B, C]]: ...
 
     @overload
     @classmethod
@@ -1220,8 +1190,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[A, B, C, D]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D]]: ...
 
     @overload
     @classmethod
@@ -1232,8 +1201,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[A, B, C, D, E]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E]]: ...
 
     @overload
     @classmethod
@@ -1245,8 +1213,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[A, B, C, D, E, F]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F]]: ...
 
     @overload
     @classmethod
@@ -1259,8 +1226,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
-    ) -> Iter[Tuple[A, B, C, D, E, F, G]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F, G]]: ...
 
     @overload
     @classmethod
@@ -1274,8 +1240,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
-    ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> Iter[Tuple[A, B, C, D, E, F, G, H]]: ...
 
     @overload
     @classmethod
@@ -1291,8 +1256,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Any]]:
-        ...
+    ) -> Iter[DynamicTuple[Any]]: ...
 
     @no_type_check
     @classmethod
@@ -1375,19 +1339,19 @@ class Iter(Iterator[T]):
 
     @classmethod
     def create(cls, iterable: Iterable[U]) -> Iter[U]:
-        return cls(iterable)  # type: ignore
+        return cls(iterable)  # type: ignore[arg-type, return-value]
 
     @classmethod
     def create_tuple(cls, iterables: DynamicTuple[Iterable[U]]) -> DynamicTuple[Iter[U]]:
-        return tuple(map(cls, iterables))  # type: ignore
+        return tuple(map(cls, iterables))  # type: ignore[arg-type]
 
     @classmethod
     def create_nested(cls, nested: Iterable[Iterable[U]]) -> Iter[Iter[U]]:
-        return cls(map(cls, nested))  # type: ignore
+        return cls(map(cls, nested))  # type: ignore[arg-type, return-value]
 
     @classmethod
     def create_option(cls, option: Option[Iterable[U]]) -> Option[Iter[U]]:
-        return option.map(cls)  # type: ignore
+        return option.map(cls)  # type: ignore[arg-type]
 
     def __iter__(self) -> Iter[T]:
         return self
@@ -2014,7 +1978,13 @@ class Iter(Iterator[T]):
     def flatten(self: Iter[Iterable[U]]) -> Iter[U]:
         return self.create(flatten(self.iterator))
 
-    def collapse(self: Iter[RecursiveIterable[U]]) -> Iter[U]:
+    @overload
+    def collapse(self: Iter[RecursiveIterable[AnyStr]]) -> Iter[AnyStr]: ...
+
+    @overload
+    def collapse(self: Iter[RecursiveIterable[U]]) -> Iter[U]: ...
+
+    def collapse(self: Iter[RecursiveIterable[Any]]) -> Iter[Any]:
         return self.create(collapse(self.iterator))
 
     def enumerate(self) -> Iter[Tuple[int, T]]:
@@ -2042,14 +2012,12 @@ class Iter(Iterator[T]):
         return wrap_marked(at_or_last(index, self.iterator, marker))
 
     @overload
-    def slice(self, __stop: Optional[int]) -> Iter[T]:
-        ...
+    def slice(self, __stop: Optional[int]) -> Iter[T]: ...
 
     @overload
     def slice(
         self, __start: Optional[int], __stop: Optional[int], __step: Optional[int] = ...
-    ) -> Iter[T]:
-        ...
+    ) -> Iter[T]: ...
 
     def slice(self, *slice_args: Optional[int]) -> Iter[T]:
         return self.create(iter_slice(self.iterator, *slice_args))
@@ -2114,44 +2082,34 @@ class Iter(Iterator[T]):
     combine = mixed_method(create_combine, apply_combine)
 
     @overload
-    def distribute_unsafe(self, count: Literal[0]) -> EmptyTuple:
-        ...
+    def distribute_unsafe(self, count: Literal[0]) -> EmptyTuple: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[1]) -> Tuple1[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[1]) -> Tuple1[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[2]) -> Tuple2[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[2]) -> Tuple2[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[3]) -> Tuple3[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[3]) -> Tuple3[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[4]) -> Tuple4[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[4]) -> Tuple4[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[5]) -> Tuple5[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[5]) -> Tuple5[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[6]) -> Tuple6[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[6]) -> Tuple6[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[7]) -> Tuple7[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[7]) -> Tuple7[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: Literal[8]) -> Tuple8[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: Literal[8]) -> Tuple8[Iter[T]]: ...
 
     @overload
-    def distribute_unsafe(self, count: int) -> DynamicTuple[Iter[T]]:
-        ...
+    def distribute_unsafe(self, count: int) -> DynamicTuple[Iter[T]]: ...
 
     def distribute_unsafe(self, count: int) -> DynamicTuple[Iter[T]]:
         return self.create_tuple(distribute_unsafe(count, self.iterator))
@@ -2159,44 +2117,34 @@ class Iter(Iterator[T]):
     distribute_infinite = distribute_unsafe
 
     @overload
-    def distribute(self, count: Literal[0]) -> EmptyTuple:
-        ...
+    def distribute(self, count: Literal[0]) -> EmptyTuple: ...
 
     @overload
-    def distribute(self, count: Literal[1]) -> Tuple1[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[1]) -> Tuple1[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[2]) -> Tuple2[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[2]) -> Tuple2[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[3]) -> Tuple3[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[3]) -> Tuple3[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[4]) -> Tuple4[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[4]) -> Tuple4[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[5]) -> Tuple5[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[5]) -> Tuple5[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[6]) -> Tuple6[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[6]) -> Tuple6[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[7]) -> Tuple7[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[7]) -> Tuple7[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: Literal[8]) -> Tuple8[Iter[T]]:
-        ...
+    def distribute(self, count: Literal[8]) -> Tuple8[Iter[T]]: ...
 
     @overload
-    def distribute(self, count: int) -> DynamicTuple[Iter[T]]:
-        ...
+    def distribute(self, count: int) -> DynamicTuple[Iter[T]]: ...
 
     def distribute(self, count: int) -> DynamicTuple[Iter[T]]:
         return self.create_tuple(distribute(count, self.iterator))
@@ -2234,87 +2182,67 @@ class Iter(Iterator[T]):
     iter_chunks_infinite = iter_chunks_unsafe
 
     @overload
-    def groups(self, size: Literal[0]) -> Iter[Never]:
-        ...
+    def groups(self, size: Literal[0]) -> Iter[Never]: ...
 
     @overload
-    def groups(self, size: Literal[1]) -> Iter[Tuple1[T]]:
-        ...
+    def groups(self, size: Literal[1]) -> Iter[Tuple1[T]]: ...
 
     @overload
-    def groups(self, size: Literal[2]) -> Iter[Tuple2[T]]:
-        ...
+    def groups(self, size: Literal[2]) -> Iter[Tuple2[T]]: ...
 
     @overload
-    def groups(self, size: Literal[3]) -> Iter[Tuple3[T]]:
-        ...
+    def groups(self, size: Literal[3]) -> Iter[Tuple3[T]]: ...
 
     @overload
-    def groups(self, size: Literal[4]) -> Iter[Tuple4[T]]:
-        ...
+    def groups(self, size: Literal[4]) -> Iter[Tuple4[T]]: ...
 
     @overload
-    def groups(self, size: Literal[5]) -> Iter[Tuple5[T]]:
-        ...
+    def groups(self, size: Literal[5]) -> Iter[Tuple5[T]]: ...
 
     @overload
-    def groups(self, size: Literal[6]) -> Iter[Tuple6[T]]:
-        ...
+    def groups(self, size: Literal[6]) -> Iter[Tuple6[T]]: ...
 
     @overload
-    def groups(self, size: Literal[7]) -> Iter[Tuple7[T]]:
-        ...
+    def groups(self, size: Literal[7]) -> Iter[Tuple7[T]]: ...
 
     @overload
-    def groups(self, size: Literal[8]) -> Iter[Tuple8[T]]:
-        ...
+    def groups(self, size: Literal[8]) -> Iter[Tuple8[T]]: ...
 
     @overload
-    def groups(self, size: int) -> Iter[DynamicTuple[T]]:
-        ...
+    def groups(self, size: int) -> Iter[DynamicTuple[T]]: ...
 
     def groups(self, size: int) -> Iter[DynamicTuple[T]]:
         return self.create(groups(size, self.iterator))
 
     @overload
-    def groups_longest(self, size: Literal[0]) -> Iter[Never]:
-        ...
+    def groups_longest(self, size: Literal[0]) -> Iter[Never]: ...
 
     @overload
-    def groups_longest(self, size: Literal[1]) -> Iter[Tuple1[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[1]) -> Iter[Tuple1[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[2]) -> Iter[Tuple2[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[2]) -> Iter[Tuple2[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[3]) -> Iter[Tuple3[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[3]) -> Iter[Tuple3[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[4]) -> Iter[Tuple4[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[4]) -> Iter[Tuple4[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[5]) -> Iter[Tuple5[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[5]) -> Iter[Tuple5[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[6]) -> Iter[Tuple6[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[6]) -> Iter[Tuple6[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[7]) -> Iter[Tuple7[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[7]) -> Iter[Tuple7[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: Literal[8]) -> Iter[Tuple8[Option[T]]]:
-        ...
+    def groups_longest(self, size: Literal[8]) -> Iter[Tuple8[Option[T]]]: ...
 
     @overload
-    def groups_longest(self, size: int) -> Iter[DynamicTuple[Option[T]]]:
-        ...
+    def groups_longest(self, size: int) -> Iter[DynamicTuple[Option[T]]]: ...
 
     def groups_longest(self, size: int) -> Iter[DynamicTuple[Option[T]]]:
         return self.create(groups_longest(size, self.iterator))
@@ -2335,44 +2263,34 @@ class Iter(Iterator[T]):
         return self.create(pairs_windows(self.iterator))
 
     @overload
-    def tuple_windows(self, size: Literal[0]) -> Iter[EmptyTuple]:
-        ...
+    def tuple_windows(self, size: Literal[0]) -> Iter[EmptyTuple]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[1]) -> Iter[Tuple1[T]]:
-        ...
+    def tuple_windows(self, size: Literal[1]) -> Iter[Tuple1[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[2]) -> Iter[Tuple2[T]]:
-        ...
+    def tuple_windows(self, size: Literal[2]) -> Iter[Tuple2[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[3]) -> Iter[Tuple3[T]]:
-        ...
+    def tuple_windows(self, size: Literal[3]) -> Iter[Tuple3[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[4]) -> Iter[Tuple4[T]]:
-        ...
+    def tuple_windows(self, size: Literal[4]) -> Iter[Tuple4[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[5]) -> Iter[Tuple5[T]]:
-        ...
+    def tuple_windows(self, size: Literal[5]) -> Iter[Tuple5[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[6]) -> Iter[Tuple6[T]]:
-        ...
+    def tuple_windows(self, size: Literal[6]) -> Iter[Tuple6[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[7]) -> Iter[Tuple7[T]]:
-        ...
+    def tuple_windows(self, size: Literal[7]) -> Iter[Tuple7[T]]: ...
 
     @overload
-    def tuple_windows(self, size: Literal[8]) -> Iter[Tuple8[T]]:
-        ...
+    def tuple_windows(self, size: Literal[8]) -> Iter[Tuple8[T]]: ...
 
     @overload
-    def tuple_windows(self, size: int) -> Iter[DynamicTuple[T]]:
-        ...
+    def tuple_windows(self, size: int) -> Iter[DynamicTuple[T]]: ...
 
     def tuple_windows(self, size: int) -> Iter[DynamicTuple[T]]:
         return self.create(tuple_windows(size, self.iterator))
@@ -2381,24 +2299,20 @@ class Iter(Iterator[T]):
         return self.create(set_windows(size, self.iterator))
 
     @overload
-    def apply_zip(self) -> Iter[Tuple[T]]:
-        ...
+    def apply_zip(self) -> Iter[Tuple[T]]: ...
 
     @overload
-    def apply_zip(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]:
-        ...
+    def apply_zip(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]: ...
 
     @overload
     def apply_zip(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-    ) -> Iter[Tuple[T, A, B]]:
-        ...
+    ) -> Iter[Tuple[T, A, B]]: ...
 
     @overload
     def apply_zip(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[T, A, B, C]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C]]: ...
 
     @overload
     def apply_zip(
@@ -2407,8 +2321,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[T, A, B, C, D]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D]]: ...
 
     @overload
     def apply_zip(
@@ -2418,8 +2331,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[T, A, B, C, D, E]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E]]: ...
 
     @overload
     def apply_zip(
@@ -2430,8 +2342,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F]]: ...
 
     @overload
     def apply_zip(
@@ -2443,8 +2354,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]: ...
 
     @overload
     def apply_zip(
@@ -2457,8 +2367,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]: ...
 
     @overload
     def apply_zip(
@@ -2473,8 +2382,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Any]]:
-        ...
+    ) -> Iter[DynamicTuple[Any]]: ...
 
     def apply_zip(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
         return self.create(zip(self.iterator, *iterables))
@@ -2482,24 +2390,20 @@ class Iter(Iterator[T]):
     zip = mixed_method(create_zip, apply_zip)
 
     @overload
-    def apply_zip_equal(self) -> Iter[Tuple[T]]:
-        ...
+    def apply_zip_equal(self) -> Iter[Tuple[T]]: ...
 
     @overload
-    def apply_zip_equal(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]:
-        ...
+    def apply_zip_equal(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]: ...
 
     @overload
     def apply_zip_equal(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-    ) -> Iter[Tuple[T, A, B]]:
-        ...
+    ) -> Iter[Tuple[T, A, B]]: ...
 
     @overload
     def apply_zip_equal(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[T, A, B, C]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2508,8 +2412,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[T, A, B, C, D]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2519,8 +2422,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[T, A, B, C, D, E]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2531,8 +2433,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2544,8 +2445,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2558,8 +2458,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]: ...
 
     @overload
     def apply_zip_equal(
@@ -2574,8 +2473,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Any]]:
-        ...
+    ) -> Iter[DynamicTuple[Any]]: ...
 
     def apply_zip_equal(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
         return self.create(zip_equal(self.iterator, *iterables))
@@ -2583,24 +2481,20 @@ class Iter(Iterator[T]):
     zip_equal = mixed_method(create_zip_equal, apply_zip_equal)
 
     @overload
-    def apply_zip_longest(self) -> Iter[Tuple[Option[T]]]:
-        ...
+    def apply_zip_longest(self) -> Iter[Tuple[Option[T]]]: ...
 
     @overload
-    def apply_zip_longest(self, __iterable_a: Iterable[A]) -> Iter[Tuple[Option[T], Option[A]]]:
-        ...
+    def apply_zip_longest(self, __iterable_a: Iterable[A]) -> Iter[Tuple[Option[T], Option[A]]]: ...
 
     @overload
     def apply_zip_longest(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-    ) -> Iter[Tuple[Option[T], Option[A], Option[B]]]:
-        ...
+    ) -> Iter[Tuple[Option[T], Option[A], Option[B]]]: ...
 
     @overload
     def apply_zip_longest(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[Option[T], Option[A], Option[B], Option[C]]]:
-        ...
+    ) -> Iter[Tuple[Option[T], Option[A], Option[B], Option[C]]]: ...
 
     @overload
     def apply_zip_longest(
@@ -2609,8 +2503,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D]]]:
-        ...
+    ) -> Iter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D]]]: ...
 
     @overload
     def apply_zip_longest(
@@ -2620,8 +2513,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D], Option[E]]]:
-        ...
+    ) -> Iter[Tuple[Option[T], Option[A], Option[B], Option[C], Option[D], Option[E]]]: ...
 
     @overload
     def apply_zip_longest(
@@ -2642,8 +2534,7 @@ class Iter(Iterator[T]):
             Option[E],
             Option[F],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     def apply_zip_longest(
@@ -2666,8 +2557,7 @@ class Iter(Iterator[T]):
             Option[F],
             Option[G],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     def apply_zip_longest(
@@ -2692,8 +2582,7 @@ class Iter(Iterator[T]):
             Option[G],
             Option[H],
         ]
-    ]:
-        ...
+    ]: ...
 
     @overload
     def apply_zip_longest(
@@ -2708,8 +2597,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Option[Any]]]:
-        ...
+    ) -> Iter[DynamicTuple[Option[Any]]]: ...
 
     def apply_zip_longest(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Option[Any]]]:
         return self.create(zip_longest(self.iterator, *iterables))
@@ -2720,24 +2608,20 @@ class Iter(Iterator[T]):
         return self.create(transpose(self.iterator))
 
     @overload
-    def apply_cartesian_product(self) -> Iter[Tuple[T]]:
-        ...
+    def apply_cartesian_product(self) -> Iter[Tuple[T]]: ...
 
     @overload
-    def apply_cartesian_product(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]:
-        ...
+    def apply_cartesian_product(self, __iterable_a: Iterable[A]) -> Iter[Tuple[T, A]]: ...
 
     @overload
     def apply_cartesian_product(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-    ) -> Iter[Tuple[T, A, B]]:
-        ...
+    ) -> Iter[Tuple[T, A, B]]: ...
 
     @overload
     def apply_cartesian_product(
         self, __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-    ) -> Iter[Tuple[T, A, B, C]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2746,8 +2630,7 @@ class Iter(Iterator[T]):
         __iterable_b: Iterable[B],
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
-    ) -> Iter[Tuple[T, A, B, C, D]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2757,8 +2640,7 @@ class Iter(Iterator[T]):
         __iterable_c: Iterable[C],
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
-    ) -> Iter[Tuple[T, A, B, C, D, E]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2769,8 +2651,7 @@ class Iter(Iterator[T]):
         __iterable_d: Iterable[D],
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2782,8 +2663,7 @@ class Iter(Iterator[T]):
         __iterable_e: Iterable[E],
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2796,8 +2676,7 @@ class Iter(Iterator[T]):
         __iterable_f: Iterable[F],
         __iterable_g: Iterable[G],
         __iterable_h: Iterable[H],
-    ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]:
-        ...
+    ) -> Iter[Tuple[T, A, B, C, D, E, F, G, H]]: ...
 
     @overload
     def apply_cartesian_product(
@@ -2812,8 +2691,7 @@ class Iter(Iterator[T]):
         __iterable_h: Iterable[Any],
         __iterable_n: Iterable[Any],
         *iterables: Iterable[Any],
-    ) -> Iter[DynamicTuple[Any]]:
-        ...
+    ) -> Iter[DynamicTuple[Any]]: ...
 
     def apply_cartesian_product(self, *iterables: Iterable[Any]) -> Iter[DynamicTuple[Any]]:
         return self.create(cartesian_product(self.iterator, *iterables))
@@ -2821,40 +2699,31 @@ class Iter(Iterator[T]):
     cartesian_product = mixed_method(create_cartesian_product, apply_cartesian_product)
 
     @overload
-    def cartesian_power(self, power: Literal[0]) -> Iter[EmptyTuple]:
-        ...
+    def cartesian_power(self, power: Literal[0]) -> Iter[EmptyTuple]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[1]) -> Iter[Tuple1[T]]:
-        ...
+    def cartesian_power(self, power: Literal[1]) -> Iter[Tuple1[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[2]) -> Iter[Tuple2[T]]:
-        ...
+    def cartesian_power(self, power: Literal[2]) -> Iter[Tuple2[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[3]) -> Iter[Tuple3[T]]:
-        ...
+    def cartesian_power(self, power: Literal[3]) -> Iter[Tuple3[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[4]) -> Iter[Tuple4[T]]:
-        ...
+    def cartesian_power(self, power: Literal[4]) -> Iter[Tuple4[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[5]) -> Iter[Tuple5[T]]:
-        ...
+    def cartesian_power(self, power: Literal[5]) -> Iter[Tuple5[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[6]) -> Iter[Tuple6[T]]:
-        ...
+    def cartesian_power(self, power: Literal[6]) -> Iter[Tuple6[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[7]) -> Iter[Tuple7[T]]:
-        ...
+    def cartesian_power(self, power: Literal[7]) -> Iter[Tuple7[T]]: ...
 
     @overload
-    def cartesian_power(self, power: Literal[8]) -> Iter[Tuple8[T]]:
-        ...
+    def cartesian_power(self, power: Literal[8]) -> Iter[Tuple8[T]]: ...
 
     def cartesian_power(self, power: int) -> Iter[DynamicTuple[T]]:
         """Creates an iterator over the
@@ -2882,87 +2751,67 @@ class Iter(Iterator[T]):
         return self.create(cartesian_power(power, self.iterator))
 
     @overload
-    def combinations(self, count: Literal[0]) -> Iter[EmptyTuple]:
-        ...
+    def combinations(self, count: Literal[0]) -> Iter[EmptyTuple]: ...
 
     @overload
-    def combinations(self, count: Literal[1]) -> Iter[Tuple1[T]]:
-        ...
+    def combinations(self, count: Literal[1]) -> Iter[Tuple1[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[2]) -> Iter[Tuple2[T]]:
-        ...
+    def combinations(self, count: Literal[2]) -> Iter[Tuple2[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[3]) -> Iter[Tuple3[T]]:
-        ...
+    def combinations(self, count: Literal[3]) -> Iter[Tuple3[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[4]) -> Iter[Tuple4[T]]:
-        ...
+    def combinations(self, count: Literal[4]) -> Iter[Tuple4[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[5]) -> Iter[Tuple5[T]]:
-        ...
+    def combinations(self, count: Literal[5]) -> Iter[Tuple5[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[6]) -> Iter[Tuple6[T]]:
-        ...
+    def combinations(self, count: Literal[6]) -> Iter[Tuple6[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[7]) -> Iter[Tuple7[T]]:
-        ...
+    def combinations(self, count: Literal[7]) -> Iter[Tuple7[T]]: ...
 
     @overload
-    def combinations(self, count: Literal[8]) -> Iter[Tuple8[T]]:
-        ...
+    def combinations(self, count: Literal[8]) -> Iter[Tuple8[T]]: ...
 
     @overload
-    def combinations(self, count: int) -> Iter[DynamicTuple[T]]:
-        ...
+    def combinations(self, count: int) -> Iter[DynamicTuple[T]]: ...
 
     def combinations(self, count: int) -> Iter[DynamicTuple[T]]:
         return self.create(combinations(count, self.iterator))
 
     @overload
-    def combinations_with_replacement(self, count: Literal[0]) -> Iter[EmptyTuple]:
-        ...
+    def combinations_with_replacement(self, count: Literal[0]) -> Iter[EmptyTuple]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[1]) -> Iter[Tuple1[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[1]) -> Iter[Tuple1[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[2]) -> Iter[Tuple2[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[2]) -> Iter[Tuple2[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[3]) -> Iter[Tuple3[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[3]) -> Iter[Tuple3[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[4]) -> Iter[Tuple4[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[4]) -> Iter[Tuple4[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[5]) -> Iter[Tuple5[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[5]) -> Iter[Tuple5[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[6]) -> Iter[Tuple6[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[6]) -> Iter[Tuple6[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[7]) -> Iter[Tuple7[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[7]) -> Iter[Tuple7[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: Literal[8]) -> Iter[Tuple8[T]]:
-        ...
+    def combinations_with_replacement(self, count: Literal[8]) -> Iter[Tuple8[T]]: ...
 
     @overload
-    def combinations_with_replacement(self, count: int) -> Iter[DynamicTuple[T]]:
-        ...
+    def combinations_with_replacement(self, count: int) -> Iter[DynamicTuple[T]]: ...
 
     def combinations_with_replacement(self, count: int) -> Iter[DynamicTuple[T]]:
         return self.create(combinations_with_replacement(count, self.iterator))
@@ -2971,44 +2820,34 @@ class Iter(Iterator[T]):
         return self.create(permute(self.iterator))
 
     @overload
-    def permutations(self, count: Literal[0]) -> Iter[EmptyTuple]:
-        ...
+    def permutations(self, count: Literal[0]) -> Iter[EmptyTuple]: ...
 
     @overload
-    def permutations(self, count: Literal[1]) -> Iter[Tuple1[T]]:
-        ...
+    def permutations(self, count: Literal[1]) -> Iter[Tuple1[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[2]) -> Iter[Tuple2[T]]:
-        ...
+    def permutations(self, count: Literal[2]) -> Iter[Tuple2[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[3]) -> Iter[Tuple3[T]]:
-        ...
+    def permutations(self, count: Literal[3]) -> Iter[Tuple3[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[4]) -> Iter[Tuple4[T]]:
-        ...
+    def permutations(self, count: Literal[4]) -> Iter[Tuple4[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[5]) -> Iter[Tuple5[T]]:
-        ...
+    def permutations(self, count: Literal[5]) -> Iter[Tuple5[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[6]) -> Iter[Tuple6[T]]:
-        ...
+    def permutations(self, count: Literal[6]) -> Iter[Tuple6[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[7]) -> Iter[Tuple7[T]]:
-        ...
+    def permutations(self, count: Literal[7]) -> Iter[Tuple7[T]]: ...
 
     @overload
-    def permutations(self, count: Literal[8]) -> Iter[Tuple8[T]]:
-        ...
+    def permutations(self, count: Literal[8]) -> Iter[Tuple8[T]]: ...
 
     @overload
-    def permutations(self, count: int) -> Iter[DynamicTuple[T]]:
-        ...
+    def permutations(self, count: int) -> Iter[DynamicTuple[T]]: ...
 
     def permutations(self, count: int) -> Iter[DynamicTuple[T]]:
         return self.create(permutations(count, self.iterator))

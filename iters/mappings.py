@@ -9,13 +9,11 @@ T = TypeVar("T")
 
 
 @overload
-def merge(*mappings: Mapping[Q, T]) -> Dict[Q, T]:
-    ...
+def merge(*mappings: Mapping[Q, T]) -> Dict[Q, T]: ...
 
 
 @overload
-def merge(*mappings: StringMapping[T], **keywords: T) -> StringDict[T]:
-    ...
+def merge(*mappings: StringMapping[T], **keywords: T) -> StringDict[T]: ...
 
 
 def merge(*mappings: Mapping[Any, Any], **keywords: Any) -> Dict[Any, Any]:

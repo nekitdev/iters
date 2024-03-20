@@ -28,6 +28,7 @@ from operator import le as less_or_equal
 from operator import lt as less
 from typing import (
     Any,
+    AnyStr,
     ContextManager,
     Counter,
     Dict,
@@ -69,11 +70,12 @@ from typing_aliases import (
     Unary,
     Validate,
     is_bytes,
+    is_reversible,
     is_string,
 )
 from typing_extensions import Never
 
-from iters.types import is_marker, is_no_default, is_not_marker, marker, no_default
+from iters.types import is_marker, is_no_default, marker, no_default
 from iters.typing import OptionalPredicate, Product, Sum
 
 __all__ = (
@@ -255,13 +257,15 @@ skip_while = drop_while
 
 
 @overload
-def compare(left_iterable: Iterable[ST], right_iterable: Iterable[ST], key: None = ...) -> Ordering:
-    ...
+def compare(
+    left_iterable: Iterable[ST], right_iterable: Iterable[ST], key: None = ...
+) -> Ordering: ...
 
 
 @overload
-def compare(left_iterable: Iterable[T], right_iterable: Iterable[T], key: Unary[T, ST]) -> Ordering:
-    ...
+def compare(
+    left_iterable: Iterable[T], right_iterable: Iterable[T], key: Unary[T, ST]
+) -> Ordering: ...
 
 
 def compare(
@@ -283,10 +287,10 @@ def compare_simple(left_iterable: Iterable[ST], right_iterable: Iterable[ST]) ->
         if is_marker(right):
             return Ordering.GREATER
 
-        if left < right:  # type: ignore
+        if left < right:
             return Ordering.LESS
 
-        if left > right:  # type: ignore
+        if left > right:
             return Ordering.GREATER
 
     return Ordering.EQUAL
@@ -349,13 +353,13 @@ def repeat_each(count: int, iterable: Iterable[T]) -> Iterator[T]:
 def repeat_last(iterable: Iterable[T]) -> Iterator[T]:
     item = marker
 
-    for item in iterable:  # type: ignore
-        yield item  # type: ignore
+    for item in iterable:  # type: ignore[assignment]
+        yield item  # type: ignore[misc]
 
     if is_marker(item):
         return
 
-    yield from repeat(item)  # type: ignore
+    yield from repeat(item)
 
 
 def count(start: int = 0, step: int = 1) -> Iterator[int]:
@@ -379,13 +383,11 @@ FIRST_ON_EMPTY = "first() called on an empty iterable"
 
 
 @overload
-def first(iterable: Iterable[T]) -> T:
-    ...
+def first(iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def first(iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def first(iterable: Iterable[T], default: U) -> Union[T, U]: ...
 
 
 def first(iterable: Iterable[Any], default: Any = no_default) -> Any:
@@ -406,25 +408,23 @@ LAST_ON_EMPTY = "last() called on an empty iterable"
 
 
 @overload
-def last(iterable: Iterable[T]) -> T:
-    ...
+def last(iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def last(iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def last(iterable: Iterable[T], default: U) -> Union[T, U]: ...
 
 
 def last(iterable: Iterable[Any], default: Any = no_default) -> Any:
     result = marker
 
-    try:
-        iterator = reversed(iterable)  # type: ignore
+    if is_reversible(iterable):
+        iterator = reversed(iterable)
 
         result = next(iterator, marker)
 
-    except TypeError:
-        for result in iterable:  # noqa
+    else:
+        for result in iterable:
             pass
 
     if is_marker(result):
@@ -440,13 +440,11 @@ REDUCE_ON_EMPTY = "reduce() called on an empty iterable"
 
 
 @overload
-def reduce(function: Binary[T, T, T], iterable: Iterable[T]) -> T:
-    ...
+def reduce(function: Binary[T, T, T], iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def reduce(function: Binary[T, T, T], iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def reduce(function: Binary[T, T, T], iterable: Iterable[T], default: U) -> Union[T, U]: ...
 
 
 def reduce(
@@ -476,13 +474,11 @@ def accumulate_fold(initial: U, function: Binary[U, T, U], iterable: Iterable[T]
 
 
 @overload
-def accumulate_sum(iterable: Iterable[S]) -> Iterator[S]:
-    ...
+def accumulate_sum(iterable: Iterable[S]) -> Iterator[S]: ...
 
 
 @overload
-def accumulate_sum(iterable: Iterable[S], initial: S) -> Iterator[S]:
-    ...
+def accumulate_sum(iterable: Iterable[S], initial: S) -> Iterator[S]: ...
 
 
 def accumulate_sum(iterable: Iterable[Any], initial: Any = no_default) -> Iterator[Any]:
@@ -493,13 +489,11 @@ def accumulate_sum(iterable: Iterable[Any], initial: Any = no_default) -> Iterat
 
 
 @overload
-def accumulate_product(iterable: Iterable[P]) -> Iterator[P]:
-    ...
+def accumulate_product(iterable: Iterable[P]) -> Iterator[P]: ...
 
 
 @overload
-def accumulate_product(iterable: Iterable[P], initial: P) -> Iterator[P]:
-    ...
+def accumulate_product(iterable: Iterable[P], initial: P) -> Iterator[P]: ...
 
 
 def accumulate_product(iterable: Iterable[Any], initial: Any = no_default) -> Iterator[Any]:
@@ -513,13 +507,11 @@ AT_ON_EMPTY = "at() called on an empty iterable"
 
 
 @overload
-def at(index: int, iterable: Iterable[T]) -> T:
-    ...
+def at(index: int, iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def at(index: int, iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def at(index: int, iterable: Iterable[T], default: U) -> Union[T, U]: ...
 
 
 def at(index: int, iterable: Iterable[Any], default: Any = no_default) -> Any:
@@ -540,13 +532,11 @@ AT_OR_LAST_ON_EMPTY = "at_or_last() called on an empty iterable"
 
 
 @overload
-def at_or_last(index: int, iterable: Iterable[T]) -> T:
-    ...
+def at_or_last(index: int, iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def at_or_last(index: int, iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def at_or_last(index: int, iterable: Iterable[T], default: U) -> Union[T, U]: ...
 
 
 def at_or_last(index: int, iterable: Iterable[Any], default: Any = no_default) -> Any:
@@ -566,58 +556,47 @@ def at_or_last(index: int, iterable: Iterable[Any], default: Any = no_default) -
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T]) -> Pair[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T]) -> Pair[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[0]) -> EmptyTuple:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[0]) -> EmptyTuple: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[1]) -> Tuple1[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[1]) -> Tuple1[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[2]) -> Tuple2[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[2]) -> Tuple2[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[3]) -> Tuple3[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[3]) -> Tuple3[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[4]) -> Tuple4[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[4]) -> Tuple4[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[5]) -> Tuple5[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[5]) -> Tuple5[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[6]) -> Tuple6[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[6]) -> Tuple6[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[7]) -> Tuple7[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[7]) -> Tuple7[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: Literal[8]) -> Tuple8[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: Literal[8]) -> Tuple8[Iterator[T]]: ...
 
 
 @overload
-def copy_unsafe(iterable: Iterable[T], copies: int) -> DynamicTuple[Iterator[T]]:
-    ...
+def copy_unsafe(iterable: Iterable[T], copies: int) -> DynamicTuple[Iterator[T]]: ...
 
 
 def copy_unsafe(iterable: Iterable[T], copies: int = 2) -> DynamicTuple[Iterator[T]]:
@@ -628,58 +607,47 @@ copy_infinite = copy_unsafe
 
 
 @overload
-def copy(iterable: Iterable[T]) -> Pair[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T]) -> Pair[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[0]) -> EmptyTuple:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[0]) -> EmptyTuple: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[1]) -> Tuple1[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[1]) -> Tuple1[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[2]) -> Tuple2[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[2]) -> Tuple2[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[3]) -> Tuple3[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[3]) -> Tuple3[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[4]) -> Tuple4[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[4]) -> Tuple4[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[5]) -> Tuple5[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[5]) -> Tuple5[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[6]) -> Tuple6[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[6]) -> Tuple6[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[7]) -> Tuple7[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[7]) -> Tuple7[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: Literal[8]) -> Tuple8[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: Literal[8]) -> Tuple8[Iterator[T]]: ...
 
 
 @overload
-def copy(iterable: Iterable[T], copies: int) -> DynamicTuple[Iterator[T]]:
-    ...
+def copy(iterable: Iterable[T], copies: int) -> DynamicTuple[Iterator[T]]: ...
 
 
 def copy(iterable: Iterable[T], copies: int = 2) -> DynamicTuple[Iterator[T]]:
@@ -708,53 +676,43 @@ def step_by(step: int, iterable: Iterable[T]) -> Iterator[T]:
 
 
 @overload
-def groups(size: Literal[0], iterable: Iterable[T]) -> Iterator[Never]:
-    ...
+def groups(size: Literal[0], iterable: Iterable[T]) -> Iterator[Never]: ...
 
 
 @overload
-def groups(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
-    ...
+def groups(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
-def groups(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
-    ...
+def groups(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]: ...
 
 
 @overload
-def groups(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
-    ...
+def groups(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]: ...
 
 
 @overload
-def groups(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
-    ...
+def groups(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]: ...
 
 
 @overload
-def groups(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
-    ...
+def groups(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]: ...
 
 
 @overload
-def groups(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
-    ...
+def groups(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]: ...
 
 
 @overload
-def groups(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
-    ...
+def groups(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]: ...
 
 
 @overload
-def groups(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
-    ...
+def groups(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]: ...
 
 
 @overload
-def groups(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    ...
+def groups(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]: ...
 
 
 def groups(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
@@ -762,119 +720,99 @@ def groups(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
 
 
 @overload
-def groups_longest(size: Literal[0], iterable: Iterable[T]) -> Iterator[Never]:
-    ...
+def groups_longest(size: Literal[0], iterable: Iterable[T]) -> Iterator[Never]: ...
 
 
 @overload
-def groups_longest(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
-    ...
+def groups_longest(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
-def groups_longest(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[Optional[T]]]:
-    ...
+def groups_longest(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[Optional[T]]]:
-    ...
+def groups_longest(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[Optional[T]]]:
-    ...
+def groups_longest(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[Optional[T]]]:
-    ...
+def groups_longest(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[Optional[T]]]:
-    ...
+def groups_longest(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[Optional[T]]]:
-    ...
+def groups_longest(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[Optional[T]]]:
-    ...
+def groups_longest(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[Optional[T]]]:
-    ...
+def groups_longest(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[Optional[T]]]: ...
 
 
 @overload
-def groups_longest(size: Literal[0], iterable: Iterable[T], fill: U) -> Iterator[Never]:
-    ...
+def groups_longest(size: Literal[0], iterable: Iterable[T], fill: U) -> Iterator[Never]: ...
 
 
 @overload
-def groups_longest(size: Literal[1], iterable: Iterable[T], fill: U) -> Iterator[Tuple1[T]]:
-    ...
+def groups_longest(size: Literal[1], iterable: Iterable[T], fill: U) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
 def groups_longest(
     size: Literal[2], iterable: Iterable[T], fill: U
-) -> Iterator[Tuple2[Union[T, U]]]:
-    ...
+) -> Iterator[Tuple2[Union[T, U]]]: ...
 
 
 @overload
 def groups_longest(
     size: Literal[3], iterable: Iterable[T], fill: U
-) -> Iterator[Tuple3[Union[T, U]]]:
-    ...
+) -> Iterator[Tuple3[Union[T, U]]]: ...
 
 
 @overload
 def groups_longest(
     size: Literal[4], iterable: Iterable[T], fill: U
-) -> Iterator[Tuple4[Union[T, U]]]:
-    ...
+) -> Iterator[Tuple4[Union[T, U]]]: ...
 
 
 @overload
 def groups_longest(
     size: Literal[5], iterable: Iterable[T], fill: U
-) -> Iterator[Tuple5[Union[T, U]]]:
-    ...
+) -> Iterator[Tuple5[Union[T, U]]]: ...
 
 
 @overload
 def groups_longest(
     size: Literal[6], iterable: Iterable[T], fill: U
-) -> Iterator[Tuple6[Union[T, U]]]:
-    ...
+) -> Iterator[Tuple6[Union[T, U]]]: ...
 
 
 @overload
 def groups_longest(
     size: Literal[7], iterable: Iterable[T], fill: U
-) -> Iterator[Tuple7[Union[T, U]]]:
-    ...
+) -> Iterator[Tuple7[Union[T, U]]]: ...
 
 
 @overload
 def groups_longest(
     size: Literal[8], iterable: Iterable[T], fill: U
-) -> Iterator[Tuple8[Union[T, U]]]:
-    ...
+) -> Iterator[Tuple8[Union[T, U]]]: ...
 
 
 @overload
 def groups_longest(
     size: int, iterable: Iterable[T], fill: U
-) -> Iterator[DynamicTuple[Union[T, U]]]:
-    ...
+) -> Iterator[DynamicTuple[Union[T, U]]]: ...
 
 
 def groups_longest(
@@ -884,13 +822,11 @@ def groups_longest(
 
 
 @overload
-def pairs_longest(iterable: Iterable[T]) -> Iterator[Pair[Optional[T]]]:
-    ...
+def pairs_longest(iterable: Iterable[T]) -> Iterator[Pair[Optional[T]]]: ...
 
 
 @overload
-def pairs_longest(iterable: Iterable[T], fill: U) -> Iterator[Pair[Union[T, U]]]:
-    ...
+def pairs_longest(iterable: Iterable[T], fill: U) -> Iterator[Pair[Union[T, U]]]: ...
 
 
 def pairs_longest(iterable: Iterable[Any], fill: Optional[Any] = None) -> Iterator[Pair[Any]]:
@@ -961,13 +897,11 @@ def append(value: T, iterable: Iterable[T]) -> Iterator[T]:
 
 
 @overload
-def group(iterable: Iterable[T], key: None = ...) -> Iterator[Tuple[T, Iterator[T]]]:
-    ...
+def group(iterable: Iterable[T], key: None = ...) -> Iterator[Tuple[T, Iterator[T]]]: ...
 
 
 @overload
-def group(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[Tuple[U, Iterator[T]]]:
-    ...
+def group(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[Tuple[U, Iterator[T]]]: ...
 
 
 def group(
@@ -977,13 +911,11 @@ def group(
 
 
 @overload
-def group_list(iterable: Iterable[T], key: None = ...) -> Iterator[Tuple[T, List[T]]]:
-    ...
+def group_list(iterable: Iterable[T], key: None = ...) -> Iterator[Tuple[T, List[T]]]: ...
 
 
 @overload
-def group_list(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[Tuple[U, List[T]]]:
-    ...
+def group_list(iterable: Iterable[T], key: Unary[T, U]) -> Iterator[Tuple[U, List[T]]]: ...
 
 
 def group_list(
@@ -994,13 +926,11 @@ def group_list(
 
 
 @overload
-def group_dict(iterable: Iterable[Q], key: None = ...) -> Dict[Q, List[Q]]:
-    ...
+def group_dict(iterable: Iterable[Q], key: None = ...) -> Dict[Q, List[Q]]: ...
 
 
 @overload
-def group_dict(iterable: Iterable[T], key: Unary[T, Q]) -> Dict[Q, List[T]]:
-    ...
+def group_dict(iterable: Iterable[T], key: Unary[T, Q]) -> Dict[Q, List[T]]: ...
 
 
 def group_dict(
@@ -1015,13 +945,11 @@ def group_dict(
 
 
 @overload
-def count_dict(iterable: Iterable[Q], key: None = ...) -> Counter[Q]:
-    ...
+def count_dict(iterable: Iterable[Q], key: None = ...) -> Counter[Q]: ...
 
 
 @overload
-def count_dict(iterable: Iterable[T], key: Unary[T, Q]) -> Counter[Q]:
-    ...
+def count_dict(iterable: Iterable[T], key: Unary[T, Q]) -> Counter[Q]: ...
 
 
 def count_dict(iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None) -> Counter[Any]:
@@ -1084,13 +1012,11 @@ def iter_length(iterable: Iterable[T]) -> int:
 
 
 @overload
-def sum(iterable: Iterable[S]) -> S:
-    ...
+def sum(iterable: Iterable[S]) -> S: ...
 
 
 @overload
-def sum(iterable: Iterable[S], initial: S) -> S:
-    ...
+def sum(iterable: Iterable[S], initial: S) -> S: ...
 
 
 def sum(iterable: Iterable[Any], initial: Any = no_default) -> Any:
@@ -1101,13 +1027,11 @@ def sum(iterable: Iterable[Any], initial: Any = no_default) -> Any:
 
 
 @overload
-def product(iterable: Iterable[P]) -> P:
-    ...
+def product(iterable: Iterable[P]) -> P: ...
 
 
 @overload
-def product(iterable: Iterable[P], initial: P) -> P:
-    ...
+def product(iterable: Iterable[P], initial: P) -> P: ...
 
 
 def product(iterable: Iterable[Any], initial: Any = no_default) -> Any:
@@ -1134,25 +1058,28 @@ def iter_with(context_manager: ContextManager[Iterable[T]]) -> Iterator[T]:
         yield from iterable
 
 
-def walk(node: RecursiveIterable[T]) -> Iterator[T]:
+@overload
+def collapse(node: RecursiveIterable[AnyStr]) -> Iterator[AnyStr]: ...
+
+
+@overload
+def collapse(node: RecursiveIterable[T]) -> Iterator[T]: ...
+
+
+def collapse(node: RecursiveIterable[Any]) -> Iterator[Any]:
     if is_string(node) or is_bytes(node):
-        yield node  # type: ignore
-        return
-
-    try:
-        tree = iter(node)  # type: ignore
-
-    except TypeError:
-        yield node  # type: ignore
-        return
+        yield node
 
     else:
-        for child in tree:
-            yield from walk(child)
+        try:
+            tree = iter(node)
 
+        except TypeError:
+            yield node
 
-def collapse(iterable: Iterable[RecursiveIterable[T]]) -> Iterator[T]:
-    return walk(iterable)
+        else:
+            for child in tree:
+                yield from collapse(child)
 
 
 def pad(
@@ -1220,13 +1147,11 @@ def contains_only_item(sized: Sized) -> bool:
 
 
 @overload
-def all_unique_fast(iterable: Iterable[Q], key: None = ...) -> bool:
-    ...
+def all_unique_fast(iterable: Iterable[Q], key: None = ...) -> bool: ...
 
 
 @overload
-def all_unique_fast(iterable: Iterable[T], key: Unary[T, Q]) -> bool:
-    ...
+def all_unique_fast(iterable: Iterable[T], key: Unary[T, Q]) -> bool: ...
 
 
 def all_unique_fast(iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None) -> bool:
@@ -1273,13 +1198,11 @@ PEEK_ON_EMPTY = "peek() called on an empty iterable"
 
 
 @overload
-def peek(iterable: Iterable[T]) -> Tuple[T, Iterator[T]]:
-    ...
+def peek(iterable: Iterable[T]) -> Tuple[T, Iterator[T]]: ...
 
 
 @overload
-def peek(iterable: Iterable[T], default: U) -> Tuple[Union[T, U], Iterator[T]]:
-    ...
+def peek(iterable: Iterable[T], default: U) -> Tuple[Union[T, U], Iterator[T]]: ...
 
 
 def peek(iterable: Iterable[Any], default: Any = no_default) -> Tuple[Any, Iterator[Any]]:
@@ -1299,7 +1222,7 @@ def peek(iterable: Iterable[Any], default: Any = no_default) -> Tuple[Any, Itera
 def has_next(iterable: Iterable[T]) -> Tuple[bool, Iterator[T]]:
     result, iterator = peek(iterable, marker)
 
-    return (is_not_marker(result), iterator)
+    return (not is_marker(result), iterator)
 
 
 def is_empty(iterable: Iterable[T]) -> Tuple[bool, Iterator[T]]:
@@ -1334,53 +1257,43 @@ def combine(*iterables: Iterable[T]) -> Iterator[T]:
 
 
 @overload
-def distribute_unsafe(count: Literal[0], iterable: Iterable[T]) -> EmptyTuple:
-    ...
+def distribute_unsafe(count: Literal[0], iterable: Iterable[T]) -> EmptyTuple: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[1], iterable: Iterable[T]) -> Tuple1[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[1], iterable: Iterable[T]) -> Tuple1[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[2], iterable: Iterable[T]) -> Tuple2[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[2], iterable: Iterable[T]) -> Tuple2[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[3], iterable: Iterable[T]) -> Tuple3[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[3], iterable: Iterable[T]) -> Tuple3[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[4], iterable: Iterable[T]) -> Tuple4[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[4], iterable: Iterable[T]) -> Tuple4[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[5], iterable: Iterable[T]) -> Tuple5[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[5], iterable: Iterable[T]) -> Tuple5[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[6], iterable: Iterable[T]) -> Tuple6[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[6], iterable: Iterable[T]) -> Tuple6[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[7], iterable: Iterable[T]) -> Tuple7[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[7], iterable: Iterable[T]) -> Tuple7[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: Literal[8], iterable: Iterable[T]) -> Tuple8[Iterator[T]]:
-    ...
+def distribute_unsafe(count: Literal[8], iterable: Iterable[T]) -> Tuple8[Iterator[T]]: ...
 
 
 @overload
-def distribute_unsafe(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
-    ...
+def distribute_unsafe(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]: ...
 
 
 def distribute_unsafe(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
@@ -1393,53 +1306,43 @@ distribute_infinite = distribute_unsafe
 
 
 @overload
-def distribute(count: Literal[0], iterable: Iterable[T]) -> EmptyTuple:
-    ...
+def distribute(count: Literal[0], iterable: Iterable[T]) -> EmptyTuple: ...
 
 
 @overload
-def distribute(count: Literal[1], iterable: Iterable[T]) -> Tuple1[Iterator[T]]:
-    ...
+def distribute(count: Literal[1], iterable: Iterable[T]) -> Tuple1[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: Literal[2], iterable: Iterable[T]) -> Tuple2[Iterator[T]]:
-    ...
+def distribute(count: Literal[2], iterable: Iterable[T]) -> Tuple2[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: Literal[3], iterable: Iterable[T]) -> Tuple3[Iterator[T]]:
-    ...
+def distribute(count: Literal[3], iterable: Iterable[T]) -> Tuple3[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: Literal[4], iterable: Iterable[T]) -> Tuple4[Iterator[T]]:
-    ...
+def distribute(count: Literal[4], iterable: Iterable[T]) -> Tuple4[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: Literal[5], iterable: Iterable[T]) -> Tuple5[Iterator[T]]:
-    ...
+def distribute(count: Literal[5], iterable: Iterable[T]) -> Tuple5[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: Literal[6], iterable: Iterable[T]) -> Tuple6[Iterator[T]]:
-    ...
+def distribute(count: Literal[6], iterable: Iterable[T]) -> Tuple6[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: Literal[7], iterable: Iterable[T]) -> Tuple7[Iterator[T]]:
-    ...
+def distribute(count: Literal[7], iterable: Iterable[T]) -> Tuple7[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: Literal[8], iterable: Iterable[T]) -> Tuple8[Iterator[T]]:
-    ...
+def distribute(count: Literal[8], iterable: Iterable[T]) -> Tuple8[Iterator[T]]: ...
 
 
 @overload
-def distribute(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
-    ...
+def distribute(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]: ...
 
 
 def distribute(count: int, iterable: Iterable[T]) -> DynamicTuple[Iterator[T]]:
@@ -1479,7 +1382,7 @@ def interleave(*iterables: Iterable[T]) -> Iterator[T]:
 
 def interleave_longest(*iterables: Iterable[T]) -> Iterator[T]:
     iterator = flatten(zip_longest(*iterables, fill=marker))
-    return (item for item in iterator if is_not_marker(item))
+    return (item for item in iterator if not is_marker(item))
 
 
 def position_all(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[int]:
@@ -1498,13 +1401,13 @@ POSITION_NO_MATCH = "position() has not found any matches"
 
 
 @overload
-def position(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> int:
-    ...
+def position(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> int: ...
 
 
 @overload
-def position(predicate: OptionalPredicate[T], iterable: Iterable[T], default: U) -> Union[int, U]:
-    ...
+def position(
+    predicate: OptionalPredicate[T], iterable: Iterable[T], default: U
+) -> Union[int, U]: ...
 
 
 def position(
@@ -1530,13 +1433,11 @@ FIND_ON_EMPTY = "find() called on an empty iterable"
 
 
 @overload
-def find(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T:
-    ...
+def find(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def find(predicate: OptionalPredicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def find(predicate: OptionalPredicate[T], iterable: Iterable[T], default: U) -> Union[T, U]: ...
 
 
 def find(
@@ -1564,15 +1465,13 @@ FIND_OR_FIRST_ON_EMPTY = "find_or_first() called on an empty iterable"
 
 
 @overload
-def find_or_first(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T:
-    ...
+def find_or_first(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T: ...
 
 
 @overload
 def find_or_first(
     predicate: OptionalPredicate[T], iterable: Iterable[T], default: U
-) -> Union[T, U]:
-    ...
+) -> Union[T, U]: ...
 
 
 def find_or_first(
@@ -1607,13 +1506,13 @@ FIND_OR_LAST_ON_EMPTY = "find_or_last() called on an empty iterable"
 
 
 @overload
-def find_or_last(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T:
-    ...
+def find_or_last(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def find_or_last(predicate: OptionalPredicate[T], iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def find_or_last(
+    predicate: OptionalPredicate[T], iterable: Iterable[T], default: U
+) -> Union[T, U]: ...
 
 
 def find_or_last(
@@ -1644,23 +1543,19 @@ MIN_MAX_ON_EMPTY = "min_max() called on an empty iterable"
 
 
 @overload
-def min_max(iterable: Iterable[ST], *, key: None = ...) -> Pair[ST]:
-    ...
+def min_max(iterable: Iterable[ST], *, key: None = ...) -> Pair[ST]: ...
 
 
 @overload
-def min_max(iterable: Iterable[T], *, key: Unary[T, ST]) -> Pair[T]:
-    ...
+def min_max(iterable: Iterable[T], *, key: Unary[T, ST]) -> Pair[T]: ...
 
 
 @overload
-def min_max(iterable: Iterable[ST], *, key: None = ..., default: U) -> Union[Pair[ST], U]:
-    ...
+def min_max(iterable: Iterable[ST], *, key: None = ..., default: U) -> Union[Pair[ST], U]: ...
 
 
 @overload
-def min_max(iterable: Iterable[T], *, key: Unary[T, ST], default: U) -> Union[Pair[T], U]:
-    ...
+def min_max(iterable: Iterable[T], *, key: Unary[T, ST], default: U) -> Union[Pair[T], U]: ...
 
 
 def min_max(
@@ -1749,20 +1644,20 @@ LAST_WITH_TAIL_ON_EMPTY = "last_with_tail() called on an empty iterable"
 
 
 @overload
-def last_with_tail(iterable: Iterable[T]) -> T:
-    ...
+def last_with_tail(iterable: Iterable[T]) -> T: ...
 
 
 @overload
-def last_with_tail(iterable: Iterable[T], default: U) -> Union[T, U]:
-    ...
+def last_with_tail(iterable: Iterable[T], default: U) -> Union[T, U]: ...
 
 
 def last_with_tail(iterable: Iterable[Any], default: Any = no_default) -> Any:
-    try:
-        iterator = reversed(iterable)  # type: ignore
+    iterator: Iterator[Any]
 
-    except TypeError:
+    if is_reversible(iterable):
+        iterator = reversed(iterable)
+
+    else:
         iterator = tail(1, iterable)
 
     result = next(iterator, marker)
@@ -1804,8 +1699,7 @@ def is_sorted(
     *,
     strict: Literal[False] = ...,
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 @overload
@@ -1815,8 +1709,7 @@ def is_sorted(
     *,
     strict: Literal[True],
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 @overload
@@ -1826,8 +1719,7 @@ def is_sorted(
     *,
     strict: Literal[False] = ...,
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 @overload
@@ -1837,8 +1729,7 @@ def is_sorted(
     *,
     strict: Literal[True],
     reverse: bool = ...,
-) -> bool:
-    ...
+) -> bool: ...
 
 
 def is_sorted(
@@ -1869,13 +1760,11 @@ def is_sorted_by(
 
 
 @overload
-def sort(iterable: Iterable[ST], *, key: None = ..., reverse: bool = ...) -> Iterator[ST]:
-    ...
+def sort(iterable: Iterable[ST], *, key: None = ..., reverse: bool = ...) -> Iterator[ST]: ...
 
 
 @overload
-def sort(iterable: Iterable[T], *, key: Unary[T, ST], reverse: bool = ...) -> Iterator[T]:
-    ...
+def sort(iterable: Iterable[T], *, key: Unary[T, ST], reverse: bool = ...) -> Iterator[T]: ...
 
 
 def sort(
@@ -1888,11 +1777,10 @@ def sort(
 
 
 def reverse(iterable: Iterable[T]) -> Iterator[T]:
-    try:
-        return reversed(iterable)  # type: ignore
+    if is_reversible(iterable):
+        return reversed(iterable)
 
-    except TypeError:
-        return reversed(list(iterable))
+    return reversed(list(iterable))
 
 
 # def circular_list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
@@ -1928,53 +1816,43 @@ def list_windows(size: int, iterable: Iterable[T]) -> Iterator[List[T]]:
 
 
 @overload
-def tuple_windows(size: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
-    ...
+def tuple_windows(size: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]: ...
 
 
 @overload
-def tuple_windows(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
-    ...
+def tuple_windows(size: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
-def tuple_windows(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
-    ...
+def tuple_windows(size: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]: ...
 
 
 @overload
-def tuple_windows(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
-    ...
+def tuple_windows(size: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]: ...
 
 
 @overload
-def tuple_windows(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
-    ...
+def tuple_windows(size: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]: ...
 
 
 @overload
-def tuple_windows(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
-    ...
+def tuple_windows(size: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]: ...
 
 
 @overload
-def tuple_windows(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
-    ...
+def tuple_windows(size: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]: ...
 
 
 @overload
-def tuple_windows(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
-    ...
+def tuple_windows(size: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]: ...
 
 
 @overload
-def tuple_windows(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
-    ...
+def tuple_windows(size: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]: ...
 
 
 @overload
-def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    ...
+def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]: ...
 
 
 def tuple_windows(size: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
@@ -2026,13 +1904,11 @@ def duplicates_fast_by(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
 
 
 @overload
-def duplicates_fast(iterable: Iterable[Q], key: None = ...) -> Iterator[Q]:
-    ...
+def duplicates_fast(iterable: Iterable[Q], key: None = ...) -> Iterator[Q]: ...
 
 
 @overload
-def duplicates_fast(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
-    ...
+def duplicates_fast(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]: ...
 
 
 def duplicates_fast(
@@ -2126,13 +2002,11 @@ def unique_fast_by(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
 
 
 @overload
-def unique_fast(iterable: Iterable[Q], key: None = ...) -> Iterator[Q]:
-    ...
+def unique_fast(iterable: Iterable[Q], key: None = ...) -> Iterator[Q]: ...
 
 
 @overload
-def unique_fast(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]:
-    ...
+def unique_fast(iterable: Iterable[T], key: Unary[T, Q]) -> Iterator[T]: ...
 
 
 def unique_fast(iterable: Iterable[Any], key: Optional[Unary[Any, Any]] = None) -> Iterator[Any]:
@@ -2186,25 +2060,21 @@ def unique(iterable: Iterable[T], key: Optional[Unary[T, U]] = None) -> Iterator
 
 
 @overload
-def zip() -> Iterator[Never]:
-    ...
+def zip() -> Iterator[Never]: ...
 
 
 @overload
-def zip(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
-    ...
+def zip(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]: ...
 
 
 @overload
-def zip(__iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iterator[Tuple[A, B]]:
-    ...
+def zip(__iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iterator[Tuple[A, B]]: ...
 
 
 @overload
 def zip(
     __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-) -> Iterator[Tuple[A, B, C]]:
-    ...
+) -> Iterator[Tuple[A, B, C]]: ...
 
 
 @overload
@@ -2213,8 +2083,7 @@ def zip(
     __iterable_b: Iterable[B],
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
-) -> Iterator[Tuple[A, B, C, D]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D]]: ...
 
 
 @overload
@@ -2224,8 +2093,7 @@ def zip(
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
-) -> Iterator[Tuple[A, B, C, D, E]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E]]: ...
 
 
 @overload
@@ -2236,8 +2104,7 @@ def zip(
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
     __iterable_f: Iterable[F],
-) -> Iterator[Tuple[A, B, C, D, E, F]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F]]: ...
 
 
 @overload
@@ -2249,8 +2116,7 @@ def zip(
     __iterable_e: Iterable[E],
     __iterable_f: Iterable[F],
     __iterable_g: Iterable[G],
-) -> Iterator[Tuple[A, B, C, D, E, F, G]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F, G]]: ...
 
 
 @overload
@@ -2263,8 +2129,7 @@ def zip(
     __iterable_f: Iterable[F],
     __iterable_g: Iterable[G],
     __iterable_h: Iterable[H],
-) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]: ...
 
 
 @overload
@@ -2279,8 +2144,7 @@ def zip(
     __iterable_h: Iterable[Any],
     __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
-) -> Iterator[DynamicTuple[Any]]:
-    ...
+) -> Iterator[DynamicTuple[Any]]: ...
 
 
 def zip(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
@@ -2288,25 +2152,21 @@ def zip(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
 
 
 @overload
-def zip_equal() -> Iterator[Never]:
-    ...
+def zip_equal() -> Iterator[Never]: ...
 
 
 @overload
-def zip_equal(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
-    ...
+def zip_equal(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]: ...
 
 
 @overload
-def zip_equal(__iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iterator[Tuple[A, B]]:
-    ...
+def zip_equal(__iterable_a: Iterable[A], __iterable_b: Iterable[B]) -> Iterator[Tuple[A, B]]: ...
 
 
 @overload
 def zip_equal(
     __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-) -> Iterator[Tuple[A, B, C]]:
-    ...
+) -> Iterator[Tuple[A, B, C]]: ...
 
 
 @overload
@@ -2315,8 +2175,7 @@ def zip_equal(
     __iterable_b: Iterable[B],
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
-) -> Iterator[Tuple[A, B, C, D]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D]]: ...
 
 
 @overload
@@ -2326,8 +2185,7 @@ def zip_equal(
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
-) -> Iterator[Tuple[A, B, C, D, E]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E]]: ...
 
 
 @overload
@@ -2338,8 +2196,7 @@ def zip_equal(
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
     __iterable_f: Iterable[F],
-) -> Iterator[Tuple[A, B, C, D, E, F]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F]]: ...
 
 
 @overload
@@ -2351,8 +2208,7 @@ def zip_equal(
     __iterable_e: Iterable[E],
     __iterable_f: Iterable[F],
     __iterable_g: Iterable[G],
-) -> Iterator[Tuple[A, B, C, D, E, F, G]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F, G]]: ...
 
 
 @overload
@@ -2365,8 +2221,7 @@ def zip_equal(
     __iterable_f: Iterable[F],
     __iterable_g: Iterable[G],
     __iterable_h: Iterable[H],
-) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]: ...
 
 
 @overload
@@ -2381,8 +2236,7 @@ def zip_equal(
     __iterable_h: Iterable[Any],
     __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
-) -> Iterator[DynamicTuple[Any]]:
-    ...
+) -> Iterator[DynamicTuple[Any]]: ...
 
 
 def zip_equal(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
@@ -2436,20 +2290,17 @@ def zip_equal_simple(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
 
 
 @overload
-def zip_longest() -> Iterator[Never]:
-    ...
+def zip_longest() -> Iterator[Never]: ...
 
 
 @overload
-def zip_longest(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
-    ...
+def zip_longest(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]: ...
 
 
 @overload
 def zip_longest(
     __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-) -> Iterator[Tuple[Optional[A], Optional[B]]]:
-    ...
+) -> Iterator[Tuple[Optional[A], Optional[B]]]: ...
 
 
 @overload
@@ -2457,8 +2308,7 @@ def zip_longest(
     __iterable_a: Iterable[A],
     __iterable_b: Iterable[B],
     __iterable_c: Iterable[C],
-) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C]]]:
-    ...
+) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C]]]: ...
 
 
 @overload
@@ -2467,8 +2317,7 @@ def zip_longest(
     __iterable_b: Iterable[B],
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
-) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]:
-    ...
+) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D]]]: ...
 
 
 @overload
@@ -2478,8 +2327,7 @@ def zip_longest(
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
-) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]:
-    ...
+) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E]]]: ...
 
 
 @overload
@@ -2490,8 +2338,9 @@ def zip_longest(
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
     __iterable_f: Iterable[F],
-) -> Iterator[Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]]:
-    ...
+) -> Iterator[
+    Tuple[Optional[A], Optional[B], Optional[C], Optional[D], Optional[E], Optional[F]]
+]: ...
 
 
 @overload
@@ -2513,8 +2362,7 @@ def zip_longest(
         Optional[F],
         Optional[G],
     ]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -2538,8 +2386,7 @@ def zip_longest(
         Optional[G],
         Optional[H],
     ]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -2554,25 +2401,21 @@ def zip_longest(
     __iterable_h: Iterable[Any],
     __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
-) -> Iterator[DynamicTuple[Optional[Any]]]:
-    ...
+) -> Iterator[DynamicTuple[Optional[Any]]]: ...
 
 
 @overload
-def zip_longest(*, fill: T) -> Iterator[Never]:
-    ...
+def zip_longest(*, fill: T) -> Iterator[Never]: ...
 
 
 @overload
-def zip_longest(__iterable_a: Iterable[A], *, fill: T) -> Iterator[Tuple[A]]:
-    ...
+def zip_longest(__iterable_a: Iterable[A], *, fill: T) -> Iterator[Tuple[A]]: ...
 
 
 @overload
 def zip_longest(
     __iterable_a: Iterable[A], __iterable_b: Iterable[B], *, fill: T
-) -> Iterator[Tuple[Union[A, T], Union[B, T]]]:
-    ...
+) -> Iterator[Tuple[Union[A, T], Union[B, T]]]: ...
 
 
 @overload
@@ -2582,8 +2425,7 @@ def zip_longest(
     __iterable_c: Iterable[C],
     *,
     fill: T,
-) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T]]]:
-    ...
+) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T]]]: ...
 
 
 @overload
@@ -2594,8 +2436,7 @@ def zip_longest(
     __iterable_d: Iterable[D],
     *,
     fill: T,
-) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T]]]:
-    ...
+) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T]]]: ...
 
 
 @overload
@@ -2607,8 +2448,7 @@ def zip_longest(
     __iterable_e: Iterable[E],
     *,
     fill: T,
-) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T]]]:
-    ...
+) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T]]]: ...
 
 
 @overload
@@ -2621,8 +2461,9 @@ def zip_longest(
     __iterable_f: Iterable[F],
     *,
     fill: T,
-) -> Iterator[Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T], Union[F, T]]]:
-    ...
+) -> Iterator[
+    Tuple[Union[A, T], Union[B, T], Union[C, T], Union[D, T], Union[E, T], Union[F, T]]
+]: ...
 
 
 @overload
@@ -2646,8 +2487,7 @@ def zip_longest(
         Union[F, T],
         Union[G, T],
     ]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -2673,8 +2513,7 @@ def zip_longest(
         Union[G, T],
         Union[H, T],
     ]
-]:
-    ...
+]: ...
 
 
 @overload
@@ -2690,8 +2529,7 @@ def zip_longest(
     __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
     fill: T,
-) -> Iterator[DynamicTuple[Union[Any, T]]]:
-    ...
+) -> Iterator[DynamicTuple[Union[Any, T]]]: ...
 
 
 def zip_longest(
@@ -2721,27 +2559,23 @@ def sign(value: int) -> int:
 
 
 @overload
-def cartesian_product() -> Iterator[EmptyTuple]:
-    ...
+def cartesian_product() -> Iterator[EmptyTuple]: ...
 
 
 @overload
-def cartesian_product(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]:
-    ...
+def cartesian_product(__iterable_a: Iterable[A]) -> Iterator[Tuple[A]]: ...
 
 
 @overload
 def cartesian_product(
     __iterable_a: Iterable[A], __iterable_b: Iterable[B]
-) -> Iterator[Tuple[A, B]]:
-    ...
+) -> Iterator[Tuple[A, B]]: ...
 
 
 @overload
 def cartesian_product(
     __iterable_a: Iterable[A], __iterable_b: Iterable[B], __iterable_c: Iterable[C]
-) -> Iterator[Tuple[A, B, C]]:
-    ...
+) -> Iterator[Tuple[A, B, C]]: ...
 
 
 @overload
@@ -2750,8 +2584,7 @@ def cartesian_product(
     __iterable_b: Iterable[B],
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
-) -> Iterator[Tuple[A, B, C, D]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D]]: ...
 
 
 @overload
@@ -2761,8 +2594,7 @@ def cartesian_product(
     __iterable_c: Iterable[C],
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
-) -> Iterator[Tuple[A, B, C, D, E]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E]]: ...
 
 
 @overload
@@ -2773,8 +2605,7 @@ def cartesian_product(
     __iterable_d: Iterable[D],
     __iterable_e: Iterable[E],
     __iterable_f: Iterable[F],
-) -> Iterator[Tuple[A, B, C, D, E, F]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F]]: ...
 
 
 @overload
@@ -2786,8 +2617,7 @@ def cartesian_product(
     __iterable_e: Iterable[E],
     __iterable_f: Iterable[F],
     __iterable_g: Iterable[G],
-) -> Iterator[Tuple[A, B, C, D, E, F, G]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F, G]]: ...
 
 
 @overload
@@ -2800,8 +2630,7 @@ def cartesian_product(
     __iterable_f: Iterable[F],
     __iterable_g: Iterable[G],
     __iterable_h: Iterable[H],
-) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]:
-    ...
+) -> Iterator[Tuple[A, B, C, D, E, F, G, H]]: ...
 
 
 @overload
@@ -2816,8 +2645,7 @@ def cartesian_product(
     __iterable_h: Iterable[Any],
     __iterable_n: Iterable[Any],
     *iterables: Iterable[Any],
-) -> Iterator[DynamicTuple[Any]]:
-    ...
+) -> Iterator[DynamicTuple[Any]]: ...
 
 
 def cartesian_product(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
@@ -2825,53 +2653,43 @@ def cartesian_product(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
 
 
 @overload
-def cartesian_power(power: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
-    ...
+def cartesian_power(power: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]: ...
 
 
 @overload
-def cartesian_power(power: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
-    ...
+def cartesian_power(power: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
-def cartesian_power(power: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
-    ...
+def cartesian_power(power: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]: ...
 
 
 @overload
-def cartesian_power(power: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
-    ...
+def cartesian_power(power: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]: ...
 
 
 @overload
-def cartesian_power(power: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
-    ...
+def cartesian_power(power: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]: ...
 
 
 @overload
-def cartesian_power(power: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
-    ...
+def cartesian_power(power: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]: ...
 
 
 @overload
-def cartesian_power(power: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
-    ...
+def cartesian_power(power: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]: ...
 
 
 @overload
-def cartesian_power(power: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
-    ...
+def cartesian_power(power: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]: ...
 
 
 @overload
-def cartesian_power(power: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
-    ...
+def cartesian_power(power: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]: ...
 
 
 @overload
-def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    ...
+def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]: ...
 
 
 def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
@@ -2879,53 +2697,43 @@ def cartesian_power(power: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[
 
 
 @overload
-def permutations(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
-    ...
+def permutations(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]: ...
 
 
 @overload
-def permutations(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
-    ...
+def permutations(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
-def permutations(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
-    ...
+def permutations(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]: ...
 
 
 @overload
-def permutations(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
-    ...
+def permutations(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]: ...
 
 
 @overload
-def permutations(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
-    ...
+def permutations(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]: ...
 
 
 @overload
-def permutations(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
-    ...
+def permutations(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]: ...
 
 
 @overload
-def permutations(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
-    ...
+def permutations(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]: ...
 
 
 @overload
-def permutations(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
-    ...
+def permutations(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]: ...
 
 
 @overload
-def permutations(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
-    ...
+def permutations(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]: ...
 
 
 @overload
-def permutations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    ...
+def permutations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]: ...
 
 
 def permutations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
@@ -2937,53 +2745,43 @@ def permute(iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
 
 
 @overload
-def combinations(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
-    ...
+def combinations(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]: ...
 
 
 @overload
-def combinations(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
-    ...
+def combinations(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
-def combinations(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
-    ...
+def combinations(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]: ...
 
 
 @overload
-def combinations(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
-    ...
+def combinations(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]: ...
 
 
 @overload
-def combinations(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
-    ...
+def combinations(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]: ...
 
 
 @overload
-def combinations(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
-    ...
+def combinations(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]: ...
 
 
 @overload
-def combinations(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
-    ...
+def combinations(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]: ...
 
 
 @overload
-def combinations(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
-    ...
+def combinations(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]: ...
 
 
 @overload
-def combinations(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
-    ...
+def combinations(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]: ...
 
 
 @overload
-def combinations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    ...
+def combinations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]: ...
 
 
 def combinations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
@@ -2991,53 +2789,63 @@ def combinations(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]
 
 
 @overload
-def combinations_with_replacement(count: Literal[0], iterable: Iterable[T]) -> Iterator[EmptyTuple]:
-    ...
+def combinations_with_replacement(
+    count: Literal[0], iterable: Iterable[T]
+) -> Iterator[EmptyTuple]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[1], iterable: Iterable[T]) -> Iterator[Tuple1[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[1], iterable: Iterable[T]
+) -> Iterator[Tuple1[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[2], iterable: Iterable[T]) -> Iterator[Tuple2[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[2], iterable: Iterable[T]
+) -> Iterator[Tuple2[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[3], iterable: Iterable[T]) -> Iterator[Tuple3[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[3], iterable: Iterable[T]
+) -> Iterator[Tuple3[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[4], iterable: Iterable[T]) -> Iterator[Tuple4[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[4], iterable: Iterable[T]
+) -> Iterator[Tuple4[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[5], iterable: Iterable[T]) -> Iterator[Tuple5[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[5], iterable: Iterable[T]
+) -> Iterator[Tuple5[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[6], iterable: Iterable[T]) -> Iterator[Tuple6[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[6], iterable: Iterable[T]
+) -> Iterator[Tuple6[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[7], iterable: Iterable[T]) -> Iterator[Tuple7[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[7], iterable: Iterable[T]
+) -> Iterator[Tuple7[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: Literal[8], iterable: Iterable[T]) -> Iterator[Tuple8[T]]:
-    ...
+def combinations_with_replacement(
+    count: Literal[8], iterable: Iterable[T]
+) -> Iterator[Tuple8[T]]: ...
 
 
 @overload
-def combinations_with_replacement(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:
-    ...
+def combinations_with_replacement(
+    count: int, iterable: Iterable[T]
+) -> Iterator[DynamicTuple[T]]: ...
 
 
 def combinations_with_replacement(count: int, iterable: Iterable[T]) -> Iterator[DynamicTuple[T]]:

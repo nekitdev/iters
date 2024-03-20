@@ -19,7 +19,7 @@ are optimized to reduce the overhead of calling [`bool`][bool].
 
 @runtime_checkable
 class Sum(Protocol):
-    """Represents types for which adding `self: S` to `other: S` returns `S`."""
+    """Represents types for which adding `self` to `other: Self` returns `Self`."""
 
     @required
     def __add__(self, __other: Self) -> Self:
@@ -28,7 +28,7 @@ class Sum(Protocol):
 
 @runtime_checkable
 class Product(Protocol):
-    """Represents types for which multiplying `self: P` with `other: P` returns `P`."""
+    """Represents types for which multiplying `self` with `other: Self` returns `Self`."""
 
     @required
     def __mul__(self, __other: Self) -> Self:

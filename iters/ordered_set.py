@@ -10,7 +10,6 @@ from typing import (
     MutableSet,
     Optional,
     Sequence,
-    Sized,
     TypeVar,
     Union,
     overload,
@@ -18,7 +17,8 @@ from typing import (
 
 from mixed_methods import mixed_method
 from named import get_type_name
-from typing_aliases import AnySet, is_instance, is_slice
+from typing_aliases import AnySet, is_instance, is_sized, is_slice
+from typing_extensions import TypeIs
 from wraps.wraps import wrap_option
 
 __all__ = ("OrderedSet", "ordered_set", "ordered_set_unchecked")
@@ -35,10 +35,18 @@ ITEMS_REPRESENTATION = "{}({})"
 
 
 ITEM_NOT_IN_ORDERED_SET = "item {!r} is not in the ordered set"
+item_not_in_ordered_set = ITEM_NOT_IN_ORDERED_SET.format
 
 
-def item_not_in_ordered_set(item: Any) -> ValueError:
-    return ValueError(ITEM_NOT_IN_ORDERED_SET.format(item))
+T = TypeVar("T")
+
+
+def is_sequence(iterable: Iterable[T]) -> TypeIs[Sequence[T]]:
+    return is_instance(iterable, Sequence)
+
+
+def is_any_set(iterable: Iterable[T]) -> TypeIs[AnySet[T]]:
+    return is_instance(iterable, AnySet)
 
 
 class OrderedSet(MutableSet[Q], Sequence[Q]):
@@ -49,7 +57,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
     The complexity of the operations assumes that *hash maps*
     have `O(1)` *insertion*, *lookup* and *deletion* as well
-    as that *arrays* have `O(1)` *by-index lookup* and *length-checking*.
+    as that *arrays* have `O(1)` *by-index lookup* and *length checking*.
 
     It is assumed that *clearing* is `O(n)`, where `n` is the number of elements.
     """
@@ -81,7 +89,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Returns:
             The created ordered set.
         """
-        return cls(iterable)  # type: ignore
+        return cls(iterable)  # type: ignore[arg-type, return-value]
 
     @classmethod
     def create_unchecked(cls, iterable: Iterable[R] = ()) -> OrderedSet[R]:
@@ -192,12 +200,10 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return len(self._items)
 
     @overload
-    def __getitem__(self, index: int) -> Q:
-        ...
+    def __getitem__(self, index: int) -> Q: ...
 
     @overload
-    def __getitem__(self, index: slice) -> OrderedSet[Q]:
-        ...
+    def __getitem__(self, index: slice) -> OrderedSet[Q]: ...
 
     def __getitem__(self, index: Union[int, slice]) -> Union[Q, OrderedSet[Q]]:
         if is_slice(index):
@@ -206,7 +212,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
             return self.create_unchecked(self._items[index])
 
-        return self._items[index]  # type: ignore
+        return self._items[index]
 
     def copy(self) -> OrderedSet[Q]:
         """Copies the ordered set.
@@ -330,18 +336,17 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             The index of the item.
         """
         index = self._item_to_index.get(item)
-        error = item_not_in_ordered_set(item)
 
         if index is None:
-            raise error
+            raise ValueError(item_not_in_ordered_set(item))
 
         if start is not None:
             if index < start:
-                raise error
+                raise ValueError(item_not_in_ordered_set(item))
 
         if stop is not None:
             if index >= stop:
-                raise error
+                raise ValueError(item_not_in_ordered_set(item))
 
         return index
 
@@ -468,7 +473,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             self.discard(item)
 
         else:
-            raise ValueError(ITEM_NOT_IN_ORDERED_SET.format(item))
+            raise ValueError(item_not_in_ordered_set(item))
 
     def insert(self, index: int, item: Q) -> None:
         """Inserts an item into the ordered set at `index`.
@@ -534,13 +539,16 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return ITEMS_REPRESENTATION.format(name, items)
 
     def __eq__(self, other: Any) -> bool:
-        if is_instance(other, Iterable):
-            if is_instance(other, Sequence):
-                return self._items == list(other)
+        try:
+            iterator = iter(other)
 
-            return set(self._item_to_index) == set(other)
+        except TypeError:
+            return False
 
-        return False
+        if is_sequence(other):
+            return self._items == list(iterator)
+
+        return set(self._item_to_index) == set(iterator)
 
     def apply_union(self, *iterables: Iterable[Q]) -> OrderedSet[Q]:
         """Returns the union of the ordered set and `iterables`.
@@ -684,11 +692,11 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Returns:
             Whether the ordered set is a subset of `other`.
         """
-        if is_instance(other, Sized):  # cover obvious cases
+        if is_sized(other):  # cover obvious cases
             if len(self) > len(other):
                 return False
 
-        if is_instance(other, AnySet):  # speedup for sets
+        if is_any_set(other):  # speedup for sets
             return all(item in other for item in self)
 
         other_set = set(other)
@@ -704,11 +712,11 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Returns:
             Whether the ordered set is a strict subset of `other`.
         """
-        if is_instance(other, Sized):  # cover obvious cases
+        if is_sized(other):  # cover obvious cases
             if len(self) >= len(other):
                 return False
 
-        if is_instance(other, AnySet):  # speedup for sets
+        if is_any_set(other):  # speedup for sets
             return all(item in other for item in self)
 
         other_set = set(other)  # default case
@@ -724,7 +732,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Returns:
             Whether the ordered set is a superset of `other`.
         """
-        if is_instance(other, Sized):  # speedup for sized iterables
+        if is_sized(other):  # speedup for sized iterables
             return len(self) >= len(other) and all(item in self for item in other)
 
         return all(item in self for item in other)  # default case
@@ -738,7 +746,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Returns:
             Whether the ordered set is a strict superset of `other`.
         """
-        if is_instance(other, Sized):  # speedup for sized iterables
+        if is_sized(other):  # speedup for sized iterables
             return len(self) > len(other) and all(item in self for item in other)
 
         array = list(other)  # default case
