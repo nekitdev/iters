@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iters"
-version = "0.16.2"
+version = "0.16.3"
 description = "Composable external iteration."
 authors = ["nekitdev"]
 license = "MIT"
@@ -113,7 +113,7 @@ strict = true
 
 [tool.changelogging]
 name = "iters"
-version = "0.16.2"
+version = "0.16.3"
 url = "https://github.com/nekitdev/iters"
 directory = "changes"
 output = "CHANGELOG.md"
