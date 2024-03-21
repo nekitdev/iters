@@ -2,6 +2,12 @@
 
 <!-- changelogging: start -->
 
+## 0.16.3 (2024-03-21)
+
+### Internal
+
+- `is_marker` and `is_no_default` now take `Any` as the argument.
+
 ## 0.16.2 (2024-03-20)
 
 ### Internal

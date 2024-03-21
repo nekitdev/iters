@@ -1349,9 +1349,9 @@ class Iter(Iterator[T]):
     def create_nested(cls, nested: Iterable[Iterable[U]]) -> Iter[Iter[U]]:
         return cls(map(cls, nested))  # type: ignore[arg-type, return-value]
 
-    @classmethod
-    def create_option(cls, option: Option[Iterable[U]]) -> Option[Iter[U]]:
-        return option.map(cls)  # type: ignore[arg-type]
+    # @classmethod
+    # def create_option(cls, option: Option[Iterable[U]]) -> Option[Iter[U]]:
+    #     return option.map(cls)  # type: ignore[arg-type]
 
     def __iter__(self) -> Iter[T]:
         return self
