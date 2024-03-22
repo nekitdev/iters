@@ -594,7 +594,7 @@ async def async_for_each_await(function: AsyncForEach[T], iterable: AnyIterable[
         await function(item)
 
 
-ASYNC_FIRST_ON_EMPTY = "async_first() called on an empty iterable"
+ASYNC_FIRST_ON_EMPTY = "`async_first` called on an empty iterable"
 
 
 @overload
@@ -619,7 +619,7 @@ async def async_first(iterable: AnyIterable[Any], default: Any = no_default) -> 
     return result
 
 
-ASYNC_LAST_ON_EMPTY = "async_last() called on an empty iterable"
+ASYNC_LAST_ON_EMPTY = "`async_last` called on an empty iterable"
 
 
 @overload
@@ -665,7 +665,7 @@ async def async_fold_await(
     return result
 
 
-ASYNC_REDUCE_ON_EMPTY = "async_reduce() called on an empty iterable"
+ASYNC_REDUCE_ON_EMPTY = "`async_reduce` called on an empty iterable"
 
 
 @overload
@@ -691,7 +691,7 @@ async def async_reduce(
     return await async_fold(initial, function, iterator)
 
 
-ASYNC_REDUCE_AWAIT_ON_EMPTY = "async_reduce_await() called on an empty iterable"
+ASYNC_REDUCE_AWAIT_ON_EMPTY = "`async_reduce_await` called on an empty iterable"
 
 
 @overload
@@ -746,7 +746,7 @@ async def async_accumulate_fold_await(
         yield value
 
 
-ASYNC_ACCUMULATE_REDUCE_ON_EMPTY = "async_accumulate_reduce() called on an empty iterable"
+ASYNC_ACCUMULATE_REDUCE_ON_EMPTY = "`async_accumulate_reduce` called on an empty iterable"
 
 
 async def async_accumulate_reduce(
@@ -764,7 +764,7 @@ async def async_accumulate_reduce(
 
 
 ASYNC_ACCUMULATE_REDUCE_AWAIT_ON_EMPTY = (
-    "async_accumulate_reduce_await() called on an empty iterable"
+    "`async_accumulate_reduce_await` called on an empty iterable"
 )
 
 
@@ -816,7 +816,7 @@ def async_accumulate_product(
     return async_accumulate_fold(initial, add, iterable)
 
 
-ASYNC_AT_ON_EMPTY = "async_at() called on an empty iterable"
+ASYNC_AT_ON_EMPTY = "`async_at` called on an empty iterable"
 
 
 @overload
@@ -841,7 +841,7 @@ async def async_at(index: int, iterable: AnyIterable[Any], default: Any = no_def
     return result
 
 
-ASYNC_AT_OR_LAST_ON_EMPTY = "async_at_or_last() called on an empty iterable"
+ASYNC_AT_OR_LAST_ON_EMPTY = "`async_at_or_last` called on an empty iterable"
 
 
 @overload
@@ -2103,7 +2103,7 @@ async def async_spy(size: int, iterable: AnyIterable[T]) -> Tuple[List[T], Async
     return head.copy(), async_chain(head, iterator)
 
 
-ASYNC_PEEK_ON_EMPTY = "async_peek() called on an empty iterable"
+ASYNC_PEEK_ON_EMPTY = "`async_peek` called on an empty iterable"
 
 
 @overload
@@ -2358,7 +2358,7 @@ async def async_position_all_await(
             yield index
 
 
-ASYNC_POSITION_NO_MATCH = "async_position() has not found any matches"
+ASYNC_POSITION_NO_MATCH = "`async_position` has not found any matches"
 
 
 @overload
@@ -2419,8 +2419,8 @@ def async_find_all_await(
     return async_filter_await(predicate, iterable)
 
 
-ASYNC_FIND_NO_MATCH = "async_find() has not found any matches"
-ASYNC_FIND_ON_EMPTY = "async_find() called on an empty iterable"
+ASYNC_FIND_NO_MATCH = "`async_find` has not found any matches"
+ASYNC_FIND_ON_EMPTY = "`async_find` called on an empty iterable"
 
 
 @overload
@@ -2456,8 +2456,8 @@ async def async_find(
     return default
 
 
-ASYNC_FIND_AWAIT_NO_MATCH = "async_find_await() has not found any matches"
-ASYNC_FIND_AWAIT_ON_EMPTY = "async_find_await() called on an empty iterable"
+ASYNC_FIND_AWAIT_NO_MATCH = "`async_find_await` has not found any matches"
+ASYNC_FIND_AWAIT_ON_EMPTY = "`async_find_await` called on an empty iterable"
 
 
 @overload
@@ -2485,7 +2485,7 @@ async def async_find_await(
     return default
 
 
-ASYNC_FIND_OR_FIRST_ON_EMPTY = "async_find_or_first() called on an empty iterable"
+ASYNC_FIND_OR_FIRST_ON_EMPTY = "`async_find_or_first` called on an empty iterable"
 
 
 @overload
@@ -2526,7 +2526,7 @@ async def async_find_or_first(
     return first
 
 
-ASYNC_FIND_OR_FIRST_AWAIT_ON_EMPTY = "async_find_or_first_await() called on an empty iterable"
+ASYNC_FIND_OR_FIRST_AWAIT_ON_EMPTY = "`async_find_or_first_await` called on an empty iterable"
 
 
 @overload
@@ -2561,7 +2561,7 @@ async def async_find_or_first_await(
     return first
 
 
-ASYNC_FIND_OR_LAST_ON_EMPTY = "async_find_or_last() called on an empty iterable"
+ASYNC_FIND_OR_LAST_ON_EMPTY = "`async_find_or_last` called on an empty iterable"
 
 
 @overload
@@ -2600,7 +2600,7 @@ async def async_find_or_last(
     return item
 
 
-ASYNC_FIND_OR_LAST_AWAIT_ON_EMPTY = "async_find_or_last_await() called on an empty iterable"
+ASYNC_FIND_OR_LAST_AWAIT_ON_EMPTY = "`async_find_or_last_await` called on an empty iterable"
 
 
 @overload
@@ -2631,7 +2631,7 @@ async def async_find_or_last_await(
     return item
 
 
-ASYNC_MIN_MAX_ON_EMPTY = "async_min_max() called on an empty iterable"
+ASYNC_MIN_MAX_ON_EMPTY = "`async_min_max` called on an empty iterable"
 
 
 @overload
@@ -2704,7 +2704,7 @@ async def async_min_max_by(iterable: AnyIterable[T], value: T, key: Unary[T, ST]
     return (low, high)
 
 
-ASYNC_MIN_MAX_AWAIT_ON_EMPTY = "async_min_max_await() called on an empty iterable"
+ASYNC_MIN_MAX_AWAIT_ON_EMPTY = "`async_min_max_await` called on an empty iterable"
 
 
 @overload
@@ -2823,7 +2823,7 @@ async def async_iter_except_await(
         pass
 
 
-ASYNC_LAST_WITH_TAIL_ON_EMPTY = "async_last_with_tail() called on an empty iterable"
+ASYNC_LAST_WITH_TAIL_ON_EMPTY = "`async_last_with_tail` called on an empty iterable"
 
 
 @overload
@@ -3493,20 +3493,23 @@ async def async_zip(*iterables: AnyIterable[Any]) -> AsyncIterator[DynamicTuple[
 SINGULAR = " "
 PLURAL = "s 1-"
 
-SHORTER = "async_zip_equal() argument {short} is shorter than argument{plural}{index}"
-LONGER = "async_zip_equal() argument {long} is longer than argument{plural}{index}"
+SHORTER = "`async_zip_equal` argument {short} is shorter than argument{plural}{index}"
+format_shorter = SHORTER.format
+
+LONGER = "`async_zip_equal` argument {long} is longer than argument{plural}{index}"
+format_longer = LONGER.format
 
 
-def format_shorter(index: int) -> str:
-    return SHORTER.format(
+def shorter(index: int) -> str:
+    return format_shorter(
         short=index + 1,
         index=index,
         plural=(PLURAL if index - 1 else SINGULAR),
     )
 
 
-def format_longer(index: int) -> str:
-    return LONGER.format(
+def longer(index: int) -> str:
+    return format_longer(
         long=index + 1,
         index=index,
         plural=(PLURAL if index - 1 else SINGULAR),
@@ -3613,12 +3616,12 @@ async def async_zip_equal(*iterables: AnyIterable[Any]) -> AsyncIterator[Dynamic
         if is_marker(head):  # argument longer than previous arguments
             for index, value in enumerate(tail, 1):
                 if value is not marker:
-                    raise ValueError(format_longer(index))
+                    raise ValueError(longer(index))
 
         else:  # argument shorter than previous ones
             for index, value in enumerate(tail, 1):
                 if is_marker(value):
-                    raise ValueError(format_shorter(index))
+                    raise ValueError(shorter(index))
 
         yield item  # simply yield if everything is alright
 
@@ -3981,7 +3984,7 @@ async def async_filter_false_await(
             yield item
 
 
-ASYNC_MAX_ON_EMPTY = "async_max() called on an empty iterable"
+ASYNC_MAX_ON_EMPTY = "`async_max` called on an empty iterable"
 
 
 @overload
@@ -4043,7 +4046,7 @@ async def async_max_by(iterable: AnyIterable[T], value: T, key: Unary[T, ST]) ->
     return value
 
 
-ASYNC_MAX_AWAIT_ON_EMPTY = "async_max_await() called on an empty iterable"
+ASYNC_MAX_AWAIT_ON_EMPTY = "`async_max_await` called on an empty iterable"
 
 
 @overload
@@ -4085,7 +4088,7 @@ async def async_max_by_await(iterable: AnyIterable[T], value: T, key: AsyncUnary
     return value
 
 
-ASYNC_MIN_ON_EMPTY = "async_min() called on an empty iterable"
+ASYNC_MIN_ON_EMPTY = "`async_min` called on an empty iterable"
 
 
 @overload
@@ -4147,7 +4150,7 @@ async def async_min_by(iterable: AnyIterable[T], value: T, key: Unary[T, ST]) ->
     return value
 
 
-ASYNC_MIN_AWAIT_ON_EMPTY = "async_min_await() called on an empty iterable"
+ASYNC_MIN_AWAIT_ON_EMPTY = "`async_min_await` called on an empty iterable"
 
 
 @overload

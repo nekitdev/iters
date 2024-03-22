@@ -39,7 +39,6 @@ from typing import (
     Literal,
     Optional,
     Set,
-    Sized,
     Tuple,
     TypeVar,
     Union,
@@ -75,6 +74,7 @@ from typing_aliases import (
 )
 from typing_extensions import Never
 
+from iters.constants import DEFAULT_START, DEFAULT_STEP
 from iters.types import is_marker, is_no_default, marker, no_default
 from iters.typing import OptionalPredicate, Product, Sum
 
@@ -103,7 +103,6 @@ __all__ = (
     "consume",
     "contains",
     "contains_identity",
-    "contains_only_item",
     "copy",
     "copy_infinite",
     "copy_unsafe",
@@ -362,11 +361,13 @@ def repeat_last(iterable: Iterable[T]) -> Iterator[T]:
     yield from repeat(item)
 
 
-def count(start: int = 0, step: int = 1) -> Iterator[int]:
+def count(start: int = DEFAULT_START, step: int = DEFAULT_STEP) -> Iterator[int]:
     return standard_count(start, step)
 
 
-def tabulate(function: Unary[int, T], start: int = 0, step: int = 1) -> Iterator[T]:
+def tabulate(
+    function: Unary[int, T], start: int = DEFAULT_START, step: int = DEFAULT_STEP
+) -> Iterator[T]:
     return map(function, count(start, step))
 
 
@@ -379,7 +380,7 @@ def for_each(function: ForEach[T], iterable: Iterable[T]) -> None:
         function(item)
 
 
-FIRST_ON_EMPTY = "first() called on an empty iterable"
+FIRST_ON_EMPTY = "`first` called on an empty iterable"
 
 
 @overload
@@ -404,7 +405,7 @@ def first(iterable: Iterable[Any], default: Any = no_default) -> Any:
     return result
 
 
-LAST_ON_EMPTY = "last() called on an empty iterable"
+LAST_ON_EMPTY = "`last` called on an empty iterable"
 
 
 @overload
@@ -436,7 +437,7 @@ def last(iterable: Iterable[Any], default: Any = no_default) -> Any:
     return result
 
 
-REDUCE_ON_EMPTY = "reduce() called on an empty iterable"
+REDUCE_ON_EMPTY = "`reduce` called on an empty iterable"
 
 
 @overload
@@ -503,7 +504,7 @@ def accumulate_product(iterable: Iterable[Any], initial: Any = no_default) -> It
     return accumulate_fold(initial, mul, iterable)
 
 
-AT_ON_EMPTY = "at() called on an empty iterable"
+AT_ON_EMPTY = "`at` called on an iterable with not enough items"
 
 
 @overload
@@ -528,7 +529,7 @@ def at(index: int, iterable: Iterable[Any], default: Any = no_default) -> Any:
     return result
 
 
-AT_OR_LAST_ON_EMPTY = "at_or_last() called on an empty iterable"
+AT_OR_LAST_ON_EMPTY = "`at_or_last` called on an empty iterable"
 
 
 @overload
@@ -1139,13 +1140,6 @@ def contains_identity(value: T, iterable: Iterable[T]) -> bool:
     return any(item is value for item in iterable)
 
 
-ONE = 1
-
-
-def contains_only_item(sized: Sized) -> bool:
-    return len(sized) == ONE
-
-
 @overload
 def all_unique_fast(iterable: Iterable[Q], key: None = ...) -> bool: ...
 
@@ -1194,7 +1188,7 @@ def spy(size: int, iterable: Iterable[T]) -> Tuple[List[T], Iterator[T]]:
     return head.copy(), chain(head, iterator)
 
 
-PEEK_ON_EMPTY = "peek() called on an empty iterable"
+PEEK_ON_EMPTY = "`peek` called on an empty iterable"
 
 
 @overload
@@ -1397,7 +1391,7 @@ def position_all(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iter
                 yield index
 
 
-POSITION_NO_MATCH = "position() has not found any matches"
+POSITION_NO_MATCH = "`position` has not found any matches"
 
 
 @overload
@@ -1428,8 +1422,8 @@ def find_all(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator
     return filter(predicate, iterable)
 
 
-FIND_NO_MATCH = "find() has not found any matches"
-FIND_ON_EMPTY = "find() called on an empty iterable"
+FIND_NO_MATCH = "`find` has not found any matches"
+FIND_ON_EMPTY = "`find` called on an empty iterable"
 
 
 @overload
@@ -1461,7 +1455,7 @@ def find(
     return default
 
 
-FIND_OR_FIRST_ON_EMPTY = "find_or_first() called on an empty iterable"
+FIND_OR_FIRST_ON_EMPTY = "`find_or_first` called on an empty iterable"
 
 
 @overload
@@ -1502,7 +1496,7 @@ def find_or_first(
     return first
 
 
-FIND_OR_LAST_ON_EMPTY = "find_or_last() called on an empty iterable"
+FIND_OR_LAST_ON_EMPTY = "`find_or_last` called on an empty iterable"
 
 
 @overload
@@ -1539,7 +1533,7 @@ def find_or_last(
     return item
 
 
-MIN_MAX_ON_EMPTY = "min_max() called on an empty iterable"
+MIN_MAX_ON_EMPTY = "`min_max` called on an empty iterable"
 
 
 @overload
@@ -1640,7 +1634,7 @@ def iter_except(function: Nullary[T], *errors: AnyErrorType) -> Iterator[T]:
         pass
 
 
-LAST_WITH_TAIL_ON_EMPTY = "last_with_tail() called on an empty iterable"
+LAST_WITH_TAIL_ON_EMPTY = "`last_with_tail` called on an empty iterable"
 
 
 @overload
@@ -2249,20 +2243,23 @@ def zip_equal(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
 SINGULAR = " "
 PLURAL = "s 1-"
 
-SHORTER = "zip_equal() argument {short} is shorter than argument{plural}{index}"
-LONGER = "zip_equal() argument {long} is longer than argument{plural}{index}"
+SHORTER = "`zip_equal` argument {short} is shorter than argument{plural}{index}"
+format_shorter = SHORTER.format
+
+LONGER = "`zip_equal` argument {long} is longer than argument{plural}{index}"
+format_longer = LONGER.format
 
 
-def format_shorter(index: int) -> str:
-    return SHORTER.format(
+def shorter(index: int) -> str:
+    return format_shorter(
         short=index + 1,
         index=index,
         plural=(PLURAL if index - 1 else SINGULAR),
     )
 
 
-def format_longer(index: int) -> str:
-    return LONGER.format(
+def longer(index: int) -> str:
+    return format_longer(
         long=index + 1,
         index=index,
         plural=(PLURAL if index - 1 else SINGULAR),
@@ -2279,12 +2276,12 @@ def zip_equal_simple(*iterables: Iterable[Any]) -> Iterator[DynamicTuple[Any]]:
         if is_marker(head):  # argument longer than previous arguments
             for index, value in enumerate(tail, 1):
                 if value is not marker:
-                    raise ValueError(format_longer(index))
+                    raise ValueError(longer(index))
 
         else:  # argument shorter than previous ones
             for index, value in enumerate(tail, 1):
                 if is_marker(value):
-                    raise ValueError(format_shorter(index))
+                    raise ValueError(shorter(index))
 
         yield item  # simply yield if everything is alright
 

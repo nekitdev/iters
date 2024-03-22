@@ -1224,9 +1224,9 @@ class AsyncIter(AsyncIterator[T]):
     async def find_or_first_await(self, predicate: AsyncPredicate[T]) -> Option[T]:
         return wrap_marked(
             await async_find_or_first_await(
-                predicate,
+                predicate,  # type: ignore[arg-type]
                 self.iterator,
-                marker,  # type: ignore[arg-type]
+                marker,
             )
         )
 
@@ -1240,9 +1240,9 @@ class AsyncIter(AsyncIterator[T]):
     async def find_or_last_await(self, predicate: AsyncPredicate[T]) -> Option[T]:
         return wrap_marked(
             await async_find_or_last_await(
-                predicate,
+                predicate,  # type: ignore[arg-type]
                 self.iterator,
-                marker,  # type: ignore[arg-type]
+                marker,
             )
         )
 
