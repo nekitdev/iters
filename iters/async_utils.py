@@ -79,6 +79,7 @@ from typing_aliases import (
 )
 from typing_extensions import Never, ParamSpec, TypeVarTuple, Unpack
 
+from iters.constants import DEFAULT_START, DEFAULT_STEP
 from iters.ordered_set import OrderedSet, ordered_set
 from iters.types import is_marker, is_no_default, marker, no_default
 from iters.typing import OptionalPredicate, Product, Sum
@@ -3918,7 +3919,7 @@ async def async_any(iterable: AnyIterable[T]) -> bool:
     return False
 
 
-async def async_count(start: int = 0, step: int = 1) -> AsyncIterator[int]:
+async def async_count(start: int = DEFAULT_START, step: int = DEFAULT_STEP) -> AsyncIterator[int]:
     value = start
 
     while True:
@@ -3927,7 +3928,9 @@ async def async_count(start: int = 0, step: int = 1) -> AsyncIterator[int]:
         value += step
 
 
-async def async_enumerate(iterable: AnyIterable[T], start: int = 0) -> AsyncIterator[Tuple[int, T]]:
+async def async_enumerate(
+    iterable: AnyIterable[T], start: int = DEFAULT_START
+) -> AsyncIterator[Tuple[int, T]]:
     value = start
 
     async for item in async_iter(iterable):
