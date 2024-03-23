@@ -4,6 +4,14 @@
 
 ## 0.17.0 (2024-03-23)
 
+### Features
+
+- Added `at_most_one` and `exactly_one` methods.
+
+### Changes
+
+- Improved error messages.
+
 ## 0.16.3 (2024-03-21)
 
 ### Internal
