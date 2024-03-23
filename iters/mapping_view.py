@@ -41,7 +41,7 @@ class MappingView(Mapping[K, V]):
 
 
 def mapping_view(mapping: Mapping[K, V]) -> MappingView[K, V]:
-    """Returns the [`MappingView[K, V]`][iters.views.mappings.MappingView] over the given mapping.
+    """Returns the [`MappingView[K, V]`][iters.mapping_view.MappingView] over the given mapping.
 
     Arguments:
         mapping: The mapping to view into.

@@ -60,8 +60,10 @@ from typing_aliases import (
     Validate,
 )
 from typing_extensions import Never, ParamSpec
-from wraps.option import Option
-from wraps.wraps import wrap_future, wrap_future_option
+from wraps.early import early_option_await
+from wraps.option import Option, Some
+from wraps.result import Result
+from wraps.wraps import wrap_future, wrap_future_option, wrap_future_result
 
 from iters.async_utils import (
     async_accumulate_fold,
@@ -266,6 +268,8 @@ from iters.async_utils import async_iter as async_iter_any_iter
 from iters.async_utils import async_pairs_longest as standard_async_pairs_longest
 from iters.async_utils import async_zip_longest as standard_async_zip_longest
 from iters.async_wraps import (
+    async_at_most_one,
+    async_exactly_one,
     async_filter_map_option,
     async_filter_map_option_await,
     async_scan,
@@ -934,11 +938,15 @@ class AsyncIter(AsyncIterator[T]):
 
     @classmethod
     def create_tuple(cls, iterables: DynamicTuple[AnyIterable[U]]) -> DynamicTuple[AsyncIter[U]]:
-        return tuple(map(cls, iterables))  # type: ignore[arg-type]
+        return tuple(map(cls.create, iterables))
 
     @classmethod
     def create_nested(cls, nested: AnyIterable[AnyIterable[U]]) -> AsyncIter[AsyncIter[U]]:
-        return cls(map(cls, nested))  # type: ignore[arg-type, return-value]
+        return cls.create(map(cls.create, nested))  # type: ignore[arg-type]
+
+    @classmethod
+    def create_option(cls, option: Option[AnyIterable[U]]) -> Option[AsyncIter[U]]:
+        return option.map(cls.create)
 
     def __aiter__(self) -> AsyncIter[T]:
         return self
@@ -1275,16 +1283,18 @@ class AsyncIter(AsyncIterator[T]):
         return await async_fold_await(initial, function, self.iterator)
 
     @wrap_future
-    async def sum(self: AsyncIter[S]) -> S:
-        return await async_sum(self.iterator)
+    @early_option_await
+    async def sum(self: AsyncIter[S]) -> Option[S]:
+        return Some(await self.sum_with(await self.next().early()))
 
     @wrap_future
     async def sum_with(self: AsyncIter[S], initial: S) -> S:
         return await async_sum(self.iterator, initial)
 
     @wrap_future
-    async def product(self: AsyncIter[P]) -> P:
-        return await async_product(self.iterator)
+    @early_option_await
+    async def product(self: AsyncIter[P]) -> Option[P]:
+        return Some(await self.product_with(await self.next().early()))
 
     @wrap_future
     async def product_with(self: AsyncIter[P], initial: P) -> P:
@@ -2557,6 +2567,18 @@ class AsyncIter(AsyncIterator[T]):
 
     def wait_concurrent_bound(self: AsyncIter[Awaitable[U]], bound: int) -> AsyncIter[U]:
         return self.create(async_wait_concurrent_bound(bound, self.iterator))
+
+    @wrap_future_result
+    async def at_most_one(self) -> Result[Option[T], AsyncIter[T]]:
+        result = await async_at_most_one(self.iterator)
+
+        return result.map_error(self.create)
+
+    @wrap_future_result
+    async def exactly_one(self) -> Result[T, Option[AsyncIter[T]]]:
+        result = await async_exactly_one(self.iterator)
+
+        return result.map_error(self.create_option)
 
     @wrap_future
     async def into_iter(self) -> Iter[T]:

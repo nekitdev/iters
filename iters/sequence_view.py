@@ -42,7 +42,7 @@ class SequenceView(Sequence[T]):
 
 
 def sequence_view(sequence: Sequence[T]) -> SequenceView[T]:
-    """Returns the [`SequenceView[T]`][iters.views.sequences.SequenceView] over the given sequence.
+    """Returns the [`SequenceView[T]`][iters.sequence_view.SequenceView] over the given sequence.
 
     Arguments:
         sequence: The sequence to view into.

@@ -60,12 +60,13 @@ plugins:
         python:
           options:
             members_order: source
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
             show_signature_annotations: true
-
-          paths: [iters]
 
           import:
             - https://docs.python.org/3/objects.inv
+            - https://nekitdev.github.io/orderings/objects.inv
             - https://nekitdev.github.io/wraps/objects.inv
 
 markdown_extensions:

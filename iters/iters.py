@@ -50,6 +50,7 @@ from typing_aliases import (
 from typing_extensions import Never, ParamSpec
 from wraps.early import early_option
 from wraps.option import Option, Some
+from wraps.result import Result
 
 from iters.constants import DEFAULT_START, DEFAULT_STEP, EMPTY_BYTES, EMPTY_STRING
 from iters.ordered_set import OrderedSet, ordered_set
@@ -175,7 +176,7 @@ from iters.utils import (
 from iters.utils import groups_longest as standard_groups_longest
 from iters.utils import pairs_longest as standard_pairs_longest
 from iters.utils import zip_longest as standard_zip_longest
-from iters.wraps import filter_map_option, scan
+from iters.wraps import at_most_one, exactly_one, filter_map_option, scan
 
 __all__ = (
     # the iterator type
@@ -1343,15 +1344,15 @@ class Iter(Iterator[T]):
 
     @classmethod
     def create_tuple(cls, iterables: DynamicTuple[Iterable[U]]) -> DynamicTuple[Iter[U]]:
-        return tuple(map(cls, iterables))  # type: ignore[arg-type]
+        return tuple(map(cls.create, iterables))
 
     @classmethod
     def create_nested(cls, nested: Iterable[Iterable[U]]) -> Iter[Iter[U]]:
-        return cls(map(cls, nested))  # type: ignore[arg-type, return-value]
+        return cls.create(map(cls.create, nested))
 
-    # @classmethod
-    # def create_option(cls, option: Option[Iterable[U]]) -> Option[Iter[U]]:
-    #     return option.map(cls)  # type: ignore[arg-type]
+    @classmethod
+    def create_option(cls, option: Option[Iterable[U]]) -> Option[Iter[U]]:
+        return option.map(cls.create)
 
     def __iter__(self) -> Iter[T]:
         return self
@@ -1408,7 +1409,7 @@ class Iter(Iterator[T]):
             other: The other iterable.
 
         Returns:
-            The [`Ordering`][iters.types.Ordering] representing the result.
+            The [`Ordering`][orderings.core.Ordering] representing the result.
         """
         return compare(self.iterator, other)
 
@@ -1430,7 +1431,7 @@ class Iter(Iterator[T]):
             key: The key function.
 
         Returns:
-            The [`Ordering`][iters.types.Ordering] representing the result.
+            The [`Ordering`][orderings.core.Ordering] representing the result.
         """
         return compare(self.iterator, other, key)
 
@@ -3276,6 +3277,12 @@ class Iter(Iterator[T]):
 
     # def transpose_option(self: Iter[Option[U]]) -> Option[Iter[U]]:
     #     return self.create_option(transpose_option(self.iterator))
+
+    def at_most_one(self) -> Result[Option[T], Iter[T]]:
+        return at_most_one(self.iterator).map_error(self.create)
+
+    def exactly_one(self) -> Result[T, Option[Iter[T]]]:
+        return exactly_one(self.iterator).map_error(self.create_option)
 
     def into_async_iter(self) -> AsyncIter[T]:
         """Converts an [`Iter[T]`][iters.iters.Iter] into
