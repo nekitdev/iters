@@ -2,14 +2,14 @@ from typing import Any, Iterator, Mapping, TypeVar, final
 
 from attrs import frozen
 from typing_extensions import Self
-from wraps.wraps import WrapOption
+from wraps.wraps.option import wrap_option_on
 
 __all__ = ("MappingView", "mapping_view")
 
 K = TypeVar("K")
 V = TypeVar("V")
 
-wrap_key_error = WrapOption(KeyError)
+wrap_key_error = wrap_option_on(KeyError)
 
 
 @final

@@ -1,8 +1,8 @@
 from typing import Iterable, Iterator, TypeVar
 
 from typing_aliases import Binary, Unary
-from wraps.option import NULL, Option, Some
-from wraps.result import Error, Ok, Result
+from wraps.primitives.option import NULL, Option, Some
+from wraps.primitives.result import Error, Ok, Result
 
 from iters.types import is_marker, marker
 from iters.utils import chain

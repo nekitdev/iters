@@ -48,9 +48,9 @@ from typing_aliases import (
     Unary,
 )
 from typing_extensions import Never, ParamSpec
-from wraps.early import early_option
-from wraps.option import Option, Some
-from wraps.result import Result
+from wraps.early.decorators import early_option
+from wraps.primitives.option import Option, Some
+from wraps.primitives.result import Result
 
 from iters.constants import DEFAULT_START, DEFAULT_STEP, EMPTY_BYTES, EMPTY_STRING
 from iters.ordered_set import OrderedSet, ordered_set

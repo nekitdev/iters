@@ -1,8 +1,8 @@
 from typing import AsyncIterator, TypeVar
 
 from typing_aliases import AnyIterable, AsyncBinary, AsyncUnary, Binary, Unary
-from wraps.option import NULL, Option, Some
-from wraps.result import Error, Ok, Result
+from wraps.primitives.option import NULL, Option, Some
+from wraps.primitives.result import Error, Ok, Result
 
 from iters.async_utils import async_chain, async_iter, async_next_unchecked
 from iters.types import is_marker, marker

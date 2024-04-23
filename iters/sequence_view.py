@@ -4,13 +4,13 @@ from typing import Sequence, TypeVar, Union, final, overload
 
 from attrs import frozen
 from typing_aliases import is_slice
-from wraps.wraps import WrapOption
+from wraps.wraps.option import wrap_option_on
 
 __all__ = ("SequenceView", "sequence_view")
 
 T = TypeVar("T")
 
-wrap_index_error = WrapOption(IndexError)
+wrap_index_error = wrap_option_on(IndexError)
 
 
 @final

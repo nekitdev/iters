@@ -2,6 +2,12 @@
 
 <!-- changelogging: start -->
 
+## 0.18.0 (2024-04-23)
+
+### Changes
+
+- Migrated to the latest version of the `wraps` library.
+
 ## 0.17.0 (2024-03-23)
 
 ### Features

@@ -60,10 +60,10 @@ from typing_aliases import (
     Validate,
 )
 from typing_extensions import Never, ParamSpec
-from wraps.early import early_option_await
-from wraps.option import Option, Some
-from wraps.result import Result
-from wraps.wraps import wrap_future, wrap_future_option, wrap_future_result
+from wraps.early.decorators import early_option_await
+from wraps.primitives.option import Option, Some
+from wraps.primitives.result import Result
+from wraps.wraps.futures import wrap_future, wrap_future_option, wrap_future_result
 
 from iters.async_utils import (
     async_accumulate_fold,

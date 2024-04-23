@@ -19,7 +19,7 @@ from mixed_methods import mixed_method
 from named import get_type_name
 from typing_aliases import AnySet, is_instance, is_sized, is_slice
 from typing_extensions import TypeIs
-from wraps.wraps import wrap_option
+from wraps.wraps.option import wrap_option_on
 
 __all__ = ("OrderedSet", "ordered_set", "ordered_set_unchecked")
 
@@ -47,6 +47,9 @@ def is_sequence(iterable: Iterable[T]) -> TypeIs[Sequence[T]]:
 
 def is_any_set(iterable: Iterable[T]) -> TypeIs[AnySet[T]]:
     return is_instance(iterable, AnySet)
+
+
+wrap_index_error = wrap_option_on(IndexError)
 
 
 class OrderedSet(MutableSet[Q], Sequence[Q]):
@@ -350,7 +353,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
         return index
 
-    get_index = wrap_option(index)
+    get_index = wrap_index_error(index)
     """An alias of [`index`][iters.ordered_set.OrderedSet.index] wrapped to return
     [`Option[int]`][wraps.option.Option] instead of erroring.
     """
@@ -405,7 +408,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
         return item
 
-    get_pop = wrap_option(pop)
+    get_pop = wrap_index_error(pop)
     """An alias of [`pop`][iters.ordered_set.OrderedSet.pop] wrapped to return
     [`Option[Q]`][wraps.option.Option] instead of erroring.
     """
