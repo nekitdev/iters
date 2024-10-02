@@ -1,8 +1,8 @@
 from typing import AsyncIterator, TypeVar
 
 from typing_aliases import AnyIterable, AsyncBinary, AsyncUnary, Binary, Unary
-from wraps.primitives.option import NULL, Option, Some
-from wraps.primitives.result import Error, Ok, Result
+from wraps.option import NULL, Option, Some
+from wraps.result import Err, Ok, Result
 
 from iters.async_utils import async_chain, async_iter, async_next_unchecked
 from iters.types import is_marker, marker
@@ -64,12 +64,12 @@ async def async_exactly_one(iterable: AnyIterable[T]) -> Result[T, Option[AsyncI
     first = await async_next_unchecked(iterator, marker)
 
     if is_marker(first):
-        return Error(NULL)
+        return Err(NULL)
 
     second = await async_next_unchecked(iterator, marker)
 
     if not is_marker(second):
-        return Error(Some(async_chain((first, second), iterator)))
+        return Err(Some(async_chain((first, second), iterator)))
 
     return Ok(first)
 
@@ -85,6 +85,6 @@ async def async_at_most_one(iterable: AnyIterable[T]) -> Result[Option[T], Async
     second = await async_next_unchecked(iterator, marker)
 
     if not is_marker(second):
-        return Error(async_chain((first, second), iterator))
+        return Err(async_chain((first, second), iterator))
 
     return Ok(Some(first))

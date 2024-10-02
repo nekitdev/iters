@@ -19,7 +19,7 @@ from mixed_methods import mixed_method
 from named import get_type_name
 from typing_aliases import AnySet, is_instance, is_sized, is_slice
 from typing_extensions import TypeIs
-from wraps.wraps.option import wrap_option_on
+from wraps.option import wrap_option_on
 
 __all__ = ("OrderedSet", "ordered_set", "ordered_set_unchecked")
 

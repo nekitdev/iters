@@ -4,7 +4,7 @@ from typing import Any, TypeVar, Union
 
 from solus import Singleton
 from typing_extensions import TypeIs
-from wraps.primitives.option import NULL, Option, Some
+from wraps.option import NULL, Option, Some
 
 T = TypeVar("T")
 

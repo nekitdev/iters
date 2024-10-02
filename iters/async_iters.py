@@ -61,9 +61,11 @@ from typing_aliases import (
 )
 from typing_extensions import Never, ParamSpec
 from wraps.early.decorators import early_option_await
-from wraps.primitives.option import Option, Some
-from wraps.primitives.result import Result
-from wraps.wraps.futures import wrap_future, wrap_future_option, wrap_future_result
+from wraps.option import Option, Some
+from wraps.result import Result
+from wraps.futures.future import wrap_future
+from wraps.futures.option import wrap_future_option
+from wraps.futures.result import wrap_future_result
 
 from iters.async_utils import (
     async_accumulate_fold,

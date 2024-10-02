@@ -2,7 +2,7 @@ from typing import Any, Iterator, Mapping, TypeVar, final
 
 from attrs import frozen
 from typing_extensions import Self
-from wraps.wraps.option import wrap_option_on
+from wraps.option import wrap_option_on
 
 __all__ = ("MappingView", "mapping_view")
 

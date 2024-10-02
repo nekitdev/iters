@@ -43,7 +43,7 @@ async-extensions = ">= 4.0.0"
 mixed-methods = ">= 1.1.1"
 
 funcs = ">= 0.10.1"
-wraps = ">= 0.11.0"
+wraps = ">= 0.15.0"
 
 [tool.poetry.group.format.dependencies]
 ruff = "0.4.1"
