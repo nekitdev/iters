@@ -76,7 +76,7 @@ from typing_extensions import Never
 
 from iters.constants import DEFAULT_START, DEFAULT_STEP
 from iters.types import is_marker, is_no_default, marker, no_default
-from iters.typing import OptionalPredicate, Product, Sum
+from iters.typing import OptionalPredicate, Product, Sum, or_bool
 
 __all__ = (
     "accumulate_fold",
@@ -207,6 +207,7 @@ __all__ = (
     "unique",
     "unique_fast",
     "unpack_unary_tuple",
+    "windows_with",
     "zip",
     "zip_equal",
     "zip_longest",
@@ -240,11 +241,11 @@ ST = TypeVar("ST", bound=StrictOrdered)
 
 
 def take_while(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[T]:
-    return standard_take_while(predicate or bool, iterable)
+    return standard_take_while(or_bool(predicate), iterable)
 
 
 def drop_while(predicate: OptionalPredicate[T], iterable: Iterable[T]) -> Iterator[T]:
-    return standard_drop_while(predicate or bool, iterable)
+    return standard_drop_while(or_bool(predicate), iterable)
 
 
 def none(iterable: Iterable[Any]) -> bool:

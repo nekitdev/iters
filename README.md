@@ -20,7 +20,7 @@ Iterators are heavily used in idiomatic Python code, so becoming familiar with t
 
 **Python 3.8 or above is required.**
 
-### pip
+### `pip`
 
 Installing the library with `pip` is quite simple:
 
@@ -31,31 +31,23 @@ $ pip install iters
 Alternatively, the library can be installed from source:
 
 ```console
-$ git clone https://github.com/nekitdev/iters.git
-$ cd iters
-$ python -m pip install .
+$ pip install git+https://github.com/nekitdev/iters.git
 ```
 
-### poetry
+Or via cloning the repository:
+
+```console
+$ git clone https://github.com/nekitdev/iters.git
+$ cd iters
+$ pip install .
+```
+
+### `uv`
 
 You can add `iters` as a dependency with the following command:
 
 ```console
-$ poetry add iters
-```
-
-Or by directly specifying it in the configuration like so:
-
-```toml
-[tool.poetry.dependencies]
-iters = "^0.18.0"
-```
-
-Alternatively, you can add it directly from the source:
-
-```toml
-[tool.poetry.dependencies.iters]
-git = "https://github.com/nekitdev/iters.git"
+$ uv add iters
 ```
 
 ## Examples
@@ -85,8 +77,8 @@ print(result)  # [0, 4, 16, 36, 64]
 
 ### Asynchronous
 
-Asynchronous iteration is fully supported by `iters`, and its API is similar to its
-synchronous counterpart.
+Asynchronous iteration is fully supported by the [`async-iters`][async-iters] library,
+and its API is similar to the synchronous counterpart (`iters`).
 
 ## Documentation
 
@@ -116,7 +108,7 @@ If you are interested in contributing to `iters`, make sure to take a look at th
 
 [Email]: mailto:support@nekit.dev
 
-[Discord]: https://nekit.dev/discord
+[Discord]: https://nekit.dev/chat
 
 [Actions]: https://github.com/nekitdev/iters/actions
 
@@ -131,7 +123,7 @@ If you are interested in contributing to `iters`, make sure to take a look at th
 [Coverage]: https://codecov.io/gh/nekitdev/iters
 [Documentation]: https://nekitdev.github.io/iters
 
-[Discord Badge]: https://img.shields.io/badge/chat-discord-5865f2
+[Discord Badge]: https://img.shields.io/discord/728012506899021874
 [License Badge]: https://img.shields.io/pypi/l/iters
 [Version Badge]: https://img.shields.io/pypi/v/iters
 [Downloads Badge]: https://img.shields.io/pypi/dm/iters
@@ -140,3 +132,5 @@ If you are interested in contributing to `iters`, make sure to take a look at th
 [Check Badge]: https://github.com/nekitdev/iters/workflows/check/badge.svg
 [Test Badge]: https://github.com/nekitdev/iters/workflows/test/badge.svg
 [Coverage Badge]: https://codecov.io/gh/nekitdev/iters/branch/main/graph/badge.svg
+
+[async-iters]: https://github.com/nekitdev/async-iters

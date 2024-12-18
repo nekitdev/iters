@@ -1,1 +1,1 @@
---8<-- "SECURITY.md"
+../SECURITY.md

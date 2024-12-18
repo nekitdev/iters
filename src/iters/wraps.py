@@ -1,8 +1,8 @@
 from typing import Iterable, Iterator, TypeVar
 
 from typing_aliases import Binary, Unary
-from wraps.primitives.option import NULL, Option, Some
-from wraps.primitives.result import Error, Ok, Result
+from wraps.option import NULL, Option, Some
+from wraps.result import Err, Ok, Result
 
 from iters.types import is_marker, marker
 from iters.utils import chain
@@ -37,12 +37,12 @@ def exactly_one(iterable: Iterable[T]) -> Result[T, Option[Iterator[T]]]:
     first = next(iterator, marker)
 
     if is_marker(first):
-        return Error(NULL)
+        return Err(NULL)
 
     second = next(iterator, marker)
 
     if not is_marker(second):
-        return Error(Some(chain((first, second), iterator)))
+        return Err(Some(chain((first, second), iterator)))
 
     return Ok(first)
 
@@ -58,6 +58,6 @@ def at_most_one(iterable: Iterable[T]) -> Result[Option[T], Iterator[T]]:
     second = next(iterator, marker)
 
     if not is_marker(second):
-        return Error(chain((first, second), iterator))
+        return Err(chain((first, second), iterator))
 
     return Ok(Some(first))

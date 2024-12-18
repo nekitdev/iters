@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from builtins import iter as standard_iter
 from builtins import reversed as standard_reversed
-from functools import wraps
 from typing import (
     Any,
     AnyStr,
@@ -24,6 +23,16 @@ from typing import (
     overload,
 )
 
+try:
+    from async_iters.iters import AsyncIter, async_iter
+
+except ImportError:
+    ASYNC = False
+
+else:
+    ASYNC = True
+
+from funcs.decorators import wraps
 from mixed_methods import mixed_method
 from orderings import LenientOrdered, Ordering, StrictOrdered
 from typing_aliases import (
@@ -49,11 +58,11 @@ from typing_aliases import (
 )
 from typing_extensions import Never, ParamSpec
 from wraps.early.decorators import early_option
-from wraps.primitives.option import Option, Some
-from wraps.primitives.result import Result
+from wraps.option import Option, Some
+from wraps.result import Result
 
 from iters.constants import DEFAULT_START, DEFAULT_STEP, EMPTY_BYTES, EMPTY_STRING
-from iters.ordered_set import OrderedSet, ordered_set
+from iters.ordered_sets import OrderedSet, ordered_set, ordered_set_unchecked
 from iters.types import MarkerOr, marker, wrap_marked
 from iters.typing import OptionalPredicate, Product, Sum
 from iters.utils import (
@@ -133,6 +142,7 @@ from iters.utils import (
     list_windows,
     map_except,
     min_max,
+    none,
     once,
     once_with,
     pad,
@@ -170,6 +180,7 @@ from iters.utils import (
     tuple_windows,
     unique,
     unique_fast,
+    windows_with,
     zip,
     zip_equal,
 )
@@ -259,7 +270,6 @@ class Iter(Iterator[T]):
 
     @property
     def iterator(self) -> Iterator[T]:
-        """The underlying iterator."""
         return self._iterator
 
     @classmethod
@@ -1614,7 +1624,7 @@ class Iter(Iterator[T]):
         return set(self.iterator)
 
     def ordered_set(self: Iter[Q]) -> OrderedSet[Q]:
-        """Collects the iterator into the [`OrderedSet[Q]`][iters.ordered_set.OrderedSet].
+        """Collects the iterator into the [`OrderedSet[Q]`][iters.collections.ordered_sets.OrderedSet].
 
         Warning:
             The items of the iterator have to be hashable for this method to work.
@@ -1635,7 +1645,7 @@ class Iter(Iterator[T]):
             ```
 
         Returns:
-            The [`OrderedSet[Q]`][iters.ordered_set.OrderedSet] over the iterator.
+            The [`OrderedSet[Q]`][iters.collections.ordered_sets.OrderedSet] over the iterator.
         """
         return ordered_set(self.iterator)
 
@@ -1841,6 +1851,12 @@ class Iter(Iterator[T]):
 
     def any_by(self, predicate: Predicate[T]) -> bool:
         return self.map(predicate).any()
+
+    def none(self) -> bool:
+        return none(self.iterator)
+
+    def none_by(self, predicate: Predicate[T]) -> bool:
+        return self.map(predicate).none()
 
     def all_equal(self) -> bool:
         return all_equal(self.iterator)
@@ -2298,6 +2314,9 @@ class Iter(Iterator[T]):
 
     def set_windows(self: Iter[Q], size: int) -> Iter[Set[Q]]:
         return self.create(set_windows(size, self.iterator))
+
+    def windows_with(self, function: Unary[Iterable[T], U], size: int) -> Iter[U]:
+        return self.create(windows_with(function, size, self.iterator))
 
     @overload
     def apply_zip(self) -> Iter[Tuple[T]]: ...
@@ -3279,26 +3298,27 @@ class Iter(Iterator[T]):
     #     return self.create_option(transpose_option(self.iterator))
 
     def at_most_one(self) -> Result[Option[T], Iter[T]]:
-        return at_most_one(self.iterator).map_error(self.create)
+        return at_most_one(self.iterator).map_err(self.create)
 
     def exactly_one(self) -> Result[T, Option[Iter[T]]]:
-        return exactly_one(self.iterator).map_error(self.create_option)
+        return exactly_one(self.iterator).map_err(self.create_option)
 
-    def into_async_iter(self) -> AsyncIter[T]:
-        """Converts an [`Iter[T]`][iters.iters.Iter] into
-        an [`AsyncIter[T]`][iters.async_iters.AsyncIter].
+    if ASYNC:
+        def into_async_iter(self) -> AsyncIter[T]:
+            """Converts an [`Iter[T]`][iters.iters.Iter] into
+            an [`AsyncIter[T]`][async_iters.iters.AsyncIter].
 
-        Example:
-            ```python
-            >>> async_iterator = iter.of(13, 34, 42).into_async_iter()
-            >>> await async_iterator.tuple()
-            (13, 34, 42)
-            ```
+            Example:
+                ```python
+                >>> async_iterator = iter.of(13, 34, 42).into_async_iter()
+                >>> await async_iterator.tuple()
+                (13, 34, 42)
+                ```
 
-        Returns:
-            The async iterator created from the iterator.
-        """
-        return async_iter(self.iterator)
+            Returns:
+                The async iterator created from the iterator.
+            """
+            return async_iter(self.iterator)
 
 
 iter = Iter
@@ -3323,6 +3343,3 @@ def wrap_iter(function: Callable[PS, Iterable[T]]) -> Callable[PS, Iter[T]]:
         return iter(function(*args, **kwargs))
 
     return wrap
-
-
-from iters.async_iters import AsyncIter, async_iter

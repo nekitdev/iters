@@ -11,15 +11,12 @@ nav:
   - Index: "index.md"
   - Predicates: "predicates.md"
   - Reference:
-    - Iterators: "reference/iters.md"
-    - Async Iterators: "reference/async_iters.md"
-    - Ordered Set: "reference/ordered_set.md"
-    - Mapping View: "reference/mapping_view.md"
-    - Sequence View: "reference/sequence_view.md"
-    - Utilities: "reference/utils.md"
-    - Async Utilities: "reference/async_utils.md"
-    - Mappings: "reference/mappings.md"
-    - Typing: "reference/typing.md"
+      - Iterators: "reference/iters.md"
+      - Utilities: "reference/utils.md"
+      - Wraps: "reference/wraps.md"
+      - Mappings: "reference/mappings.md"
+      - Ordered Sets: "reference/ordered_sets.md"
+      - Typing: "reference/typing.md"
   - Changelog: "changelog.md"
   - Security: "security.md"
   - Code of Conduct: "code_of_conduct.md"
@@ -27,7 +24,7 @@ nav:
 
 watch:
   - docs
-  - iters
+  - src
 
 theme:
   name: material
@@ -68,6 +65,8 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://nekitdev.github.io/orderings/objects.inv
             - https://nekitdev.github.io/wraps/objects.inv
+            - https://nekitdev.github.io/iters-collections/objects.inv
+            - https://nekitdev.github.io/iters-async/objects.inv
 
 markdown_extensions:
   - pymdownx.highlight

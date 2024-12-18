@@ -12,9 +12,6 @@ build/
 dist/
 wheels/
 
-*.egg-info/
-*.egg
-
 MANIFEST
 
 *.manifest
@@ -81,4 +78,5 @@ cython_debug/
 *.log
 
 # remove lock file if it should be included
-poetry.lock
+
+uv.lock

@@ -3,7 +3,7 @@ from typing import Generic, TypeVar, final
 from attrs import define
 from typing_extensions import Self
 
-__all__ = ("State", "stateful")
+__all__ = ("State", "state")
 
 T = TypeVar("T")
 
@@ -25,8 +25,8 @@ class State(Generic[T]):
         return self
 
 
-def stateful(value: T) -> State[T]:
-    """Wraps the given value into a [`State[T]`][wraps.state.State].
+def state(value: T) -> State[T]:
+    """Wraps the given value into a [`State[T]`][wraps.states.State].
 
     Arguments:
         value: The value to wrap.

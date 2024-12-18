@@ -8,10 +8,12 @@ from typing import (
     Iterator,
     List,
     MutableSet,
+    MutableSequence,
     Optional,
     Sequence,
     TypeVar,
     Union,
+    final,
     overload,
 )
 
@@ -19,24 +21,45 @@ from mixed_methods import mixed_method
 from named import get_type_name
 from typing_aliases import AnySet, is_instance, is_sized, is_slice
 from typing_extensions import TypeIs
-from wraps.wraps.option import wrap_option_on
+from wraps.option import NULL, Option, Some, wrap_optional
 
 __all__ = ("OrderedSet", "ordered_set", "ordered_set_unchecked")
+
+
+def none(iterable: Iterable[Any]) -> bool:
+    return not any(iterable)
+
+
+def is_index_in_bounds(index: int, length: int) -> bool:
+    if index < 0:
+        index = ~index
+
+    return index < length
+
 
 Q = TypeVar("Q", bound=Hashable)
 R = TypeVar("R", bound=Hashable)
 
+
 SLICE_ALL = slice(None)
+"""The slice that takes all items."""
+
 LAST = ~0
 """The last index."""
 
-EMPTY_REPRESENTATION = "{}()"
-ITEMS_REPRESENTATION = "{}({})"
+EMPTY = ()
+"""The empty iterable, used for defaults."""
 
+EMPTY_REPRESENTATION = "{name}()"
+empty_representation = EMPTY_REPRESENTATION.format
 
-ITEM_NOT_IN_ORDERED_SET = "item {!r} is not in the ordered set"
-item_not_in_ordered_set = ITEM_NOT_IN_ORDERED_SET.format
+ITEMS_REPRESENTATION = "{name}({items!r})"
+items_representation = ITEMS_REPRESENTATION.format
 
+NOT_IN_ORDERED_SET = "{item!r} is not in the ordered set"
+not_in_ordered_set = NOT_IN_ORDERED_SET.format
+
+DUPLICATES = "the created ordered set has duplicates"
 
 T = TypeVar("T")
 
@@ -49,9 +72,7 @@ def is_any_set(iterable: Iterable[T]) -> TypeIs[AnySet[T]]:
     return is_instance(iterable, AnySet)
 
 
-wrap_index_error = wrap_option_on(IndexError)
-
-
+@final
 class OrderedSet(MutableSet[Q], Sequence[Q]):
     """Represents ordered sets, i.e. mutable hash sets that preserve insertion order.
 
@@ -65,14 +86,14 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
     It is assumed that *clearing* is `O(n)`, where `n` is the number of elements.
     """
 
-    def __init__(self, iterable: Iterable[Q] = ()) -> None:
+    def __init__(self, iterable: Iterable[Q] = EMPTY) -> None:
         self._items: List[Q] = []
         self._item_to_index: Dict[Q, int] = {}
 
         self.update(iterable)
 
     @classmethod
-    def create(cls, iterable: Iterable[R] = ()) -> OrderedSet[R]:
+    def create(cls, iterable: Iterable[R] = EMPTY) -> OrderedSet[R]:
         """Creates an ordered set from an iterable.
 
         Complexity:
@@ -95,7 +116,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return cls(iterable)  # type: ignore[arg-type, return-value]
 
     @classmethod
-    def create_unchecked(cls, iterable: Iterable[R] = ()) -> OrderedSet[R]:
+    def create_unchecked(cls, iterable: Iterable[R] = EMPTY) -> OrderedSet[R]:
         """Creates an ordered set from an iterable without checking if the items are unique.
 
         This method is useful when constructing an ordered set from an iterable that is known to
@@ -110,10 +131,19 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             >>> order_set = ordered_set.create_unchecked(array)
             >>> order_set
             OrderedSet([1, 2, 3])
+            >>> # however, it is trivial to verify whether the caller upheld the invariants
+            >>> invalid = [0, 0]
+            >>> order_set = ordered_set.create_unchecked(invalid)
+            Traceback (most recent call last):
+              ...
+            ValueError: the created ordered set has duplicates
             ```
 
         Arguments:
             iterable: The iterable to create the ordered set from.
+
+        Raises:
+            ValueError: In case duplicates are found. This check is `O(1)`.
 
         Returns:
             The created ordered set.
@@ -125,8 +155,10 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
         items.extend(iterable)
 
-        for index, item in enumerate(items):
-            item_to_index[item] = index
+        item_to_index.update((item, index) for index, item in enumerate(items))
+
+        if len(items) != len(item_to_index):
+            raise ValueError(DUPLICATES)
 
         return self
 
@@ -190,7 +222,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             *iterables: The iterables to create the ordered set symmetric difference from.
 
         Returns:
-            The ordered set symmetric difference.
+            The ordered symmetric set difference.
         """
         if iterables:
             head, *tail = iterables
@@ -199,23 +231,13 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
         return cls.create()
 
-    def __len__(self) -> int:
-        return len(self._items)
+    def is_empty(self) -> bool:
+        """Checks whether the ordered set is empty.
 
-    @overload
-    def __getitem__(self, index: int) -> Q: ...
-
-    @overload
-    def __getitem__(self, index: slice) -> OrderedSet[Q]: ...
-
-    def __getitem__(self, index: Union[int, slice]) -> Union[Q, OrderedSet[Q]]:
-        if is_slice(index):
-            if index == SLICE_ALL:
-                return self.copy()
-
-            return self.create_unchecked(self._items[index])
-
-        return self._items[index]
+        Returns:
+            Whether the ordered set is empty.
+        """
+        return not self._items
 
     def copy(self) -> OrderedSet[Q]:
         """Copies the ordered set.
@@ -234,7 +256,14 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             >>> order_set = ordered_set([1, 2, 3])
             >>> order_set
             OrderedSet([1, 2, 3])
-            >>> order_set.copy()
+            >>> copy = order_set.copy()
+            >>> copy
+            OrderedSet([1, 2, 3])
+            >>> ordered_set.try_remove(2)
+            Some(2)
+            >>> order_set
+            OrderedSet([1, 3])
+            >>> copy
             OrderedSet([1, 2, 3])
             ```
 
@@ -243,8 +272,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """
         return self.create_unchecked(self)
 
-    def __contains__(self, item: Any) -> bool:
-        return item in self._item_to_index
+    def try_add(self, item: Q) -> Option[Q]
 
     def add(self, item: Q) -> None:
         """Adds an item to the ordered set.
@@ -276,9 +304,6 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
             items.append(item)
 
-    append = add
-    """An alias of [`add`][iters.ordered_set.OrderedSet.add]."""
-
     def update(self, iterable: Iterable[Q]) -> None:
         """Updates the ordered set with the items from an iterable.
 
@@ -308,55 +333,31 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             self.add(item)
 
     extend = update
-    """An alias of [`update`][iters.ordered_set.OrderedSet.update]."""
+    """An alias of [`update`][iters.ordered_sets.OrderedSet.update]."""
 
-    def index(self, item: Q, start: Optional[int] = None, stop: Optional[int] = None) -> int:
-        """Gets the index of an item in the ordered set.
-
-        Complexity:
-            `O(1)`.
-
-        Example:
-            ```python
-            >>> order_set = ordered_set([1, 2, 3])
-            >>> order_set.index(1)
-            0
-            >>> order_set.index(5)
-            Traceback (most recent call last):
-              ...
-            ValueError: 5 is not in the ordered set
-            ```
-
-        Arguments:
-            item: The item to get the index of.
-            start: The index to start searching from.
-            stop: The index to stop searching at.
-
-        Raises:
-            ValueError: The item is not in the ordered set.
-
-        Returns:
-            The index of the item.
-        """
+    def try_index(self, item: Q, start: Optional[int] = None, stop: Optional[int] = None) -> Option[int]:
         index = self._item_to_index.get(item)
 
         if index is None:
-            raise ValueError(item_not_in_ordered_set(item))
+            return NULL
 
         if start is not None:
             if index < start:
-                raise ValueError(item_not_in_ordered_set(item))
+                return NULL
 
         if stop is not None:
             if index >= stop:
-                raise ValueError(item_not_in_ordered_set(item))
+                return NULL
 
-        return index
+        return Some(index)
 
-    get_index = wrap_index_error(index)
-    """An alias of [`index`][iters.ordered_set.OrderedSet.index] wrapped to return
-    [`Option[int]`][wraps.option.Option] instead of erroring.
-    """
+    def index(self, item: Q, start: Optional[int] = None, stop: Optional[int] = None) -> int:
+        return self.try_index(item, start, stop).or_raise(
+            ValueError(not_in_ordered_set(item=item))
+        )
+
+    def contains(self, item: Q) -> bool:
+        return item in self._item_to_index
 
     def count(self, item: Q) -> int:
         """Returns `1` if an item is in the ordered set, `0` otherwise.
@@ -370,13 +371,22 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Returns:
             `1` if the `item` is in the ordered set, `0` otherwise.
         """
-        return int(item in self._item_to_index)
+        return int(self.contains(item))
+
+    def try_pop(self, index: int = LAST) -> Option[Q]:
+        items = self._items
+
+        item = items[index]
+
+        self.discard(item)
+
+        return item
 
     def pop(self, index: int = LAST) -> Q:
         """Pops an item from the ordered set at `index`.
 
         Complexity:
-            `O(n)`, see [`discard`][iters.ordered_set.OrderedSet.discard].
+            `O(n)`, see [`discard`][iters.ordered_sets.OrderedSet.discard].
 
         Example:
             ```python
@@ -400,18 +410,22 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Returns:
             The popped item.
         """
-        items = self._items
+        ...
 
-        item = items[index]
+    def try_remove(self, item: Q) -> Option[Q]:
+        item_to_index = self._item_to_index
 
-        self.discard(item)
+        if item in item_to_index:
+            index = item_to_index[item]
 
-        return item
+            for item_in, index_in in item_to_index.items():
+                if index_in >= index:
+                    item_to_index[item_in] -= 1
 
-    get_pop = wrap_index_error(pop)
-    """An alias of [`pop`][iters.ordered_set.OrderedSet.pop] wrapped to return
-    [`Option[Q]`][wraps.option.Option] instead of erroring.
-    """
+            return Some(item)
+
+        else:
+            return NULL
 
     def discard(self, item: Q) -> None:
         """Discards an item from the ordered set.
@@ -435,21 +449,12 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Arguments:
             item: The item to discard.
         """
-        item_to_index = self._item_to_index
-
-        if item in item_to_index:
-            index = item_to_index[item]
-
-            del self._items[index]
-
-            for item_in, index_in in item_to_index.items():
-                if index_in >= index:
-                    item_to_index[item_in] -= 1
+        self.try_remove(item)  # discard the returned `Option[Q]`
 
     def remove(self, item: Q) -> None:
-        """A checked version of [`discard`][iters.ordered_set.OrderedSet.discard].
+        """A checked version of [`discard`][iters.ordered_sets.OrderedSet.discard].
 
-        Complexity: `O(n)`, see [`discard`][iters.ordered_set.OrderedSet.discard].
+        Complexity: `O(n)`, see [`discard`][iters.ordered_sets.OrderedSet.discard].
 
         Example:
             ```python
@@ -472,11 +477,7 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         Raises:
             ValueError: The item is not in the ordered set.
         """
-        if item in self:
-            self.discard(item)
-
-        else:
-            raise ValueError(item_not_in_ordered_set(item))
+        self.try_remove(item).or_raise(ValueError(not_in_ordered_set(item=item)))
 
     def insert(self, index: int, item: Q) -> None:
         """Inserts an item into the ordered set at `index`.
@@ -514,7 +515,24 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
             item_to_index[item] = index
 
         else:
-            self.append(item)
+            self.add(item)
+
+    def reverse(self) -> None:
+        """Reverses the ordered set.
+
+        Complexity:
+            `O(n)`.
+        """
+        items = self._items
+
+        items.reverse()
+
+        length = len(items)
+
+        item_to_index = self._item_to_index
+
+        for item, index in item_to_index.items():
+            item_to_index[item] = length + ~index
 
     def clear(self) -> None:
         """Clears the ordered set.
@@ -524,34 +542,6 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """
         self._items.clear()
         self._item_to_index.clear()
-
-    def __iter__(self) -> Iterator[Q]:
-        return iter(self._items)
-
-    def __reversed__(self) -> Iterator[Q]:
-        return reversed(self._items)
-
-    def __repr__(self) -> str:
-        name = get_type_name(self)
-
-        items = self._items
-
-        if not items:
-            return EMPTY_REPRESENTATION.format(name)
-
-        return ITEMS_REPRESENTATION.format(name, items)
-
-    def __eq__(self, other: Any) -> bool:
-        try:
-            iterator = iter(other)
-
-        except TypeError:
-            return False
-
-        if is_sequence(other):
-            return self._items == list(iterator)
-
-        return set(self._item_to_index) == set(iterator)
 
     def apply_union(self, *iterables: Iterable[Q]) -> OrderedSet[Q]:
         """Returns the union of the ordered set and `iterables`.
@@ -568,8 +558,8 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return self.copy()
 
     union = mixed_method(create_union, apply_union)
-    """Mixes [`create_union`][iters.ordered_set.OrderedSet.create_union]
-    and [`apply_union`][iters.ordered_set.OrderedSet.apply_union].
+    """Mixes [`create_union`][iters.ordered_sets.OrderedSet.create_union]
+    and [`apply_union`][iters.ordered_sets.OrderedSet.apply_union].
     """
 
     def apply_intersection(self, *iterables: Iterable[Q]) -> OrderedSet[Q]:
@@ -591,8 +581,8 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return self.copy()
 
     intersection = mixed_method(create_intersection, apply_intersection)
-    """Mixes [`create_intersection`][iters.ordered_set.OrderedSet.create_intersection]
-    and [`apply_intersection`][iters.ordered_set.OrderedSet.apply_intersection].
+    """Mixes [`create_intersection`][iters.ordered_sets.OrderedSet.create_intersection]
+    and [`apply_intersection`][iters.ordered_sets.OrderedSet.apply_intersection].
     """
 
     def intersection_update(self, *iterables: Iterable[Q]) -> None:
@@ -626,8 +616,8 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         return self.copy()
 
     difference = mixed_method(create_difference, apply_difference)
-    """Mixes [`create_difference`][iters.ordered_set.OrderedSet.create_difference]
-    and [`apply_difference`][iters.ordered_set.OrderedSet.apply_difference].
+    """Mixes [`create_difference`][iters.ordered_sets.OrderedSet.create_difference]
+    and [`apply_difference`][iters.ordered_sets.OrderedSet.apply_difference].
     """
 
     def difference_update(self, *iterables: Iterable[Q]) -> None:
@@ -645,6 +635,11 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
     def single_symmetric_difference(self, other: Iterable[Q]) -> OrderedSet[Q]:
         ordered = self.create(other)
+
+        # there are two simple ways to compute symmetric difference:
+        # - self.union(ordered).difference(self.intersection(ordered))
+        # - self.difference(ordered).union(ordered.difference(self))
+        # and the latter is usually faster than the former
 
         return self.difference(ordered).union(ordered.difference(self))
 
@@ -669,8 +664,10 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
     symmetric_difference = mixed_method(create_symmetric_difference, apply_symmetric_difference)
     """Mixes
-    [`create_symmetric_difference`][iters.ordered_set.OrderedSet.create_symmetric_difference] and
-    [`apply_symmetric_difference`][iters.ordered_set.OrderedSet.apply_symmetric_difference].
+    [`create_symmetric_difference`]
+    [iters.ordered_sets.OrderedSet.create_symmetric_difference] and
+    [`apply_symmetric_difference`]
+    [iters.ordered_sets.OrderedSet.apply_symmetric_difference].
     """
 
     def symmetric_difference_update(self, *iterables: Iterable[Q]) -> None:
@@ -767,6 +764,63 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
         """
         return none(item in self for item in other)
 
+    def __bool__(self) -> bool:
+        """The implementation of [`bool`][bool] that checks whether the ordered set is non-empty.
+
+        Returns:
+            Whether the ordered set is non-empty.
+        """
+        return not self.is_empty()
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    @overload
+    def __getitem__(self, index: int) -> Q: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> OrderedSet[Q]: ...
+
+    def __getitem__(self, index: Union[int, slice]) -> Union[Q, OrderedSet[Q]]:
+        if is_slice(index):
+            if index == SLICE_ALL:
+                return self.copy()
+
+            return self.create_unchecked(self._items[index])
+
+        return self._items[index]
+
+    def __iter__(self) -> Iterator[Q]:
+        return iter(self._items)
+
+    def __reversed__(self) -> Iterator[Q]:
+        return reversed(self._items)
+
+    def __repr__(self) -> str:
+        name = get_type_name(self)
+
+        items = self._items
+
+        if not items:
+            return empty_representation(name=name)
+
+        return items_representation(name=name, items=items)
+
+    def __eq__(self, other: Any) -> bool:
+        try:
+            iterator = iter(other)
+
+        except TypeError:
+            return False
+
+        if is_sequence(other):
+            return self._items == list(iterator)
+
+        return set(self._item_to_index) == set(iterator)
+
+    def __contains__(self, item: Any) -> bool:
+        return item in self._item_to_index
+
     # I honestly hate these names ~ nekit
 
     issubset = is_subset
@@ -775,8 +829,11 @@ class OrderedSet(MutableSet[Q], Sequence[Q]):
 
 
 ordered_set = OrderedSet
-"""An alias of [`OrderedSet`][iters.ordered_set.OrderedSet]."""
+"""An alias of [`OrderedSet`][iters.ordered_sets.OrderedSet]."""
 ordered_set_unchecked = ordered_set.create_unchecked
-"""An alias of [`ordered_set.create_unchecked`][iters.ordered_set.OrderedSet.create_unchecked]."""
+"""An alias of
+[`ordered_set.create_unchecked`][iters.ordered_sets.OrderedSet.create_unchecked].
+"""
 
-from iters.utils import chain, none
+
+from iters.utils import chain

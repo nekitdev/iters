@@ -1,1 +1,1 @@
---8<-- "README.md"
+../README.md

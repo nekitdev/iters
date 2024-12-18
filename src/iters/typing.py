@@ -17,13 +17,17 @@ are optimized to reduce the overhead of calling [`bool`][bool].
 """
 
 
+def or_bool(predicate: OptionalPredicate[T]) -> Predicate[T]:
+    return bool if predicate is None else predicate
+
+
 @runtime_checkable
 class Sum(Protocol):
     """Represents types for which adding `self` to `other: Self` returns `Self`."""
 
     @required
     def __add__(self, __other: Self) -> Self:
-        raise NotImplementedError
+        ...
 
 
 @runtime_checkable
@@ -32,4 +36,4 @@ class Product(Protocol):
 
     @required
     def __mul__(self, __other: Self) -> Self:
-        raise NotImplementedError
+        ...
